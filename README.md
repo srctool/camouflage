@@ -10,7 +10,7 @@ This repository is the umbrella for documentation, conceptual design, and langua
 ---
 
 ## Repository Structure
-.
+```
 ├── README.md                  # This overview
 ├── LICENSE                    # Main repo license (MIT)
 ├── docs/                      # Docusaurus documentation sites
@@ -26,6 +26,7 @@ This repository is the umbrella for documentation, conceptual design, and langua
     ├── LICENSE
     ├── CODE_OF_CONDUCT.md    # Optional for Dart submodule
     └── lib/
+```
 ---
 
 ## Documentation
