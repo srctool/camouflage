@@ -1,4 +1,20 @@
-Title: <short summary>
+Title: <type>(<scope>): <short description>
+
+<!--
+PR title must follow Conventional Commits:
+  <type>(<scope>): <short description>
+
+- type: one of feat, fix, docs, style, refactor, test, chore
+- scope: affected module/package (e.g., kotlin-lib, dart-lib, ui-generator)
+- short description: concise summary of the change
+
+Examples:
+- feat(kotlin-lib): add redact() helper for masked logging
+- fix(dart-lib): handle null input in Parser.fromJson
+- docs(root): clarify setup and supported SDK versions
+
+GitKraken users: GitKraken uses the first line of the commit message as the PR title. You can copy this PR title format directly when committing.
+-->
 
 ## Description
 - What does this PR change and why?
