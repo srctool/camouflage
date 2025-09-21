@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-Usage-blue.svg)](LINK_TO_USAGE_DOCS)
+
 # Camouflage - SRC Tool
 
 Welcome to **Camouflage**, part of the **SRC Tool** — a set of libraries and tools to accelerate UI development and documentation workflows.
