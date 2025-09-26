@@ -1,11 +1,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Docs](https://img.shields.io/badge/docs-Usage-blue.svg)](./docs/usage/)
+[![Docs](https://img.shields.io/badge/docs-Website-blue.svg)](docs/)
 
 # Camouflage - SRC Tool
 
 Welcome to **Camouflage**, part of the **SRC Tool** — a set of libraries and tools to accelerate UI development and documentation workflows.
 
-This repository is the umbrella for documentation, conceptual design, and language-specific implementations included as Git submodules. The libraries live under kotlin-lib/ and dart-lib/ in this repo and mirror their own upstream repositories. Documentation and design foundations are under docs/* (see docs/internal/*).
+This repository is the umbrella for documentation, conceptual design, and language-specific implementations included as Git submodules. The libraries live under kotlin-lib/ and dart-lib/. The documentation site is built with Docusaurus under docs/.
 
 ---
 
@@ -13,34 +13,46 @@ This repository is the umbrella for documentation, conceptual design, and langua
 ```
 ├── README.md                  # This overview
 ├── LICENSE                    # Main repo license (MIT)
-├── docs/                      # Docusaurus documentation sites
-│   ├── internal/             # Internal conceptual & design docs
-│   └── usage/                # User-facing usage documentation
-├── kotlin-lib/               # Kotlin implementation of Camouflage
+├── docs/                      # Docusaurus website (Guide, Components, API, Architecture)
+│   ├── docusaurus.config.ts   # Site config
+│   └── development/
+│       ├── guide/             # Source for /guide
+│       ├── components/        # Source for /components
+│       ├── api/               # Source for /api
+│       └── architecture/      # Source for /architecture
+├── kotlin-lib/                # Kotlin implementation of Camouflage
 │   ├── README.md
 │   ├── LICENSE
-│   ├── CODE_OF_CONDUCT.md    # Optional for Kotlin submodule
 │   └── src/
-└── dart-lib/                 # Dart implementation of Camouflage
+└── dart-lib/                  # Dart implementation of Camouflage
     ├── README.md
     ├── LICENSE
-    ├── CODE_OF_CONDUCT.md    # Optional for Dart submodule
     └── lib/
 ```
 ---
 
 ## Documentation
 
-### Internal Docs (for contributors)
+The documentation website exposes four top-level sections:
+- Guide → /guide
+- Components → /components
+- API → /api
+- Architecture → /architecture
 
-- **Purpose:** Share conceptual design, architecture, and implementation guides.  
-- **Access:** [Internal Docs Site](./docs/internal/)  
-- **Notes:** Use this to understand Camouflage’s structure, architecture, and implementation patterns before contributing.
+Source files live under docs/development/<section>, each with its own manual sidebar file at:
+- docs/development/guide/sidebars.ts
+- docs/development/components/sidebars.ts
+- docs/development/api/sidebars.ts
+- docs/development/architecture/sidebars.ts
 
-### Usage Docs (for users)
+Run the docs locally:
+- Node 20+
+- From docs/:
+  - Install deps: npm install (or yarn)
+  - Start dev server: npm run start
+  - Build: npm run build
 
-- **Purpose:** Introduce Camouflage, provide “Getting Started,” and code references.  
-- **Access:** [Usage Docs Site](./docs/usage/)  
+Notes for examples: the site includes a language preference switcher for Kotlin and Dart. Authors can use the `LanguageSwitcher` button and wrap examples with `LangTabs` to sync examples across pages.
 
 ---
 
@@ -48,39 +60,37 @@ This repository is the umbrella for documentation, conceptual design, and langua
 
 ### Kotlin Implementation (`kotlin-lib/`)
 
-- Contains the Kotlin version of Camouflage.  
-- Contributors working with Kotlin should submit changes here.  
-- Upstream repository: https://github.com/srctool/camouflage-kotlin  
-- **Documentation:** See internal docs under `docs/internal/kotlin/`.  
-- **License:** [Apache 2.0](./kotlin-lib/LICENSE)
+- Contains the Kotlin version of Camouflage.
+- Contributors working with Kotlin should submit changes here.
+- Upstream repository: https://github.com/srctool/camouflage-kotlin
+- License: [Apache 2.0](./kotlin-lib/LICENSE)
 
 ### Dart Implementation (`dart-lib/`)
 
-- Contains the Dart version of Camouflage.  
-- Contributors working with Dart should submit changes here.  
-- Upstream repository: https://github.com/srctool/camouflage-dart  
-- **Documentation:** See internal docs under `docs/internal/dart/`.  
-- **License:** [Apache 2.0](./dart-lib/LICENSE)
+- Contains the Dart version of Camouflage.
+- Contributors working with Dart should submit changes here.
+- Upstream repository: https://github.com/srctool/camouflage-dart
+- License: [Apache 2.0](./dart-lib/LICENSE)
 
 ---
 
 ## Contributing
 
-- Follow the Code of Conduct in each submodule repository (see kotlin-lib/CODE_OF_CONDUCT.md and dart-lib/CODE_OF_CONDUCT.md).  
-- Contributions should focus on **one language per submodule**.  
-- Refer to internal docs for architecture, design, and implementation guidelines.  
-- Open issues or pull requests in the respective submodule repository.
+- Follow the Code of Conduct in each submodule repository (see kotlin-lib/CODE_OF_CONDUCT.md and dart-lib/CODE_OF_CONDUCT.md).
+- Contributions should focus on one language per submodule.
+- For documentation contributions, see the section paths and local dev instructions above.
+- Open issues or pull requests in the respective submodule repository when the change only affects that implementation; otherwise use the root repo.
 
 ---
 
 ## License
 
-- **Main repository (docs & conceptual overview):** MIT License  
-- **Kotlin/Dart submodules:** Apache 2.0 License
+- Main repository (docs & conceptual overview): MIT License
+- Kotlin/Dart submodules: Apache 2.0 License
 
 ---
 
 ## Contact
 
-- Questions or feedback: **contact@srctool.org**  
+- Questions or feedback: contact@srctool.org
 - Contributor-related inquiries: follow instructions in each submodule’s README.

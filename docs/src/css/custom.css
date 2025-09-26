@@ -1,0 +1,56 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Import Outfit font */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+/* You can override the default Infima variables here. */
+:root {
+  /* Brand colors */
+  --ifm-color-primary: #009741;
+  --ifm-color-primary-dark: #008A3B;
+  --ifm-color-primary-darker: #007E36;
+  --ifm-color-primary-darkest: #00692D;
+  --ifm-color-primary-light: #19A953;
+  --ifm-color-primary-lighter: #33B86A;
+  --ifm-color-primary-lightest: #66D08F;
+
+  /* Typography: set Outfit as the base and heading font */
+  --ifm-font-family-base: "Outfit", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --ifm-heading-font-family: var(--ifm-font-family-base);
+
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #27C45B;
+  --ifm-color-primary-dark: #23B052;
+  --ifm-color-primary-darker: #21A64D;
+  --ifm-color-primary-darkest: #1D9344;
+  --ifm-color-primary-light: #3CCA6B;
+  --ifm-color-primary-lighter: #52CF7C;
+  --ifm-color-primary-lightest: #68D68C;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Sidebar language switcher: keep below fixed navbar and visually integrated */
+.docSidebarWithSwitcher .sidebarLangSwitcher {
+  position: sticky;
+  top: var(--ifm-navbar-height);
+  z-index: 2; /* above sidebar bg, below navbar */
+  background: var(--ifm-background-surface-color);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.docSidebarWithSwitcher .sidebarLangLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-bottom: 0.25rem;
+}
