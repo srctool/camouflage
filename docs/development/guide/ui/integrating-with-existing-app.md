@@ -1,6 +1,6 @@
 ---
-sidebar_label: Integrating with existing app (UI)
-title: UI — Integrating with an existing app
+sidebar_label: Integrating UI with existing app
+title: Integrating Camouflage UI with an existing app
 ---
 
 import {KotlinOnly, DartOnly} from '@site/src/components/LangContent';

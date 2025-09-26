@@ -15,20 +15,20 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Storybook',
-      collapsed: false,
-      items: [
-        'storybook/getting-started',
-        'storybook/integrating-with-existing-app',
-      ],
-    },
-    {
-      type: 'category',
       label: 'Blueprint',
       collapsed: false,
       items: [
         'blueprint/getting-started',
         'blueprint/integrating-with-existing-app',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Storybook',
+      collapsed: false,
+      items: [
+        'storybook/getting-started',
+        'storybook/integrating-with-existing-app',
       ],
     },
   ],

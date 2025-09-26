@@ -1,6 +1,6 @@
 ---
-sidebar_label: Getting started (UI)
-title: UI — Getting started
+sidebar_label: Getting started with UI
+title: Getting started with Camouflage UI
 ---
 
 import {KotlinOnly, DartOnly} from '@site/src/components/LangContent';

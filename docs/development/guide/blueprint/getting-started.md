@@ -1,6 +1,6 @@
 ---
-sidebar_label: Getting started (Blueprint)
-title: Blueprint — Getting started
+sidebar_label: Getting started with Blueprint
+title: Getting started with Camouflage Blueprint
 ---
 
 import {KotlinOnly, DartOnly} from '@site/src/components/LangContent';

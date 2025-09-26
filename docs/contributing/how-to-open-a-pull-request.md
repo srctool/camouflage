@@ -6,7 +6,7 @@ title: How to open a pull request
 Use this checklist to submit a high‑quality PR.
 
 Before you open the PR
-- Rebase on the latest main and resolve conflicts locally.
+- Rebase on the latest develop (or main for hotfix/release PRs) and resolve conflicts locally.
 - Ensure builds and tests pass locally (see language‑specific steps below).
 - Run format/lint tools.
 - Update docs and changelogs (if applicable).
@@ -21,6 +21,7 @@ PR title and description
   - Migration notes if breaking changes
 
 Target and scope
+- Target branch: feature/bugfix → develop; release/hotfix → main
 - Kotlin changes → affect files under kotlin-lib/
 - Dart changes → affect files under dart-lib/
 - Docs changes → affect files under docs/
@@ -37,5 +38,8 @@ After opening the PR
 - When squashing/merging, preserve the Conventional Commit style in the final message.
 
 Merging policy
+- Upstream repository: Squash and merge only on protected branches `main` and `develop`. Merge commits and rebase merges are not used on those branches.
+- Forks: You may use any workflow/merge strategy in your own fork. The final merge to upstream `main`/`develop` will be performed as a squash merge.
 - At least one approval is required. Maintainers may request additional reviewers based on scope.
 - CI must be green. Maintainers may re‑run flaky jobs or ask for follow‑ups if needed.
+- The squashed commit title comes from the PR title; the body comes from the PR description. Keep both clear and concise.

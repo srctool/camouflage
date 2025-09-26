@@ -1,6 +1,6 @@
 ---
-sidebar_label: Getting started (Storybook)
-title: Storybook — Getting started
+sidebar_label: Getting started with Storybook
+title: Getting started with Camouflage Storybook
 ---
 
 import {KotlinOnly, DartOnly} from '@site/src/components/LangContent';

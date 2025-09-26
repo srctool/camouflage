@@ -1,6 +1,6 @@
 ---
-sidebar_label: Integrating with existing app (Blueprint)
-title: Blueprint — Integrating with an existing app
+sidebar_label: Integrating Blueprint with an existing app
+title: Integrating Camouflage Blueprint with an existing app
 ---
 
 import {KotlinOnly, DartOnly} from '@site/src/components/LangContent';
