@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Git hook: post-checkout
+# Purpose: When switching branches or checking out updates, keep submodules synced.
+# This hook will update submodules to the latest origin/<branch> for main/develop,
+# otherwise it will just init/update to recorded commits.
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+"$REPO_ROOT/scripts/sync-submodules.sh" || true

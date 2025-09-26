@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Git hook: post-merge
+# Purpose: After pulling/merging, keep submodules synced similarly to post-checkout.
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+"$REPO_ROOT/scripts/sync-submodules.sh" || true

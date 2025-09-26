@@ -1,0 +1,109 @@
+name: Release on tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  create_github_release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish_kotlin:
+    name: Publish kotlin-lib
+    needs: create_github_release
+    runs-on: ubuntu-latest
+    if: ${{ secrets.KOTLIN_PUBLISH_ENABLED == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Publish with Gradle
+        working-directory: kotlin-lib
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          ./gradlew --no-daemon publish
+
+  publish_dart:
+    name: Publish dart-lib
+    needs: create_github_release
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DART_PUBLISH_ENABLED == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Configure pub credentials
+        run: |
+          mkdir -p ~/.config/dart
+          echo "${{ secrets.PUB_CREDENTIALS_JSON }}" > ~/.config/dart/pub-credentials.json
+      - name: Publish to pub.dev
+        working-directory: dart-lib
+        run: |
+          dart pub publish --force
+
+  update_root_docs_changelog:
+    name: Update root docs & changelog
+    needs: create_github_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate release notes file
+        id: notes
+        uses: release-drafter/release-drafter@v6
+        with:
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Append to CHANGELOG.md (no-op without write permission)
+        run: |
+          echo "\n## $GITHUB_REF_NAME" >> CHANGELOG.md
+          echo "\n${{ steps.notes.outputs.name }}\n" >> CHANGELOG.md || true
+      - name: Commit changelog update
+        if: ${{ success() && github.ref_type == 'tag' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md || true
+          git commit -m "chore(docs): update root CHANGELOG for $GITHUB_REF_NAME" || echo "No changes to commit"
+          git push || echo "Push skipped (no permissions)"
+      - name: Build docs
+        working-directory: docs
+        run: |
+          npm ci
+          npm run build
