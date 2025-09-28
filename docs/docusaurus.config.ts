@@ -124,6 +124,88 @@ const config: Config = {
     colorMode: {
       respectPrefersColorScheme: true,
     },
+    footer: {
+      style: 'dark',
+      links: [
+        {
+          title: 'Documentation',
+          items: [
+            {
+              label: 'Getting Started',
+              to: '/guide/intro',
+            },
+            {
+              label: 'Components',
+              to: '/components',
+            },
+            {
+              label: 'API Reference',
+              to: '/api',
+            },
+            {
+              label: 'Ecosystem Architecture',
+              to: '/guide/ecosystem-architecture',
+            },
+          ],
+        },
+        {
+          title: 'Packages',
+          items: [
+            {
+              label: 'Camouflage UI',
+              to: '/guide/ui/architecture',
+            },
+            {
+              label: 'Camouflage Blueprint',
+              to: '/guide/blueprint/architecture',
+            },
+            {
+              label: 'Camouflage Storybook',
+              to: '/guide/storybook/architecture',
+            },
+          ],
+        },
+        {
+          title: 'Platform',
+          items: [
+            {
+              label: 'Kotlin/KMP',
+              href: 'https://kotlinlang.org/docs/multiplatform.html',
+            },
+            {
+              label: 'Flutter/Dart',
+              href: 'https://flutter.dev',
+            },
+            {
+              label: 'Compose Multiplatform',
+              href: 'https://www.jetbrains.com/lp/compose-multiplatform/',
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'Blog',
+              to: '/blog',
+            },
+            {
+              label: 'GitHub',
+              href: 'https://github.com/srctool/camouflage',
+            },
+            {
+              label: 'Contributing',
+              to: '/contributing',
+            },
+            {
+              label: 'Release Notes',
+              to: '/guide/releases',
+            },
+          ],
+        },
+      ],
+      copyright: `Copyright © ${new Date().getFullYear()} SRC Tool. Built with Docusaurus.`,
+    },
     navbar: {
       title: 'Camouflage',
       logo: {
@@ -154,8 +236,9 @@ const config: Config = {
         // Version selector injected via swizzled Navbar Right content
         {
           href: 'https://github.com/srctool/camouflage',
-          label: 'GitHub',
           position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
         },
       ],
     },
@@ -163,28 +246,57 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Documentation',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'Getting Started',
+              to: '/guide/intro',
+            },
+            {
+              label: 'Components',
+              to: '/components',
+            },
+            {
+              label: 'API Reference',
+              to: '/api',
+            },
+            {
+              label: 'Ecosystem Architecture',
+              to: '/guide/ecosystem-architecture',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Packages',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'Camouflage UI',
+              to: '/guide/ui/architecture',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'Camouflage Blueprint',
+              to: '/guide/blueprint/architecture',
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Camouflage Storybook',
+              to: '/guide/storybook/architecture',
+            },
+          ],
+        },
+        {
+          title: 'Platform',
+          items: [
+            {
+              label: 'Kotlin/KMP',
+              href: 'https://kotlinlang.org/docs/multiplatform.html',
+            },
+            {
+              label: 'Flutter/Dart',
+              href: 'https://flutter.dev',
+            },
+            {
+              label: 'Compose Multiplatform',
+              href: 'https://www.jetbrains.com/lp/compose-multiplatform/',
             },
           ],
         },
@@ -197,7 +309,15 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/srctool/camouflage',
+            },
+            {
+              label: 'Contributing',
+              to: '/contributing',
+            },
+            {
+              label: 'Release Notes',
+              to: '/guide/releases',
             },
           ],
         },
