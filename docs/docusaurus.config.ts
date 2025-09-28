@@ -108,17 +108,6 @@ const config: Config = {
     [
       '@docusaurus/plugin-content-docs',
       {
-        id: 'architecture',
-        path: 'development/architecture',
-        routeBasePath: 'architecture',
-        sidebarPath: require.resolve('./development/architecture/sidebars.ts'),
-        editUrl:
-          'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
         id: 'contributing',
         path: 'contributing',
         routeBasePath: 'contributing',
@@ -149,7 +138,6 @@ const config: Config = {
             {label: 'Guide', to: '/guide'},
             {label: 'Components', to: '/components'},
             {label: 'API', to: '/api'},
-            {label: 'Architecture', to: '/architecture'},
           ],
         },
         {

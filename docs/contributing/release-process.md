@@ -7,8 +7,8 @@ This page describes how we cut releases and what automation runs.
 
 Overview
 - Daily work happens in forks. Create feature/bugfix branches from develop and open PRs to develop at the upstream repository.
-- For a release, create a release/<version> branch from develop in your fork, stabilize it, and open a PR to main.
-- After the PR is merged to main, tag the merge commit with v<major>.<minor>.<patch> (for example, v1.2.3).
+- For a release, create a release/{version} branch from develop in your fork, stabilize it, and open a PR to main.
+- After the PR is merged to main, tag the merge commit with v{major}.{minor}.{patch} (for example, v1.2.3).
 - The tag triggers automation to generate changelogs and publish the language libraries. The root repo updates documentation and its changelog.
 
 Branches

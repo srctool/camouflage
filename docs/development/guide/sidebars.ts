@@ -4,12 +4,14 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   guideSidebar: [
     'intro',
+    'ecosystem-architecture',
     {
       type: 'category',
       label: 'UI',
       collapsed: false,
       items: [
         'ui/getting-started',
+        'ui/architecture',
         'ui/integrating-with-existing-app',
       ],
     },
@@ -19,6 +21,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'blueprint/getting-started',
+        'blueprint/architecture',
         'blueprint/integrating-with-existing-app',
       ],
     },
@@ -28,6 +31,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'storybook/getting-started',
+        'storybook/architecture',
         'storybook/integrating-with-existing-app',
       ],
     },
