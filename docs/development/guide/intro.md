@@ -7,6 +7,108 @@ slug: /
 
 Welcome to the Camouflage documentation. These docs cover concepts, components, APIs, and architecture for the Kotlin and Dart implementations.
 
+## What is Camouflage?
+
+Camouflage is a comprehensive UI development ecosystem that unifies UI development across Kotlin and Dart platforms through three powerful, interconnected packages:
+
+### 1. Camouflage UI (camouflage-ui)
+
+At its core, Camouflage UI is a modern design system implementation that provides:
+
+- **Cross-Platform Components**: A unified set of UI components that maintain consistency across Kotlin (KMP/CMP) and Flutter platforms
+- **Schema-Based Theme Mapping**: A unique approach to component theming:
+  - Components reference theme keys defined in a schema
+  - Schema acts as a flexible mapping layer between design system and components
+  - Define your design system properties and connect them via schema keys
+  - No rigid theme interfaces or predefined structures
+  - Complete freedom to map any design token to any component property
+  - Example: Map 'button.primary.background' to your design system's actual color token
+- **Platform-Specific Optimizations**: Native performance and behavior while maintaining a consistent API
+- **Accessibility First**: Built-in support for screen readers, keyboard navigation, and WCAG guidelines
+- **Dynamic Theming**: Runtime theme updates with built-in support for:
+  - Dark/light mode switching
+  - Multiple brand themes
+  - Custom theme variations
+  - Design system versioning
+
+### 2. Camouflage Blueprint (camouflage-blueprint)
+
+Blueprint is our innovative UI generation engine that enables dynamic component composition and state management:
+
+- **Component Reference System**: 
+  - Locate and use components via key-based referencing
+  - Access both built-in and custom components
+  - Type-safe component resolution
+
+- **State Management**:
+  - Built-in `stateOf` function for component state manipulation
+  - Declarative state updates through properties
+  - Reactive state management integrated with platform UI (Composable/Widget)
+
+- **Event Handling**:
+  - Add event listeners through component properties
+  - Direct integration with component state
+  - Platform-native event support
+
+Key features:
+- Dynamic component composition
+- Integrated state management
+- Type-safe component referencing
+- Hot-reload compatible development
+- Platform-specific optimizations
+
+### 3. Camouflage Storybook (camouflage-storybook)
+
+A native implementation of Storybook for Kotlin and Dart that provides:
+
+- **Component Development Environment**: Isolated environment for building and testing UI components
+- **Interactive Documentation**: Live component examples with editable props
+- **Visual Testing Tools**: Built-in support for visual regression testing
+- **Cross-Platform Preview**: Test components across different platforms and states
+- **Addon System**: Extensible architecture supporting custom addons
+
+Unique capabilities:
+- Native performance without JavaScript runtime
+- Platform-specific testing tools
+- Integration with camouflage-ui and blueprint
+- Support for both Camouflage and custom components
+- Hot-reload support for rapid development
+
+## Why Camouflage?
+
+Camouflage solves several critical challenges in cross-platform UI development:
+
+1. **Design System Adaptability**
+   - Schema-driven theme mapping system
+   - Direct mapping to your design tokens
+   - Complete theme customization through schema
+   - Platform-specific overrides when needed
+   - Dark mode support built-in
+
+2. **Consistency at Scale**
+   - Single source of truth for design system implementation
+   - Unified component API across platforms
+   - Consistent behavior and accessibility
+   - Design-to-development workflow alignment
+
+3. **Developer Experience**
+   - Familiar patterns for both Kotlin and Flutter developers
+   - Rich development tools and documentation
+   - Rapid prototyping with Blueprint
+   - Comprehensive testing environment
+
+3. **Performance**
+   - Native implementation for each platform
+   - Optimized rendering and updates
+   - No runtime overhead
+   - Efficient state management
+
+4. **Maintenance**
+   - Shared component logic
+   - Centralized design system updates
+   - Automated testing and documentation
+   - Version-controlled UI definitions
+
 ## Prerequisites
 
 ### Development Environment
@@ -57,135 +159,28 @@ Welcome to the Camouflage documentation. These docs cover concepts, components, 
   - UI state management
   - Atomic design principles
 
+## Documentation Structure
 
+Our documentation is organized into three main sections:
 
-## What is Camouflage?
+### Guide
+High-level walkthroughs and getting started tutorials covering:
+- Introduction to Camouflage ecosystem
+- Setting up your development environment
+- Basic usage and integration patterns
 
-Camouflage is a comprehensive UI development ecosystem that consists of three main packages:
+### Components
+Comprehensive component documentation including:
+- Design guidelines and principles
+- Component specifications and APIs
+- Usage examples and best practices
+- Implementation considerations
 
-### 1. Camouflage UI (`camouflage-ui`)
-- An adaptable UI component design system package
-- Provides a comprehensive set of customizable, cross-platform UI components
-- Implements consistent design patterns across Kotlin and Dart platforms
+### API Reference
+Technical details and implementation specifics for:
+- Blueprint schema development
+- Storybook configuration
+- Integration patterns
+- Platform-specific considerations
 
-### 2. Camouflage Blueprint (`camouflage-blueprint`)
-- A powerful UI generator that creates interfaces based on schema definitions
-- Supports custom component schema creation for both Kotlin and Dart/Flutter
-- Specializes in generating higher-level components
-- Enables developers to define their own complex component schemas
-- Utilizes camouflage-ui components as building blocks
-- Provides flexibility to extend and customize the schema system
-
-### 3. Camouflage Storybook (`camouflage-storybook`)
-- A native implementation of Storybook.js capabilities for Kotlin and Dart
-- Built using camouflage-ui and camouflage-blueprint
-- Provides component documentation, testing, and visualization features
-- Supports both Camouflage UI components and custom components
-- Offers the same powerful features as Storybook.js but tailored for Kotlin and Dart environments
-
-## What Camouflage can do?
-
-Camouflage empowers developers with its three core packages:
-
-1. **Design System Development (`camouflage-ui`)**
-   - Create consistent UI components across Kotlin and Dart platforms
-   - Implement adaptable design patterns
-   - Build accessible and responsive components
-   - Maintain unified styling and behavior
-   - Support platform-specific optimizations
-
-2. **Schema-Driven UI Generation (`camouflage-blueprint`)**
-   - Create and maintain custom component schemas
-   - Define complex organism-level components and above
-   - Generate UI layouts from schema definitions
-   - Build reusable component templates
-   - Support platform-specific customizations for Kotlin and Dart/Flutter
-   - Enable component composition through schema inheritance
-   - Provide extensible schema validation system
-
-3. **Component Development and Testing (`camouflage-storybook`)**
-   - Document and showcase UI components
-   - Test components in isolation
-   - Preview different component states
-   - Support for both Camouflage and custom components
-   - Interactive development environment
-   - Visual regression testing
-   - Component state management
-   - Matches Storybook.js features in Kotlin and Dart
-
-## How to use these docs
-
-- Sections
-  - **Guide**: High-level walkthroughs and getting started tutorials
-    - Introduction to Camouflage ecosystem
-    - Setting up your development environment
-    - Basic usage and integration patterns
-  
-  - **Components**: Comprehensive component documentation
-    - Design guidelines and principles
-    - Component specifications
-      - Props and parameters
-      - States and variants
-      - Accessibility requirements
-    - Component schemas and definitions
-    - Usage examples and best practices
-    - Implementation considerations
-    
-  - **API**: Technical reference and implementation details
-    - Blueprint
-      - Custom schema development guide
-      - Schema composition and inheritance
-      - Component schema API for Kotlin and Dart/Flutter
-      - Higher-level component patterns (organisms+)
-      - Integration with existing components
-      - Schema validation and extension APIs
-      - Best practices for custom schemas
-    - Storybook
-      - Configuration and setup
-      - Story writing API
-      - Testing utilities
-      - Add-ons and extensions
-    - Integration APIs
-      - Cross-package integration
-      - Platform-specific considerations
-- Language preference
-  - Use the Language switcher at the top of the docs sidebar to pick Kotlin or Dart.
-  - Your choice is remembered across pages and sessions.
-  - Page content adapts to your selection without showing language tabs. Tabs are reserved for other distinctions later (e.g., platform, runtime).
-- Getting started
-  - From the homepage, use the "Get Started with" split button to jump into the Guide.
-
-### Documentation Development
-- Node.js 20+
-- Documentation setup:
-  ```bash
-  cd docs/
-  npm install
-  npm run start  # for local development
-  ```
-
-## Developer notes
-### Language-aware theming
-- The site's primary color adapts to your chosen language:
-  - Kotlin: Purple theme
-  - Dart: Blue theme
-- Theme changes affect:
-  - Sidebar navigation
-  - Homepage selector
-  - Code snippets
-  - Interactive examples
-
-### Documentation Standards
-- All code examples should:
-  - Be thoroughly tested and verified
-  - Include proper error handling
-  - Follow platform-specific conventions
-  - Have clear comments explaining complex logic
-  - Be accessibility-compliant
-
-### Contributing
-- Follow the language-specific style guides
-- Ensure all examples are up to date with the latest API changes
-- Test documentation changes locally before submitting
-- Include relevant tags for better searchability
-- Cross-reference related documentation when applicableflage documentation. These docs cover concepts, components, APIs, and architecture for the Kotlin and Dart implementations.
+Use the Language switcher at the top of the docs sidebar to toggle between Kotlin and Dart-specific content.
