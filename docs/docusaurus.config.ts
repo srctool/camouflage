@@ -27,6 +27,11 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
 
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
@@ -49,21 +54,7 @@ const config: Config = {
       'classic',
       {
         docs: false,
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -79,8 +70,6 @@ const config: Config = {
         path: 'development/guide',
         routeBasePath: 'guide',
         sidebarPath: require.resolve('./development/guide/sidebars.ts'),
-        editUrl:
-          'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
       },
     ],
     [
@@ -90,19 +79,6 @@ const config: Config = {
         path: 'development/components',
         routeBasePath: 'components',
         sidebarPath: require.resolve('./development/components/sidebars.ts'),
-        editUrl:
-          'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'api',
-        path: 'development/api',
-        routeBasePath: 'api',
-        sidebarPath: require.resolve('./development/api/sidebars.ts'),
-        editUrl:
-          'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
       },
     ],
     [
@@ -112,8 +88,6 @@ const config: Config = {
         path: 'contributing',
         routeBasePath: 'contributing',
         sidebarPath: require.resolve('./contributing/sidebars.ts'),
-        editUrl:
-          'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
       },
     ],
   ],
@@ -130,39 +104,18 @@ const config: Config = {
         {
           title: 'Documentation',
           items: [
-            {
-              label: 'Getting Started',
-              to: '/guide/intro',
-            },
-            {
-              label: 'Components',
-              to: '/components',
-            },
-            {
-              label: 'API Reference',
-              to: '/api',
-            },
-            {
-              label: 'Ecosystem Architecture',
-              to: '/guide/ecosystem-architecture',
-            },
+            {label: 'Overview', to: '/guide'},
+            {label: 'Theme', to: '/guide/foundations/theme'},
+            {label: 'Components', to: '/components'},
+            {label: 'Roadmap', to: '/guide/project/roadmap'},
           ],
         },
         {
-          title: 'Packages',
+          title: 'Architecture',
           items: [
-            {
-              label: 'Camouflage UI',
-              to: '/guide/ui/architecture',
-            },
-            {
-              label: 'Camouflage Blueprint',
-              to: '/guide/blueprint/architecture',
-            },
-            {
-              label: 'Camouflage Storybook',
-              to: '/guide/storybook/architecture',
-            },
+            {label: 'Architecture', to: '/guide/architecture/architecture'},
+            {label: 'Skins', to: '/guide/skins'},
+            {label: 'Tooling', to: '/guide/integrations/tooling'},
           ],
         },
         {
@@ -186,20 +139,12 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
               label: 'GitHub',
               href: 'https://github.com/srctool/camouflage',
             },
             {
               label: 'Contributing',
               to: '/contributing',
-            },
-            {
-              label: 'Release Notes',
-              to: '/guide/releases',
             },
           ],
         },
@@ -219,7 +164,6 @@ const config: Config = {
           items: [
             {label: 'Guide', to: '/guide'},
             {label: 'Components', to: '/components'},
-            {label: 'API', to: '/api'},
           ],
         },
         {
@@ -227,12 +171,6 @@ const config: Config = {
           label: 'Contributing',
           position: 'right',
         },
-        {
-          href: 'https://discordapp.com/invite/docusaurus',
-          label: 'Community',
-          position: 'right',
-        },
-        {to: '/blog', label: 'Blog', position: 'right'},
         // Version selector injected via swizzled Navbar Right content
         {
           href: 'https://github.com/srctool/camouflage',
@@ -241,88 +179,6 @@ const config: Config = {
           'aria-label': 'GitHub repository',
         },
       ],
-    },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Documentation',
-          items: [
-            {
-              label: 'Getting Started',
-              to: '/guide/intro',
-            },
-            {
-              label: 'Components',
-              to: '/components',
-            },
-            {
-              label: 'API Reference',
-              to: '/api',
-            },
-            {
-              label: 'Ecosystem Architecture',
-              to: '/guide/ecosystem-architecture',
-            },
-          ],
-        },
-        {
-          title: 'Packages',
-          items: [
-            {
-              label: 'Camouflage UI',
-              to: '/guide/ui/architecture',
-            },
-            {
-              label: 'Camouflage Blueprint',
-              to: '/guide/blueprint/architecture',
-            },
-            {
-              label: 'Camouflage Storybook',
-              to: '/guide/storybook/architecture',
-            },
-          ],
-        },
-        {
-          title: 'Platform',
-          items: [
-            {
-              label: 'Kotlin/KMP',
-              href: 'https://kotlinlang.org/docs/multiplatform.html',
-            },
-            {
-              label: 'Flutter/Dart',
-              href: 'https://flutter.dev',
-            },
-            {
-              label: 'Compose Multiplatform',
-              href: 'https://www.jetbrains.com/lp/compose-multiplatform/',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/srctool/camouflage',
-            },
-            {
-              label: 'Contributing',
-              to: '/contributing',
-            },
-            {
-              label: 'Release Notes',
-              to: '/guide/releases',
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} SRC Tool. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

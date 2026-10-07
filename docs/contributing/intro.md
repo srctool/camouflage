@@ -23,8 +23,9 @@ Quick links
 - Versioning policy → /contributing/versioning-policy
 
 Docs authoring tips
-- Documentation lives under docs/development/* (guide, components, api, architecture). Each section has its own manual sidebar.ts.
-- Use the LanguageSwitcher and LangTabs components for Kotlin/Dart examples so readers can keep their preferred language across pages.
+- The Guide (docs/development/guide) and Components (docs/development/components) pages are generated from the Camouflage design notes by `docs/scripts/sync_vault.py`. Don't edit them by hand: change the notes and re-run the script. The sidebars follow the folders.
+- Each generated page has a Concept part (shown for every language) and an Implementation part (Kotlin or Dart, picked with the language switcher).
+- For hand-written pages, use the KotlinOnly, DartOnly and LangTabs components for Kotlin/Dart content so readers keep their preferred language across pages.
 
 Code of Conduct
 Participation is governed by the Code of Conduct files in each submodule. For sensitive reports, email contact@srctool.org.

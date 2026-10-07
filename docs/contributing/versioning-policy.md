@@ -6,18 +6,19 @@ title: Versioning policy
 We follow Semantic Versioning (SemVer) for the library submodules, and we keep the docs site aligned with released features.
 
 Scope
-- Kotlin library (kotlin-lib/): versioned independently
-- Dart library (dart-lib/): versioned independently
+- Kotlin library (kotlin-lib/) and Dart library (dart-lib/): the core set (core, skins, navigation) shares the **minor** version across both, so 0.3 is the same milestone on both platforms. **Patch** versions are independent.
+- Kotlin ships a BOM that pins core, the skins and navigation to versions tested together. Dart has no BOM; each skin's constraint on core keeps them compatible.
 - Docs site (docs/): not versioned like the libraries; it documents the latest released and in‑progress features. When necessary, we call out version‑specific behavior.
 
 SemVer summary
+- While the version is `0.x`, the API is still settling: a MINOR bump may break, and the changelog says so.
 - MAJOR (x.0.0): incompatible API changes
 - MINOR (x.y.0): backwards‑compatible feature additions
 - PATCH (x.y.z): backwards‑compatible bug fixes
 
 Breaking changes
 - Require a MAJOR bump and must include migration notes in the PR description and in the CHANGELOG/release notes.
-- Communicate deprecations ahead of time where feasible (add @Deprecated annotations in Kotlin or documentation notes in Dart) and provide alternatives.
+- Deprecate before removing: mark the old API `@Deprecated` (Kotlin and Dart) for one minor version with its replacement, then remove it in the next major.
 
 Release cadence
 - We release as needed rather than on a fixed schedule. Multiple small changes may batch into a MINOR release; urgent fixes may trigger PATCH releases.

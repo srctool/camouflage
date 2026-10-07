@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
@@ -11,32 +12,33 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Write the component once',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        What a component is stays fixed; how it looks comes from a swappable Skin plus a Theme.
+        A new app gets a new Theme, not new components. See the <Link to="/guide">Overview</Link>.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Your brand, not a stock look',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Theme tokens and component themes cover most designs; borrow one component from another skin
+        when a design asks for it. See <Link to="/guide/foundations/theme">Theme</Link> and{' '}
+        <Link to="/guide/skins">Skins</Link>.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Kotlin and Flutter alike',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        The same components and parameters on Compose Multiplatform and Flutter. Pick your language in the
+        sidebar to see its implementation. Browse the <Link to="/components">Components</Link>.
       </>
     ),
   },

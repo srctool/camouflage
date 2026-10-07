@@ -29,7 +29,7 @@ Style and tooling
 - Keep public APIs documented; update README/docs when behavior changes.
 
 Docs contributions
-- Docs live in docs/development/* (guide, components, api, architecture). Update the relevant section and its sidebars.ts for ordering.
+- Guide and Components pages are generated from the Camouflage design notes by docs/scripts/sync_vault.py; change the notes and re-run it rather than editing the generated .mdx files. Contributing pages are hand-written.
 - For code examples that exist in both languages, prefer the LanguageSwitcher and LangTabs components to keep examples in sync with the user’s language preference.
 
 Design and discussion
