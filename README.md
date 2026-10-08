@@ -58,6 +58,8 @@ The sites include a Kotlin/Dart language switcher. Wrap language-specific conten
 
 ## Submodules
 
+Submodule pointers are updated by hand: Actions → **Update submodules** → Run workflow → target `develop` or `main`. It opens a PR that moves `kotlin-lib` and `dart-lib` to the latest commit of that branch in their repositories (never backwards).
+
 ### Kotlin Implementation (`kotlin-lib/`)
 
 - Contains the Kotlin version of Camouflage.

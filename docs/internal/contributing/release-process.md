@@ -8,7 +8,8 @@ This page describes how we cut releases and what automation runs.
 Overview
 - Daily work happens in forks. Create feature/bugfix branches from develop and open PRs to develop at the upstream repository.
 - The libraries are released in their own repositories: `camouflage-kotlin` and `camouflage-dart`. Pushing a release tag there publishes the packages and creates that repository's GitHub Release.
-- This repository has no release of its own. After the libraries are released, open a `release/<version>` PR from develop to main here: the submodule workflow moves `kotlin-lib` and `dart-lib` to their latest main commits (the released ones), and merging it to main deploys the docs sites.
+- This repository has no release of its own. After the libraries are released, open a `release/<version>` PR from develop to main here, and merge it to deploy the docs sites.
+- Submodule pointers move only when you run **Update submodules** (Actions → Update submodules → Run workflow → target `develop` or `main`). It moves `kotlin-lib` and `dart-lib` to the latest commit of the same branch in their repositories and opens a PR into the target (or updates the open one). It never moves a pointer backwards: if a library's branch is behind, it keeps the pointer and warns. Run it after the library PRs it should include are merged, and merge its PR last. For a release, run it with `main` after the libraries are tagged on their main.
 
 Branches
 - develop: integration branch and default PR target for features/bugfixes.
