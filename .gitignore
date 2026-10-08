@@ -1,2 +1,16 @@
 # Claude Code local settings (preview launch configs)
 .claude/
+
+# Gradle (local state and build output)
+.gradle/
+.kotlin/
+build/
+local.properties
+
+# IntelliJ / Android Studio. The shared project files already in git
+# (.idea/misc.xml, modules.xml, vcs.xml, camouflage.iml) stay tracked.
+.idea/
+*.iml
+
+# macOS
+.DS_Store
