@@ -1,0 +1,66 @@
+name: Docs
+
+# Two Docusaurus sites, each deployed to its own Cloudflare Pages project:
+#   docs/internal → camouflage-dev.srctool.com (contributor docs)
+#   docs/usage    → camouflage.srctool.com     (usage docs)
+# Pull requests (including from forks) only build; pushes to main in srctool/camouflage deploy.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CAMOUFLAGE_INTERNAL_URL: https://camouflage-dev.srctool.com
+  CAMOUFLAGE_USAGE_URL: https://camouflage.srctool.com
+
+jobs:
+  docs:
+    name: ${{ matrix.site }} docs
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: internal
+            project: camouflage-dev
+          - site: usage
+            project: camouflage
+    defaults:
+      run:
+        working-directory: docs/${{ matrix.site }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/${{ matrix.site }}/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Deploy to Cloudflare Pages
+        # Only the organization repo deploys; forks and pull requests have no Cloudflare secrets.
+        if: github.repository == 'srctool/camouflage' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: docs/${{ matrix.site }}
+          command: pages deploy build --project-name=${{ matrix.project }} --branch=main --commit-dirty=true

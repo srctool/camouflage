@@ -102,8 +102,13 @@ jobs:
           git add CHANGELOG.md || true
           git commit -m "chore(docs): update root CHANGELOG for $GITHUB_REF_NAME" || echo "No changes to commit"
           git push || echo "Push skipped (no permissions)"
-      - name: Build docs
-        working-directory: docs
+      - name: Build contributor docs
+        working-directory: docs/internal
+        run: |
+          npm ci
+          npm run build
+      - name: Build usage docs
+        working-directory: docs/usage
         run: |
           npm ci
           npm run build

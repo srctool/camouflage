@@ -13,13 +13,9 @@ This repository is the umbrella for documentation, conceptual design, and langua
 ```
 ├── README.md                  # This overview
 ├── LICENSE                    # Main repo license (MIT)
-├── docs/                      # Docusaurus website (Guide, Components, API, Architecture)
-│   ├── docusaurus.config.ts   # Site config
-│   └── development/
-│       ├── guide/             # Source for /guide
-│       ├── components/        # Source for /components
-│       ├── api/               # Source for /api
-│       └── architecture/      # Source for /architecture
+├── docs/                      # Two Docusaurus sites, deployed separately
+│   ├── internal/              # Contributor docs: design, architecture, implementation
+│   └── usage/                 # Usage docs: for developers using Camouflage in an app
 ├── kotlin-lib/                # Kotlin implementation of Camouflage
 │   ├── README.md
 │   ├── LICENSE
@@ -33,26 +29,30 @@ This repository is the umbrella for documentation, conceptual design, and langua
 
 ## Documentation
 
-The documentation website exposes four top-level sections:
-- Guide → /guide
-- Components → /components
-- API → /api
-- Architecture → /architecture
+There are two documentation sites, each its own Docusaurus project, built and deployed separately:
 
-Source files live under docs/development/<section>, each with its own manual sidebar file at:
-- docs/development/guide/sidebars.ts
-- docs/development/components/sidebars.ts
-- docs/development/api/sidebars.ts
-- docs/development/architecture/sidebars.ts
+- **Contributor docs** (`docs/internal/`): concepts, architecture, the theme and skin contract, every component's API, and the Kotlin and Flutter implementation of each, plus Contributing. The Guide and Components pages are generated from the Camouflage design notes by `docs/internal/scripts/sync_vault.py`; don't edit them by hand.
+- **Usage docs** (`docs/usage/`): installing Camouflage, setting up a theme, and using the components in an app. Written by hand; they start with the first release.
 
-Run the docs locally:
-- Node 20+
-- From docs/:
-  - Install deps: npm install (or yarn)
-  - Start dev server: npm run start
-  - Build: npm run build
+The usage site doesn't link to the contributor docs directly: its **Contributing** link goes to the contributor site's Contributing section, which leads into the Guide and Components. The contributor site doesn't link to the usage site. Set `CAMOUFLAGE_INTERNAL_URL` (default `http://localhost:3000`) when building the usage site, and each site's own address with `CAMOUFLAGE_INTERNAL_URL` / `CAMOUFLAGE_USAGE_URL`.
 
-Notes for examples: the site includes a language preference switcher for Kotlin and Dart. Authors can use the `LanguageSwitcher` button and wrap examples with `LangTabs` to sync examples across pages.
+Run a site locally (Node 20+), from `docs/internal/` or `docs/usage/`:
+- Install deps: `npm install`
+- Start dev server: `npm run start` (the contributor site runs on port 3000, the usage site on 3001)
+- Build: `npm run build`
+
+### Deployment
+
+Both sites are deployed to Cloudflare Pages by `.github/workflows/docs.yml` when `docs/` changes on `main` in `srctool/camouflage`. Pull requests (including from forks) only build them.
+
+| Site | Folder | Cloudflare Pages project | Domain |
+|---|---|---|---|
+| Contributor docs | `docs/internal/` | `camouflage-dev` | https://camouflage-dev.srctool.com |
+| Usage docs | `docs/usage/` | `camouflage` | https://camouflage.srctool.com |
+
+The workflow needs two repository secrets: `CLOUDFLARE_API_TOKEN` (a token with *Account → Cloudflare Pages → Edit*) and `CLOUDFLARE_ACCOUNT_ID`.
+
+The sites include a Kotlin/Dart language switcher. Wrap language-specific content in `KotlinOnly` / `DartOnly`, or code examples in `LangTabs`, so readers keep their preferred language across pages.
 
 ---
 
