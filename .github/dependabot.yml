@@ -9,10 +9,15 @@ updates:
     groups:
       libraries:
         patterns: ['*']
+    # Dependabot waits 3 days before offering a new version by default. These are our own
+    # libraries, so take their merged main right away.
+    cooldown:
+      default-days: 1
+      exclude: ['*']
     commit-message:
       prefix: chore(submodules)
 
-  # GitHub Actions used by .github/workflows.
+  # GitHub Actions used by .github/workflows (keeps Dependabot's default 3-day cooldown).
   - package-ecosystem: github-actions
     directory: /
     schedule:
