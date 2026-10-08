@@ -1,43 +1,80 @@
-name: Release on tag
+name: Release
 
+# Run by hand from the Actions tab (Run workflow → branch main → tag).
+# If the tag doesn't exist yet, it's created on the latest commit of main.
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to release, e.g. v1.2.3 (created on main if it does not exist)'
+        required: true
+        type: string
 
 permissions:
   contents: write
   packages: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ inputs.tag }}
+
 jobs:
   create_github_release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
+      - name: Check inputs
+        run: |
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag must look like v1.2.3 (got '$TAG')"
+            exit 1
+          fi
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::Run the release from main (got $GITHUB_REF)"
+            exit 1
+          fi
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Create the tag if it doesn't exist
+        run: |
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Using existing tag $TAG at $(git rev-parse --short "$TAG^{commit}")"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "refs/tags/$TAG"
+            echo "Created tag $TAG at $(git rev-parse --short HEAD)"
+          fi
+
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ inputs.tag }}
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish_kotlin:
     name: Publish kotlin-lib
     needs: create_github_release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Job-level `if` can't read `secrets`; set the repository variable to 'true' to publish.
     if: ${{ vars.KOTLIN_PUBLISH_ENABLED == 'true' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
+          submodules: recursive
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
@@ -54,13 +91,15 @@ jobs:
   publish_dart:
     name: Publish dart-lib
     needs: create_github_release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ vars.DART_PUBLISH_ENABLED == 'true' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
+          submodules: recursive
       - name: Set up Dart
         uses: dart-lang/setup-dart@v1
         with:
@@ -74,33 +113,27 @@ jobs:
         run: |
           dart pub publish --force
 
-  update_root_docs_changelog:
-    name: Update root docs & changelog
+  update_root_changelog:
+    name: Update root changelog
     needs: create_github_release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout main
+        uses: actions/checkout@v7
         with:
+          ref: main
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate release notes file
-        id: notes
-        uses: release-drafter/release-drafter@v6
-        with:
-          disable-autolabeler: true
+      - name: Append the release notes to CHANGELOG.md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Append to CHANGELOG.md (no-op without write permission)
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "\n## $GITHUB_REF_NAME" >> CHANGELOG.md
-          echo "\n${{ steps.notes.outputs.name }}\n" >> CHANGELOG.md || true
-      - name: Commit changelog update
-        if: ${{ success() && github.ref_type == 'tag' }}
+          notes="$(gh release view "$TAG" --json body --jq .body)"
+          printf '\n## %s\n\n%s\n' "$TAG" "$notes" >> CHANGELOG.md
+      - name: Commit and push (skipped if main is protected)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md || true
-          git commit -m "chore(docs): update root CHANGELOG for $GITHUB_REF_NAME" || echo "No changes to commit"
-          git push || echo "Push skipped (no permissions)"
+          git add CHANGELOG.md
+          git commit -m "chore(docs): update root CHANGELOG for $TAG" || echo "No changes to commit"
+          git push origin HEAD:main || echo "Push skipped (main is protected or no permission)"
       # The docs sites are built and deployed by docs.yml.
