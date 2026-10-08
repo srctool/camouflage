@@ -29,7 +29,8 @@ jobs:
     name: Publish kotlin-lib
     needs: create_github_release
     runs-on: ubuntu-latest
-    if: ${{ secrets.KOTLIN_PUBLISH_ENABLED == 'true' }}
+    # Job-level `if` can't read `secrets`; set the repository variable to 'true' to publish.
+    if: ${{ vars.KOTLIN_PUBLISH_ENABLED == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,7 +55,7 @@ jobs:
     name: Publish dart-lib
     needs: create_github_release
     runs-on: ubuntu-latest
-    if: ${{ secrets.DART_PUBLISH_ENABLED == 'true' }}
+    if: ${{ vars.DART_PUBLISH_ENABLED == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -102,13 +103,4 @@ jobs:
           git add CHANGELOG.md || true
           git commit -m "chore(docs): update root CHANGELOG for $GITHUB_REF_NAME" || echo "No changes to commit"
           git push || echo "Push skipped (no permissions)"
-      - name: Build contributor docs
-        working-directory: docs/internal
-        run: |
-          npm ci
-          npm run build
-      - name: Build usage docs
-        working-directory: docs/usage
-        run: |
-          npm ci
-          npm run build
+      # The docs sites are built and deployed by docs.yml.

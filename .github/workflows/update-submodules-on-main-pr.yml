@@ -28,6 +28,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # .gitmodules uses SSH URLs; the runner has no SSH key, so fetch the (public) submodules over HTTPS.
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
 
       - name: Initialize submodules
         run: |
@@ -44,7 +46,7 @@ jobs:
       - name: Commit changes if any
         id: commit
         run: |
-          if [[ -n $(git status --porcelain=kotlin-lib dart-lib .gitmodules) ]]; then
+          if [[ -n $(git status --porcelain -- kotlin-lib dart-lib .gitmodules) ]]; then
             echo "[DEBUG_LOG] Changes detected in submodules or .gitmodules"
             git add kotlin-lib dart-lib .gitmodules
             COMMIT_MSG="chore(submodules): update submodules to latest main heads\n\n- kotlin-lib → $(git -C kotlin-lib rev-parse --short HEAD)\n- dart-lib   → $(git -C dart-lib rev-parse --short HEAD)\n\nThis change was generated automatically on PR to main to ensure root points to each submodule's latest main commit."
