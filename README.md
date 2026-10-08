@@ -58,7 +58,11 @@ The sites include a Kotlin/Dart language switcher. Wrap language-specific conten
 
 ## Submodules
 
-Submodule pointers are updated by hand: Actions → **Update submodules** → Run workflow → target `develop` or `main`. It opens a PR that moves `kotlin-lib` and `dart-lib` to the latest commit of that branch in their repositories (never backwards).
+Submodule pointers are moved by Dependabot: it checks the libraries' `main` daily and opens a PR that updates `kotlin-lib` and `dart-lib` (see `.github/dependabot.yml`). The submodule URLs use HTTPS, so cloning needs no SSH key:
+
+```bash
+git clone --recurse-submodules https://github.com/srctool/camouflage.git
+```
 
 ### Kotlin Implementation (`kotlin-lib/`)
 

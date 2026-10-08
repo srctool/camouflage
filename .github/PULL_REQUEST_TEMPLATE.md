@@ -4,9 +4,7 @@ Thank you for your contribution! Please fill out this template to help us review
 
 Checklist
 - [ ] This PR targets the correct area (kotlin-lib / dart-lib / docs / multi-area)
-- [ ] Target branch is correct:
-  - feature/bugfix → develop
-  - release/hotfix → main
+- [ ] Targets `main` (trunk-based: every PR goes into `main`)
 - [ ] Linked related issues (e.g., Fixes #123)
 - [ ] Build/tests pass locally for the affected areas
 - [ ] I understand that this repository uses Squash and Merge only, and I prepared the PR title/body accordingly

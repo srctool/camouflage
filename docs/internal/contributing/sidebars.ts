@@ -4,6 +4,7 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   contributingSidebar: [
     'intro',
+    'git-workflow',
     {
       type: 'category',
       label: 'How To',
@@ -16,6 +17,7 @@ const sidebars: SidebarsConfig = {
       ],
     },
     'versioning-policy',
+    'release-process',
   ],
 };
 

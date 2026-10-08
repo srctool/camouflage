@@ -12,7 +12,7 @@ Choose the right scope
 - Cross‑cutting design or multi‑module changes → root repo PR touching multiple paths
 
 Branch and commit
-- Branch from main. Suggested names: `feat/<scope>-<desc>` or `fix/<scope>-<desc>`
+- Branch from the latest main, named `<type>/<short-description>` (for example `feat/date-picker-typing`). Maintainers push branches to the organization repository; others use a fork. See [Git workflow](./git-workflow).
 - Use small, focused commits.
 - Follow Conventional Commits for PR titles (also a good pattern for commit headers):
 

@@ -1,8 +1,7 @@
-# Repository settings for GitHub Settings app (Probot) to enforce merge methods
-# This file has effect only if the "Settings" GitHub App is installed for the repository.
-# Note: GitHub merge method settings are repository-wide (not per-branch). This config is intended for the upstream/org repository.
-# Forks can choose different settings and are not affected by this file in the upstream repo.
+# Repository settings for the GitHub Settings app (Probot); it has effect only if the app is installed.
+# Trunk-based: main is the only long-lived branch, and every PR is squash-merged into it.
 repository:
+  default_branch: main
   allow_merge_commit: false
   allow_rebase_merge: false
   allow_squash_merge: true

@@ -3,28 +3,31 @@ sidebar_label: Release process
 title: Release and versioning workflow
 ---
 
-This page describes how we cut releases and what automation runs.
+This page describes how releases are cut and what automation runs. The branching model behind it is in [Git workflow](./git-workflow): `main` is the only long-lived branch in every repository, and a release is a tag on `main`.
 
 Overview
-- Daily work happens in forks. Create feature/bugfix branches from develop and open PRs to develop at the upstream repository.
-- The libraries are released in their own repositories: `camouflage-kotlin` and `camouflage-dart`. Pushing a release tag there publishes the packages and creates that repository's GitHub Release.
-- This repository has no release of its own. After the libraries are released, open a `release/<version>` PR from develop to main here, and merge it to deploy the docs sites.
-- Submodule pointers move only when you run **Update submodules** (Actions → Update submodules → Run workflow → target `develop` or `main`). It moves `kotlin-lib` and `dart-lib` to the latest commit of the same branch in their repositories and opens a PR into the target (or updates the open one). It never moves a pointer backwards: if a library's branch is behind, it keeps the pointer and warns. Run it after the library PRs it should include are merged, and merge its PR last. For a release, run it with `main` after the libraries are tagged on their main.
+- The libraries are released in their own repositories, `camouflage-kotlin` and `camouflage-dart`. Pushing a release tag on `main` there publishes the packages and creates that repository's GitHub Release.
+- This repository has no release of its own: merging to `main` deploys the docs sites. After a library release, merge the Dependabot PR that moves the `kotlin-lib` / `dart-lib` pointer to the released commit.
 
-Branches
-- develop: integration branch and default PR target for features/bugfixes.
-- main: production branch. Only release PRs and hotfix PRs should target main.
-- release/*: short‑lived branches used to stabilize a release from develop.
-- hotfix/*: urgent fixes branched from main and merged back to main (then back‑merge to develop).
+Cutting a library release
+1. Make sure `main` in the library repository has everything for the release and its checks are green.
+2. Update the version and changelog in a PR (for example `chore(release): 0.3.0`) and merge it.
+3. Tag the merge commit on `main` and push the tag:
+   - Kotlin: `git tag v0.3.0 && git push origin v0.3.0`
+   - Dart: one tag per package, core first: `git tag camouflage_core-v0.3.0 && git push origin camouflage_core-v0.3.0`, then the skins once core is on pub.dev.
+4. Follow the publish workflow run in the Actions tab. It stops if the tag isn't on `main` (and, for Dart, if the `pubspec.yaml` version doesn't match the tag).
+5. In this repository, merge the Dependabot submodule PR (or ask Dependabot to check for updates).
 
 Version tags (in the library repositories)
-- Kotlin (`camouflage-kotlin`): `vX.Y.Z` (SemVer). One tag releases core, the skins and the BOM together. A single macOS job runs `check`, then publishes to Maven Central (a macOS host is needed for the iOS artifacts).
-- Dart (`camouflage-dart`): one tag per package, `<package>-vX.Y.Z` (for example `camouflage_core-v0.1.0`), the pattern pub.dev's automated publishing expects. GitHub Actions publishes to pub.dev through OIDC, with no stored secrets. Tag `camouflage_core` before the skins.
-- Tags are applied on the main branch merge commit of each library repository; the publish workflows stop if the tag isn't on main.
+- Kotlin: `vX.Y.Z` (SemVer). One tag releases core, the skins and the BOM together, from a single macOS job (a macOS host is needed for the iOS artifacts) to Maven Central.
+- Dart: `<package>-vX.Y.Z` (for example `camouflage_core-v0.1.0`), the pattern pub.dev's automated publishing expects. Published through OIDC, with no stored secrets.
 - The core set (core, skins, navigation) shares the **minor** version across Kotlin and Dart: 0.3 means the same milestone and features on both. **Patch** versions are independent, so a fix on one platform doesn't force a release on the other. See [Publishing](/guide/delivery/publishing).
 
+Fixes to a released version
+- An ordinary PR into `main`, then a patch tag. There are no maintenance branches while the version is `0.x`; if one is ever needed, branch `release/X.Y` from the tag and cherry-pick fixes onto it.
+
 Docs
-- The docs sites aren't versioned with the libraries: `docs.yml` deploys them whenever `docs/` changes on main.
+- The docs sites aren't versioned with the libraries: `docs.yml` deploys them whenever `docs/` changes on `main`.
 
 Manual fallback
 - If automation isn't configured or secrets are missing:
@@ -33,5 +36,5 @@ Manual fallback
   - Open a follow‑up PR updating CHANGELOG.md files and any docs.
 
 Notes
-- Squash & Merge only is enforced on the upstream repository for main and develop. Keep your PR title/body clear as they become the squashed commit message.
-- Keep breaking changes and migration notes clearly called out in the PR body; they will be surfaced in the release notes.
+- Squash & Merge only. Keep PR titles and descriptions clear: they become the squashed commit message, and the release notes are generated from them.
+- Call out breaking changes and migration notes in the PR body.

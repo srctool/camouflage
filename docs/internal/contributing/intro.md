@@ -21,11 +21,13 @@ Start with the design
 - [Components](/components): every component's API, with its Kotlin and Flutter implementation.
 
 Quick links
+- Git workflow (branches, PRs, submodules, releases) → /contributing/git-workflow
 - How to report a bug → /contributing/how-to-report-a-bug
 - How to contribute code → /contributing/how-to-contribute-code
 - How to open a pull request → /contributing/how-to-open-a-pull-request
 - How to run and write tests → /contributing/how-to-run-and-write-test
 - Versioning policy → /contributing/versioning-policy
+- Release process → /contributing/release-process
 
 Docs authoring tips
 - The Guide (docs/development/guide) and Components (docs/development/components) pages are generated from the Camouflage design notes by `docs/internal/scripts/sync_vault.py`. Don't edit them by hand: change the notes and re-run the script. The sidebars follow the folders.
