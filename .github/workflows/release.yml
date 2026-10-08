@@ -1,5 +1,9 @@
 name: Release
 
+# The umbrella release of srctool/camouflage. It publishes nothing: kotlin-lib and dart-lib are
+# released (tagged and published) in their own repositories first. This release records which
+# library versions belong together, through the submodule pointers.
+#
 # Run by hand from the Actions tab (Run workflow → branch main → tag).
 # If the tag doesn't exist yet, it's created on the latest commit of main.
 on:
@@ -12,7 +16,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 concurrency:
   group: release
@@ -42,13 +45,51 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create the tag if it doesn't exist
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # .gitmodules uses SSH URLs; the runner has no SSH key, so fetch the (public) submodules over HTTPS.
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+
+      - name: Use the existing tag, if any
         run: |
           if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-            echo "Using existing tag $TAG at $(git rev-parse --short "$TAG^{commit}")"
+            git checkout -q "$TAG"
+            echo "Using existing tag $TAG at $(git rev-parse --short HEAD)"
           else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            echo "Tag $TAG doesn't exist yet; releasing main at $(git rev-parse --short HEAD)"
+          fi
+
+      - name: Check each library is at a release tag
+        id: libs
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
+          notes=""
+          missing=0
+          for sub in $(git config --file .gitmodules --get-regexp '\.path$' | awk '{print $2}'); do
+            git -C "$sub" fetch -q --tags origin
+            commit="$(git -C "$sub" rev-parse --short HEAD)"
+            tags="$(git -C "$sub" tag --points-at HEAD | paste -sd ',' - | sed 's/,/, /g')"
+            if [[ -z "$tags" ]]; then
+              echo "::error::$sub is at $commit, which has no release tag. Tag and publish it in its own repository, then point the submodule at that commit."
+              missing=1
+            else
+              echo "$sub: $tags ($commit)"
+              notes+="- \`$sub\`: $tags ($commit)"$'\n'
+            fi
+          done
+          [[ "$missing" == 0 ]] || exit 1
+          {
+            echo "notes<<RELEASE_NOTES_EOF"
+            printf '%s' "$notes"
+            echo "RELEASE_NOTES_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create the tag if it doesn't exist
+        run: |
+          if ! git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
             git tag -a "$TAG" -m "Release $TAG"
             git push origin "refs/tags/$TAG"
             echo "Created tag $TAG at $(git rev-parse --short HEAD)"
@@ -58,60 +99,12 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.tag }}
+          # The library versions come first; GitHub's generated notes are appended after them.
+          body: |
+            ## Library versions
+
+            ${{ steps.libs.outputs.notes }}
           generate_release_notes: true
-
-  publish_kotlin:
-    name: Publish kotlin-lib
-    needs: create_github_release
-    runs-on: ubuntu-24.04
-    # Job-level `if` can't read `secrets`; set the repository variable to 'true' to publish.
-    if: ${{ vars.KOTLIN_PUBLISH_ENABLED == 'true' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.tag }}
-          fetch-depth: 0
-          submodules: recursive
-      - name: Set up JDK
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: '17'
-      - name: Publish with Gradle
-        working-directory: kotlin-lib
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-        run: |
-          ./gradlew --no-daemon publish
-
-  publish_dart:
-    name: Publish dart-lib
-    needs: create_github_release
-    runs-on: ubuntu-24.04
-    if: ${{ vars.DART_PUBLISH_ENABLED == 'true' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.tag }}
-          fetch-depth: 0
-          submodules: recursive
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
-      - name: Configure pub credentials
-        run: |
-          mkdir -p ~/.config/dart
-          echo "${{ secrets.PUB_CREDENTIALS_JSON }}" > ~/.config/dart/pub-credentials.json
-      - name: Publish to pub.dev
-        working-directory: dart-lib
-        run: |
-          dart pub publish --force
 
   update_root_changelog:
     name: Update root changelog

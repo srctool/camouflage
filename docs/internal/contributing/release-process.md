@@ -7,7 +7,8 @@ This page describes how we cut releases and what automation runs.
 
 Overview
 - Daily work happens in forks. Create feature/bugfix branches from develop and open PRs to develop at the upstream repository.
-- For a release, create a `release/<version>` branch from develop in your fork, stabilize it, and open a PR to main.
+- Release the libraries first, each in its own repository: tag `camouflage-kotlin` and `camouflage-dart` (see Version tags), and their own workflows publish to Maven Central and pub.dev.
+- Then create a `release/<version>` branch from develop in your fork, stabilize it, and open a PR to main. The submodule workflow moves `kotlin-lib` and `dart-lib` to their latest main commits, which should be the tagged ones.
 - After the PR is merged to main, run the **Release** workflow by hand: Actions → Release → Run workflow, branch `main`, and enter the tag (for example `v1.2.3`). If the tag doesn't exist yet, the workflow creates it on the latest commit of main, which is the release merge commit.
 - Pushing a tag on its own doesn't start a release.
 
@@ -17,19 +18,21 @@ Branches
 - release/*: short‑lived branches used to stabilize a release from develop.
 - hotfix/*: urgent fixes branched from main and merged back to main (then back‑merge to develop).
 
-Version tags
+Version tags (in the library repositories)
+- Library deploys run there, on their own tags:
+  - camouflage-kotlin: a single macOS job runs `check`, then publishes to Maven Central (a macOS host is needed for the iOS artifacts).
+  - camouflage-dart: GitHub Actions publishes to pub.dev through OIDC, with no stored secrets (pub.dev only accepts it from that repository's tags).
 - Kotlin: `vX.Y.Z` (SemVer). One tag releases core, the skins and the BOM together.
 - Dart: one tag per package, `<package>-vX.Y.Z` (for example `camouflage_core-v0.1.0`), the pattern pub.dev's automated publishing expects.
-- Tags are applied on the main branch merge commit.
+- Tags are applied on the main branch merge commit of each library repository.
+- The root repository's tag (`vX.Y.Z`) names the umbrella release, usually the shared minor milestone (`v0.3.0`). A patch released on one platform only doesn't need a root release.
 - The core set (core, skins, navigation) shares the **minor** version across Kotlin and Dart: 0.3 means the same milestone and features on both. **Patch** versions are independent, so a fix on one platform doesn't force a release on the other. See [Publishing](/guide/delivery/publishing).
 
 What the Release workflow does
 - Checks the tag looks like `vX.Y.Z` and that it's run from main.
-- GitHub Release: creates the tag if needed, then publishes a GitHub Release for it with generated release notes.
-- Library deploys:
-  - kotlin-lib: a single macOS job runs `check`, then publishes to Maven Central (a macOS host is needed for the iOS artifacts).
-  - dart-lib: GitHub Actions publishes to pub.dev through OIDC, with no stored secrets.
-  - Each publish job runs only when its repository variable (`KOTLIN_PUBLISH_ENABLED`, `DART_PUBLISH_ENABLED`) is `true`; otherwise it's skipped.
+- Checks that each submodule (`kotlin-lib`, `dart-lib`) points at a commit with a release tag in its own repository, and stops if one doesn't (for example, a library change merged after its tag).
+- GitHub Release: creates the tag if needed, then publishes a GitHub Release that lists the library versions it contains, followed by the generated release notes.
+- It publishes no packages: that happens in the library repositories.
 - Root changelog: appends the release notes to CHANGELOG.md on main. If main is protected against the workflow's push, it logs that the push was skipped.
 - The docs sites aren't part of the release: `docs.yml` deploys them whenever `docs/` changes on main.
 
