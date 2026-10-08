@@ -2,38 +2,45 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+// The usage docs: for developers using Camouflage in an app.
+// The contributor docs are a separate site (docs/internal); this site links only to its Contributing section.
+const INTERNAL_URL = process.env.CAMOUFLAGE_INTERNAL_URL ?? 'http://localhost:3000';
 
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'Camouflage',
+  tagline: 'One set of components. Your skin, your theme. Kotlin and Flutter.',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    v4: true,
   },
 
-  // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+  url: process.env.CAMOUFLAGE_USAGE_URL ?? 'http://localhost:3001',
   baseUrl: '/',
+  // Cloudflare Pages serves page.html at /page, so URLs have no trailing slash and no redirect.
+  trailingSlash: false,
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'srctool',
+  projectName: 'camouflage',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
+  },
+
+  customFields: {
+    libraryVersions: {
+      kotlin: ['latest'],
+      dart: ['latest'],
+    },
+    internalUrl: INTERNAL_URL,
   },
 
   presets: [
@@ -41,27 +48,11 @@ const config: Config = {
       'classic',
       {
         docs: {
+          path: 'docs',
+          routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -70,26 +61,24 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    colorMode: {
+      respectPrefersColorScheme: true,
+    },
     navbar: {
-      title: 'My Site',
+      title: 'Camouflage',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Camouflage Logo',
         src: 'img/logo.svg',
       },
       items: [
+        {to: '/docs', label: 'Docs', position: 'right'},
+        {href: INTERNAL_URL + '/contributing', label: 'Contributing', position: 'right'},
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Tutorial',
-        },
-        {to: '/blog', label: 'Blog', position: 'left'},
-        {
-          href: 'https://github.com/facebook/docusaurus',
-          label: 'GitHub',
+          href: 'https://github.com/srctool/camouflage',
           position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
         },
       ],
     },
@@ -98,49 +87,30 @@ const config: Config = {
       links: [
         {
           title: 'Docs',
-          items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
-          ],
+          items: [{label: 'Introduction', to: '/docs'}],
         },
         {
-          title: 'Community',
+          title: 'Platform',
           items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
-            },
+            {label: 'Kotlin/KMP', href: 'https://kotlinlang.org/docs/multiplatform.html'},
+            {label: 'Flutter/Dart', href: 'https://flutter.dev'},
+            {label: 'Compose Multiplatform', href: 'https://www.jetbrains.com/lp/compose-multiplatform/'},
           ],
         },
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
+            {label: 'Contributing', href: INTERNAL_URL + '/contributing'},
+            {label: 'GitHub', href: 'https://github.com/srctool/camouflage'},
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} SRC Tool. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['kotlin', 'dart', 'groovy', 'yaml'],
     },
   } satisfies Preset.ThemeConfig,
 };

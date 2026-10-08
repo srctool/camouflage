@@ -1,51 +1,33 @@
-Title: <type>(<scope>): <short description>
+# Pull Request
 
-<!--
-PR title must follow Conventional Commits:
-  <type>(<scope>): <short description>
+Thank you for your contribution! Please fill out this template to help us review your PR efficiently.
 
-- type: one of feat, fix, docs, style, refactor, test, chore
-- scope: affected module/package (e.g., kotlin-lib, dart-lib, ui-generator)
-- short description: concise summary of the change
+Checklist
+- [ ] This PR targets the correct area (kotlin-lib / dart-lib / docs / multi-area)
+- [ ] Target branch is correct:
+  - feature/bugfix → develop
+  - release/hotfix → main
+- [ ] Linked related issues (e.g., Fixes #123)
+- [ ] Build/tests pass locally for the affected areas
+- [ ] I understand that this repository uses Squash and Merge only, and I prepared the PR title/body accordingly
 
-Examples:
-- feat(kotlin-lib): add redact() helper for masked logging
-- fix(dart-lib): handle null input in Parser.fromJson
-- docs(root): clarify setup and supported SDK versions
+Title style (Conventional Commits)
+- Format: `<type>(<scope>): <short description>`
+  - Examples: `feat(kotlin-lib): add redact() helper`, `fix(dart-lib): avoid late init error`
 
-GitKraken users: GitKraken uses the first line of the commit message as the PR title. You can copy this PR title format directly when committing.
--->
+Squash merge guidance
+- The final commit message on main will be produced from your PR:
+  - Title → squashed commit title
+  - Description → squashed commit body
+- Keep the title concise and the description informative (what/why, notable changes, breaking notes).
 
-## Description
-- What does this PR change and why?
-- Link related issue(s): Fixes #<issue_number> (or) Relates to #<issue_number>
+Scope of changes
+- Area(s) touched:
+- Summary of changes:
 
-## Type of change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Documentation update
-- [ ] Refactor/Chore
-- [ ] Breaking change (fix or feature that would cause existing functionality to change)
+Testing notes
+- Local verification steps and results:
+- Screenshots/logs (if applicable):
 
-## Screenshots / Demos (if applicable)
-Add images, GIFs, or terminal output that demonstrates the change.
-
-## How Has This Been Tested?
-Describe the tests you ran to verify your changes (commands, test files, manual steps). Include relevant details so reviewers can reproduce.
-
-## Checklist
-- [ ] I have read the Code of Conduct in the submodule(s) I modified
-- [ ] I have run linters/formatters for affected projects
-- [ ] I added/updated tests where appropriate
-- [ ] I updated documentation (README/docs) where appropriate
-- [ ] I have linked related issues (if any)
-- [ ] I have considered backward compatibility and documented any breaking changes below
-
-## Breaking changes
-Describe any breaking changes and migration steps for users.
-
-## Additional context
-Anything else reviewers should know.
-
----
-For sensitive disclosures, contact contact@srctool.org.
+Additional notes
+- Anything reviewers should pay special attention to:

@@ -1,6 +1,8 @@
 [submodule "kotlin-lib"]
 	path = kotlin-lib
 	url = git@github.com:srctool/camouflage-kotlin.git
+	branch = main
 [submodule "dart-lib"]
 	path = dart-lib
 	url = git@github.com:srctool/camouflage-dart.git
+	branch = main

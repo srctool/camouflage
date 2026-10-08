@@ -1,15 +1,16 @@
 # Contributing to Camouflage
 
-Thank you for your interest in Camouflage! This root repository coordinates documentation, design, and the language-specific implementations. Most code changes happen in the submodules:
+Thank you for your interest in Camouflage! This root repository coordinates the documentation site, design/architecture, and the language-specific implementations. Most code changes happen in the submodules, while the documentation lives under docs/.
 
 - Kotlin implementation: `kotlin-lib/`
 - Dart implementation: `dart-lib/`
+- Documentation website: `docs/`
 
 If your contribution affects only one language, work in that submodule. If it affects documentation or cross-cutting design, open an issue/PR in the root repo.
 
 ## How you can contribute
 - Use the issue templates in `.github/ISSUE_TEMPLATE` to report bugs or request features.
-- Improve docs (see `docs/usage` and `docs/internal`).
+- Improve docs in `docs/` (see “Contributing to Docs” below).
 - Implement features or fixes in `kotlin-lib/` or `dart-lib/`.
 - Improve tests, CI, and developer experience.
 
@@ -20,12 +21,39 @@ If your contribution affects only one language, work in that submodule. If it af
 
 We may ask you to move an issue/PR to the correct submodule if needed.
 
+## Contributing to Docs (Docusaurus)
+The site is built with Docusaurus and exposes four top-level sections at the website root:
+- Guide → /guide
+- Components → /components
+- API → /api
+- Architecture → /architecture
+
+Source structure:
+- docs/development/guide/ (sidebar at docs/development/guide/sidebars.ts)
+- docs/development/components/ (sidebar at docs/development/components/sidebars.ts)
+- docs/development/api/ (sidebar at docs/development/api/sidebars.ts)
+- docs/development/architecture/ (sidebar at docs/development/architecture/sidebars.ts)
+
+Adding a new page:
+- Create an .md or .mdx file in the appropriate folder above.
+- Register it in that section’s sidebars.ts to control ordering and categories.
+- For code examples in Kotlin/Dart, prefer using:
+  - `LanguageSwitcher` for a small toggle button (optional), and
+  - `LangTabs` with two `TabItem` blocks (values: `kotlin` and `dart`) to keep examples in sync with user preference.
+
+Run the docs locally:
+- Requirements: Node 20+
+- From docs/:
+  - Install deps: `npm install` (or `yarn`)
+  - Start dev server: `npm run start`
+  - Build static site: `npm run build`
+
 ## Workflow
-1. Fork the repository and create a branch from `main`.
+1. Fork the repository and create a branch from `develop` (integration branch).
    - Suggested branch names: `feat/<scope>-<short-desc>` or `fix/<scope>-<short-desc>`
 2. Make changes with small, focused commits.
 3. Ensure formatting and checks pass (see each submodule’s CONTRIBUTING for language specifics).
-4. Open a Pull Request using the template (`.github/PULL_REQUEST_TEMPLATE.md`) and link related issues (e.g., "Fixes #123").
+4. Open a Pull Request using the template (`.github/PULL_REQUEST_TEMPLATE.md`) targeting `develop` for features/bugfixes and link related issues (e.g., "Fixes #123").
 
 ### PR title format (Conventional Commits)
 Use Conventional Commit style for PR titles. Format:
@@ -35,15 +63,21 @@ Use Conventional Commit style for PR titles. Format:
 ```
 
 - type: one of `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-- scope: affected module/package (e.g., `kotlin-lib`, `dart-lib`, `ui-generator`)
+- scope: affected module/package (e.g., `kotlin-lib`, `dart-lib`, `docs`)
 - short description: concise summary of the change
 
 Examples:
 - feat(kotlin-lib): add redact() helper for masked logging
 - fix(dart-lib): handle null input in Parser.fromJson
-- docs(root): clarify setup and supported SDK versions
+- docs(docs): add getting started guide for components
 
 Tip for GitKraken users: GitKraken uses the first line of the commit message as the PR title. You can copy the PR title format directly when committing.
+
+## Merging policy
+- Upstream repository: Squash and merge only on protected branches `main` and `develop`. Merge commits and rebase merges are not used on those branches.
+- Forks: You may use any workflow/merge strategy in your own fork. When proposing changes upstream, the final merge into `main`/`develop` will be squashed.
+- The final squashed commit title is taken from the PR title; the body is taken from the PR description.
+- Keep the PR title in Conventional Commits format and ensure the description explains the "what" and "why`. Maintainers may edit the final message for clarity.
 
 ## Code of Conduct
 Participation in this project is governed by the Code of Conduct in each submodule:
@@ -60,3 +94,22 @@ By contributing, you agree your contributions are licensed under the respective 
 
 ## Questions
 If you’re unsure where something belongs or how to start, please open a discussion/issue or email contact@srctool.org. Thanks for contributing!
+
+## Keeping submodules in sync
+- PRs targeting `develop` (and `main`) in the upstream root repo will automatically update submodule pointers so the root points to the latest commits in each submodule’s matching branch (develop → submodules’ develop; main → submodules’ main).
+- Local convenience (optional): we ship Git hooks to help keep submodules updated when you switch branches or pull:
+  - Hooks are in `.githooks/` and call `scripts/sync-submodules.sh`.
+  - Enable them once per clone:
+    - `git config core.hooksPath .githooks`
+  - After enabling, submodules will be initialized and, when on `main` or `develop`, advanced to the latest `origin/main` or `origin/develop` respectively. You can also run the script manually: `scripts/sync-submodules.sh`.
+  - Note: hooks are opt-in and affect only your local clone.
+
+## Release and versioning
+- Day-to-day work flows as forks → feature/bugfix branches → PRs into `develop`.
+- When preparing a release, create `release/<version>` from `develop` in your fork and open a PR into `main` on the upstream repository.
+- After the PR is approved and merged into `main`, tag the merge commit with `v<major>.<minor>.<patch>` (e.g., `v1.2.3`).
+- The version tag triggers automation to:
+  - Generate/update changelogs and create a GitHub Release.
+  - Publish library artifacts for both `kotlin-lib` and `dart-lib` (subject to secrets being configured).
+  - Update root documentation and changelog.
+- Hotfixes: branch from `main` as `hotfix/<desc>`, PR into `main`, tag a new `v<...>` upon merge, then back-merge to `develop`.
