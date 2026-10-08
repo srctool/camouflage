@@ -41,6 +41,17 @@ Run a site locally (Node 20+), from `docs/internal/` or `docs/usage/`:
 - Start dev server: `npm run start` (the contributor site runs on port 3000, the usage site on 3001)
 - Build: `npm run build`
 
+### Deployment
+
+Both sites are deployed to Cloudflare Pages by `.github/workflows/docs.yml` when `docs/` changes on `main` in `srctool/camouflage`. Pull requests (including from forks) only build them.
+
+| Site | Folder | Cloudflare Pages project | Domain |
+|---|---|---|---|
+| Contributor docs | `docs/internal/` | `camouflage-dev` | https://camouflage-dev.srctool.com |
+| Usage docs | `docs/usage/` | `camouflage` | https://camouflage.srctool.com |
+
+The workflow needs two repository secrets: `CLOUDFLARE_API_TOKEN` (a token with *Account → Cloudflare Pages → Edit*) and `CLOUDFLARE_ACCOUNT_ID`.
+
 The sites include a Kotlin/Dart language switcher. Wrap language-specific content in `KotlinOnly` / `DartOnly`, or code examples in `LangTabs`, so readers keep their preferred language across pages.
 
 ---

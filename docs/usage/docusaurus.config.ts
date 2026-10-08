@@ -17,6 +17,8 @@ const config: Config = {
 
   url: process.env.CAMOUFLAGE_USAGE_URL ?? 'http://localhost:3001',
   baseUrl: '/',
+  // Cloudflare Pages serves page.html at /page, so URLs have no trailing slash and no redirect.
+  trailingSlash: false,
 
   organizationName: 'srctool',
   projectName: 'camouflage',
