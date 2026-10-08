@@ -1,0 +1,67 @@
+name: Update submodules to latest main on PR to main
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-submodules:
+    name: Update submodules to latest main
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event.pull_request.base.ref == 'main' &&
+          github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Initialize submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
+
+      - name: Update submodules to latest main
+        run: |
+          echo "[DEBUG_LOG] .gitmodules contents:" && cat .gitmodules || true
+          # Ensure submodules are set to track main (configured in .gitmodules)
+          git submodule update --remote --recursive
+          echo "[DEBUG_LOG] Submodule status after update:" && git submodule status --recursive || true
+
+      - name: Commit changes if any
+        id: commit
+        run: |
+          if [[ -n $(git status --porcelain=kotlin-lib dart-lib .gitmodules) ]]; then
+            echo "[DEBUG_LOG] Changes detected in submodules or .gitmodules"
+            git add kotlin-lib dart-lib .gitmodules
+            COMMIT_MSG="chore(submodules): update submodules to latest main heads\n\n- kotlin-lib → $(git -C kotlin-lib rev-parse --short HEAD)\n- dart-lib   → $(git -C dart-lib rev-parse --short HEAD)\n\nThis change was generated automatically on PR to main to ensure root points to each submodule's latest main commit."
+            git commit -m "$COMMIT_MSG"
+            echo "committed=true" >> $GITHUB_OUTPUT
+          else
+            echo "[DEBUG_LOG] No submodule updates needed"
+            echo "committed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push commit back to PR branch
+        if: steps.commit.outputs.committed == 'true'
+        run: |
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "[DEBUG_LOG] Pushing changes to $PR_BRANCH"
+          git push origin "HEAD:$PR_BRANCH"
+
+      - name: Summary
+        run: |
+          echo "Submodule update job completed. See logs above for details."
