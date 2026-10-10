@@ -70,7 +70,7 @@ Participation in this project is governed by the Code of Conduct in each submodu
 - Kotlin: `kotlin-lib/CODE_OF_CONDUCT.md`
 - Dart: `dart-lib/CODE_OF_CONDUCT.md`
 
-For sensitive reports, email contact@srctool.org.
+For sensitive reports, email contact@srctool.com.
 
 ## License
 - Root repo (docs & concepts): MIT (see LICENSE)
@@ -79,7 +79,7 @@ For sensitive reports, email contact@srctool.org.
 By contributing, you agree your contributions are licensed under the respective project licenses.
 
 ## Questions
-If you’re unsure where something belongs or how to start, please open a discussion/issue or email contact@srctool.org. Thanks for contributing!
+If you’re unsure where something belongs or how to start, please open a discussion/issue or email contact@srctool.com. Thanks for contributing!
 
 ## Keeping submodules in sync
 - Dependabot moves the `kotlin-lib` and `dart-lib` pointers: it checks the libraries' `main` daily and opens one PR that updates both. Merge it like any PR.

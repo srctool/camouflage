@@ -46,4 +46,4 @@ If applicable, add screenshots or paste logs/stack traces to help explain your p
 Add any other context about the problem here.
 
 ---
-If you need a private channel to report a security issue or sensitive information, please email contact@srctool.org.
+If you need a private channel to report a security issue or sensitive information, please email contact@srctool.com.
