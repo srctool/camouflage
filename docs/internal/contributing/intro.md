@@ -35,4 +35,4 @@ Docs authoring tips
 - For hand-written pages, use the KotlinOnly, DartOnly and LangTabs components for Kotlin/Dart content so readers keep their preferred language across pages.
 
 Code of Conduct
-Participation is governed by the Code of Conduct files in each submodule. For sensitive reports, email contact@srctool.org.
+Participation is governed by the Code of Conduct files in each submodule. For sensitive reports, email contact@srctool.com.

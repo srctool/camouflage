@@ -98,5 +98,5 @@ git clone --recurse-submodules https://github.com/srctool/camouflage.git
 
 ## Contact
 
-- Questions or feedback: contact@srctool.org
+- Questions or feedback: contact@srctool.com
 - Contributor-related inquiries: follow instructions in each submodule’s README.
