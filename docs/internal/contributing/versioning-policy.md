@@ -34,4 +34,4 @@ Docs versioning
 - The docs site reflects the current state of the project. If we later adopt formal docs versioning, we will document the process here and in the site configuration.
 
 Questions
-- If you’re unsure how to categorize a change or what version to target, open an issue or ask in your PR. For sensitive topics, email contact@srctool.org.
+- If you’re unsure how to categorize a change or what version to target, open an issue or ask in your PR. For sensitive topics, email contact@srctool.com.
