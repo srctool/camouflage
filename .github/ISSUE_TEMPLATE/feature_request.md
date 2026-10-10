@@ -28,4 +28,4 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context or screenshots about the feature request here.
 
 ---
-If you have questions, feel free to reach out at contact@srctool.org.
+If you have questions, feel free to reach out at contact@srctool.com.
