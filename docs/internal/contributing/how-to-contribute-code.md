@@ -38,7 +38,7 @@ Design and discussion
 
 Security and conduct
 - Follow the Code of Conduct in each submodule.
-- For sensitive matters, email contact@srctool.org instead of opening a public issue.
+- For sensitive matters, email contact@srctool.com instead of opening a public issue.
 
 Next steps
 - When ready, open a pull request (see How to open a pull request) and ensure all checks pass.

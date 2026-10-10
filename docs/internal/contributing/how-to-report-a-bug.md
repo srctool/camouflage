@@ -23,7 +23,7 @@ Where to file
 
 Security or sensitive reports
 - Do not open a public issue for sensitive matters.
-- Email contact@srctool.org with details; we will respond within 72 hours.
+- Email contact@srctool.com with details; we will respond within 72 hours.
 
 Template
 
