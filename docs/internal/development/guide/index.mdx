@@ -73,7 +73,7 @@ The docs are grouped into folders that map one to one to **sidebar categories** 
 | | [Skin Contract](/guide/architecture/skin-contract) | what a Skin must provide, how to write a new one |
 | | [Provider and Scoping](/guide/architecture/provider-and-scoping) | how skins and themes reach components, nesting, switching |
 | **03 - Components** | [Components — Overview](/components) | the 40 component contracts, in 8 groups |
-| **04 - Skins** | [Skins](/guide/skins) | **Minimal** (Camouflage's own dialect, v1), and the Later dialects: Material, Cupertino (with Liquid Glass), Fluent, Carbon |
+| **04 - Skins** | [Skins](/guide/skins) | **Minimal** (Camouflage's own dialect) and **Fluent** (Fluent 2, ADR-38) for v1, and the Later dialects: Material, Cupertino (with Liquid Glass), Carbon |
 | **05 - Integrations** | [Figma and AI](/guide/integrations/figma-and-ai) | how a Figma file becomes a Theme or Skin via the Figma MCP (Later) |
 | | [Figma Conventions](/guide/integrations/figma-conventions) | the designer-facing page: how to set up a Figma file for Camouflage |
 | | [Tooling](/guide/integrations/tooling) | tooling that works without Figma: tokens JSON, the `camo` CLI, `camouflage-mcp`, a Figma plugin, Studio (Later) |
@@ -147,7 +147,8 @@ Package root: `com.srctool.camouflage.<module>` (e.g. `com.srctool.camouflage.co
 | Components | [Components — Overview](/components) | [Components — Overview](/components#implementation) |
 | Skins | [Minimal Skin](/guide/skins/minimal-skin) (v1) | [Minimal Skin](/guide/skins/minimal-skin#implementation) |
 | Skins | [Material Skin](/guide/skins/material-skin) (Later) | [Material Skin](/guide/skins/material-skin#implementation) |
-| Skins | Cupertino, Fluent, Carbon (Later) | platform notes when a skin is picked up |
+| Skins | [Fluent Skin](/guide/skins/fluent-skin) (v1, ADR-38) | [Fluent Skin](/guide/skins/fluent-skin#implementation) |
+| Skins | Cupertino, Carbon (Later) | platform notes when a skin is picked up |
 | Integrations | [Figma and AI](/guide/integrations/figma-and-ai), [Tooling](/guide/integrations/tooling) | (Later; tooling is platform-neutral, no Kotlin note) |
 | Delivery | (none) | [Publishing](/guide/delivery/publishing) |
 | Delivery | (none) | [Testing](/guide/delivery/testing) |
@@ -206,7 +207,8 @@ camouflage-dart/
 | Components | [Components — Overview](/components) | [Components — Overview](/components#implementation) |
 | Skins | [Minimal Skin](/guide/skins/minimal-skin) (v1) | [Minimal Skin](/guide/skins/minimal-skin#implementation) |
 | Skins | [Material Skin](/guide/skins/material-skin) (Later) | [Material Skin](/guide/skins/material-skin#implementation) |
-| Skins | Cupertino, Fluent, Carbon (Later) | platform notes when a skin is picked up |
+| Skins | [Fluent Skin](/guide/skins/fluent-skin) (v1, ADR-38) | [Fluent Skin](/guide/skins/fluent-skin#implementation) |
+| Skins | Cupertino, Carbon (Later) | platform notes when a skin is picked up |
 | Delivery | (none) | [Publishing](/guide/delivery/publishing) |
 | Delivery | (none) | [Testing](/guide/delivery/testing) |
 

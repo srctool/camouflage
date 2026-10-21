@@ -93,7 +93,8 @@ The error message names what is missing and where:
 
 ```kotlin
 val skin = when (currentPlatform) {
-    Android, Desktop, Web -> MinimalSkin     // or MaterialSkin / FluentSkin once built (Later)
+    Android, Web -> MinimalSkin             // or MaterialSkin once built (Later)
+    Desktop -> FluentSkin                    // v1 (ADR-38)
     iOS -> MinimalSkin                       // or CupertinoSkin once built (Later)
 }
 CamouflageProvider(skin = skin, theme = if (systemIsDark) brandDark else brandLight) { App() }

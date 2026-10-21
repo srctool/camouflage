@@ -303,3 +303,16 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - Sinew drops a list's items on refresh, so `PagedListTheme.refreshKeepsItems = true` isn't supported through Sinew's glue. Other sources can still use it.
   - The glue is `PagingState<T>.toCamo(localizer)`. Kotlin adds a `@Composable toCamo()`, and Flutter `toCamoOf(context)`.
 - **Consequences:** none for Camouflage's code. The dependency rule is unchanged: Camouflage never depends on Sinew, and only `sinew_camouflage` knows both.
+
+### ADR-38 The Fluent skin ships in v0.1, alongside Minimal
+- **Context:** Graft, the author's desktop git client (Kotlin, Compose Desktop), is styled as Fluent 2 using the token mapping of [Fluent Skin](/guide/skins/fluent-skin), and plans to switch its `ui-kit` to Camouflage's `fluentSkin()` once a desktop skin is published. Fluent is also the natural dialect for desktop and enterprise apps. And a second, structurally different skin built from M3 tests the Skin contract with two real dialects before 39 components depend on it.
+- **Decision:**
+  - v0.1 ships **two skins: Minimal and Fluent** (module `camouflage-skin-fluent`, package `camouflage_skin_fluent`), on Kotlin and Flutter. Kotlin is built first, as for every milestone.
+  - Fluent is built **alongside each milestone**, not as a milestone of its own: M3 adds the `Subtle` feedback, the double-stroke focus, the `Solid` surface with Fluent's shadow ramp, `fluentTheme` and the M3 renderers; M5 to M8 add the Fluent renderers for their components; **Acrylic** comes with the overlays (M6) and **Mica** with the navigation chrome (M8).
+  - The full scope of the Fluent note: `Solid`, `Acrylic` and `Mica`, plus the compact desktop density (24 small / 32 medium) through component themes.
+  - Supersedes ADR-22 for Fluent only. Material, Cupertino and Carbon stay Later.
+- **Consequences:**
+  - From M3, every component milestone builds two renderer sets, and the M4 demo can switch skin as well as brand.
+  - No Material dependency is added: like Minimal, Fluent draws everything on Compose foundation and Flutter widgets.
+  - Acrylic and Mica bring the first platform-specific dependencies into a skin (a backdrop blur in Compose; Windows window-backdrop interop on both platforms). They stay inside the Fluent module, chosen in its platform notes.
+  - Graft becomes the first real app on Camouflage once v0.1 is published.
