@@ -62,7 +62,7 @@ flowchart TB
     SkinMin --> Core
     SkinM["camouflage-skin-material (Later)"] -.-> Core
     SkinC["camouflage-skin-cupertino (Later, incl. Liquid Glass)"] -.-> Core
-    SkinF["camouflage-skin-fluent (Later)"] -.-> Core
+    SkinF["camouflage-skin-fluent (v1, ADR-38)"] --> Core
     SkinCb["camouflage-skin-carbon (Later)"] -.-> Core
     BP["camouflage-blueprint (Later): UI from JSON"] -.-> Core
 ```
@@ -71,8 +71,9 @@ flowchart TB
 |---|---|---|
 | `camouflage-core` | `CamoTheme` and its groups, `CamoSkin` plus every renderer interface, `SurfaceTreatment`, `InteractionFeedback`, `CamouflageProvider`, the 11 components | the platform UI toolkit only (Compose foundation / Flutter widgets) |
 | `camouflage-skin-minimal` (v1) | `MinimalSkin` (Camouflage's own dialect), its renderers, the Flat surface treatment, Fade feedback, `minimalTheme` | `camouflage-core` |
-| `camouflage-skin-material`, `-cupertino`, `-fluent`, `-carbon` (Later) | the other dialects ([Skins](/guide/skins)) | `camouflage-core` |
-| Later skins | one module each | `camouflage-core` (a Fluent skin may also reuse Material renderers) |
+| `camouflage-skin-fluent` (v1, ADR-38) | `FluentSkin` (Fluent 2), its renderers, the Solid, Acrylic and Mica surface treatments, Subtle feedback, `fluentTheme` | `camouflage-core` |
+| `camouflage-skin-material`, `-cupertino`, `-carbon` (Later) | the other dialects ([Skins](/guide/skins)) | `camouflage-core` |
+| Later skins | one module each | `camouflage-core` |
 | `camouflage-storybook`, `camouflage-filesystem`, … (Later, family packages in the same repo, ADR-26) | a component catalog built with Camouflage; a file layer with a browser/picker built with Camouflage. See [Roadmap](/guide/project/roadmap). | both → core (never the reverse) |
 | `camouflage-blueprint` (Later) | server-driven UI: builds Camouflage components, forms and `CamoRule`s from JSON through a type registry | `camouflage-core` (never the reverse) |
 
@@ -126,7 +127,8 @@ This note introduces no new API. It is the map of the API defined elsewhere:
 | `Camouflage.skin`, `Camouflage.theme` | accessors | [Provider and Scoping](/guide/architecture/provider-and-scoping) | read the current skin and theme |
 | `CamoText` … `CamoBottomSheet`, `CamoForm` | components | [Components — Overview](/components) | what apps call |
 | `MinimalSkin` | skin | [Minimal Skin](/guide/skins/minimal-skin) | the v1 skin (Camouflage's own dialect) |
-| `MaterialSkin`, `CupertinoSkin`, `FluentSkin`, `CarbonSkin` | skins | [Skins](/guide/skins) | Later dialects |
+| `FluentSkin` | skin | [Fluent Skin](/guide/skins/fluent-skin) | the second v1 skin (Fluent 2, ADR-38) |
+| `MaterialSkin`, `CupertinoSkin`, `CarbonSkin` | skins | [Skins](/guide/skins) | Later dialects |
 
 **The full render path as pseudocode** (one button):
 
