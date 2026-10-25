@@ -343,7 +343,7 @@ public interface SurfaceTreatment {
 @Stable
 public interface InteractionFeedback {
     /** Compose Indication drawing press / hover / focus feedback in the given content color. */
-    public fun indication(contentColor: Color, theme: CamoTheme): Indication
+    public fun indication(contentColor: Color, shape: Shape, theme: CamoTheme): Indication   // shape: overlays stay inside it, focus rings follow it (as Flutter's wrap)
 }
 ```
 
@@ -386,7 +386,7 @@ It has no default values. `copy(button = BrandButtonRenderer)` is the partial ov
 @Composable public fun ProvideContentStyle(color: Color, iconStyle: IconStyle, content: @Composable () -> Unit)
 
 /** The current skin's feedback as an Indication, for use with Modifier.indication. */
-@Composable public fun rememberSkinIndication(contentColor: Color): Indication
+@Composable public fun rememberSkinIndication(contentColor: Color, shape: Shape): Indication
 
 /** Applies the disabled alphas uniformly. */
 public fun Color.disabled(alpha: Float): Color
@@ -413,7 +413,7 @@ internal object DebugButtonRenderer : ButtonRenderer {
         Row(
             modifier = modifier                                           // 1. behavior first
                 .then(Camouflage.skin.surfaceTreatment.modifier(colors.container, style.shape, 0.dp, theme))
-                .indication(state.interactionSource, rememberSkinIndication(colors.content))
+                .indication(state.interactionSource, rememberSkinIndication(colors.content, style.shape))
                 .border(if (state.interaction.focused) 2.dp else 0.dp, Color.Magenta, style.shape)
                 .heightIn(min = style.height).widthIn(min = style.minWidth)
                 .padding(if (slots.prefixIcon != null || slots.suffixIcon != null) style.paddingWithIcon else style.padding),

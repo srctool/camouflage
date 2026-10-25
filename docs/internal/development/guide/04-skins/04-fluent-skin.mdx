@@ -213,7 +213,8 @@ public data class FluentTokens(
 }
 ```
 
-- **`Subtle`** is an `IndicationNodeFactory` whose node swaps the container's fill to the hover or pressed step, read with `theme.tokens<FluentTokens>()`. No ripple, no overlay alpha.
+- **The state steps are drawn by Fluent's renderers** (an indication can't recolor a fill another modifier drew): each renderer picks the hover or pressed token from `theme.tokens<FluentTokens>()` for the default tone, and steps a status tone's fill 8% / 16% toward its content color (Fluent has no status hover tokens). **`Subtle`** is the `IndicationNodeFactory` for the focus indicator; no ripple, no overlay alpha.
+- `FluentTokens` also carries `brandBackground` and `neutralForegroundOnBrand`: in dark mode the role `primary` is the brand *foreground* (`brand[100]`, readable as text), while a filled primary button uses `brandBackground` (`brand[70]`) with white text.
 - The **focus indicator** is a separate draw node: a 2 dp `strokeFocus2` outer stroke and a 1 dp `strokeFocus1` inner stroke, shown only for keyboard focus.
 - Under another theme (no `FluentTokens`), `Subtle` falls back to a 4% / 8% `onSurface` overlay, so `FluentSkin` still works with a brand theme that wasn't built from `fluentTheme`.
 
@@ -321,7 +322,8 @@ abstract final class FluentMica {
 
 `FluentTokens extends CamoTokenSet<FluentTokens>` carries the explicit state steps (`neutralBackground1Hover`, `…Pressed`, `brandBackgroundHover`, `strokeFocus1`, `strokeFocus2`, …), with `copyWith` and `lerp`. Renderers read it with `CamoTokens.of<FluentTokens>(context)`.
 
-- **`Subtle.wrap`** listens to the `CamoInteractionController` and swaps the fill to the hover or pressed step (an `AnimatedContainer`, 100 ms). No overlay alpha.
+- **The state steps are drawn by Fluent's renderers**, which read the interaction from `ButtonState` and pick the hover or pressed token (as in Kotlin); a status tone's fill steps 8% / 16% toward its content color. **`Subtle.wrap`** paints only the focus indicator under a Fluent theme. No overlay alpha.
+- As in Kotlin, dark mode's `primary` is the brand foreground, and filled primary buttons use `FluentTokens.brandBackground`.
 - The **double-stroke focus** is a `CustomPaint` around the child: 2 px `strokeFocus2` outside, 1 px `strokeFocus1` inside, for keyboard focus only (`FocusHighlightMode.traditional`).
 - Without `FluentTokens` in the theme, `Subtle` falls back to a 4% / 8% `onSurface` overlay.
 

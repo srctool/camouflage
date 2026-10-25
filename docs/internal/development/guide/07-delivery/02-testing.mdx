@@ -61,7 +61,7 @@ fun <S> assertNoLiterals(render: @Composable (style: S) -> Unit, oddStyle: S, me
 | direction | LTR, RTL |
 | component states | per component: variants × tones × enabled/disabled/focused/pressed(where capturable) |
 
-The file naming is `button_primary-error_material_dark_fs2_rtl.png`. Goldens live in `src/<target>Test/snapshots`, and CI runs `verifyRoborazzi*`. Record with `recordRoborazzi*` locally, and review the diffs in the PR.
+The file naming is `button_primary-error_material_dark_fs2_rtl.png`. Goldens live in `src/<target>Test/snapshots`, and CI runs `verifyRoborazzi*`. Goldens render with the **Ahem** test font (`CamoTheme.withGoldenFont()` in `camouflage-skin-testing`, as Flutter's CI goldens do), so a recording made on macOS verifies on Linux CI. Since M3 the JVM desktop goldens run on every PR; Android (Robolectric) and iOS join with the full matrix in M9. Compose UI tests live in `skikoTest` (JVM, iOS, wasmJs); on the Android host they'd need Robolectric. Record with `recordRoborazzi*` locally, and review the diffs in the PR.
 
 ### 3.3 Coverage {#kotlin-33-coverage}
 
