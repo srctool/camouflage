@@ -316,3 +316,14 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - No Material dependency is added: like Minimal, Fluent draws everything on Compose foundation and Flutter widgets.
   - Acrylic and Mica bring the first platform-specific dependencies into a skin (a backdrop blur in Compose; Windows window-backdrop interop on both platforms). They stay inside the Fluent module, chosen in its platform notes.
   - Graft becomes the first real app on Camouflage once v0.1 is published.
+
+### ADR-39 Contract types arrive with their component
+- **Context:** The Theme and Skin Contract notes asked for the whole contract up front: every `XTheme` (component theme) in M1, and all 39 renderer interfaces, `CamoSkin` fields and `DebugSkin` renderers in M2. But a renderer's `XState`, `XSlots` and `XStyle` are defined by its component note and only arrive with that component (M3 to M8). Writing them early means designing 39 components' data ahead of their milestones, then revising them when each component is built. Kotlin also can't declare the empty data classes the Theme note planned as placeholders.
+- **Decision:**
+  - M1 ships `CamoComponentThemes` as an empty holder. M2 ships the contract **mechanism**: the shared types (`InteractionState`, `IconStyle`), `SurfaceTreatment`, `InteractionFeedback`, `CamoSkin(name, surfaceTreatment, feedback)`, the skin-author helpers, the provider and `DebugSkin`'s no-op surface and feedback.
+  - Each component's milestone adds, together: its `XTheme` field in `CamoComponentThemes`, its `XState` / `XSlots` / `XStyle`, its `XRenderer` interface, its required field in `CamoSkin`, and its renderer in `DebugSkin`, Minimal and Fluent.
+  - Until the icon renderer exists (M3), the provider's root icon style is core's default (20, `onSurface`, the Minimal value under ADR-24).
+- **Consequences:**
+  - `CamoSkin` still has no defaults, so adding a field breaks every skin at compile time. Before v0.1 nothing is published, so that is the intended forcing function: a milestone isn't done until every skin implements its new renderers.
+  - M2's behavior-modifier test (Kotlin) uses a test-only renderer. The `ButtonStyle.merge` test and `DebugSkin`'s labelled button come with `CamoButton` in M3.
+  - Kotlin's "`CamoDialogFrame` inside a nested provider" test moves to M6 with the frame.
