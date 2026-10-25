@@ -254,6 +254,7 @@ public data class FluentTokens(
 | Mica on macOS, Linux, Windows 10 | Solid. The call is guarded by an OS-version check. |
 | Mica and window decorations | The backdrop shows only where the window's own background is transparent. Verify at M8 whether that works with a decorated Compose window, or needs an undecorated window with an app title bar (Graft already draws its own). |
 | `FluentSkin` with a non-Fluent theme | Works: renderers read core's roles, and `Subtle` falls back to an overlay (§3.1). |
+| A brand on Fluent | Build the brand's theme from `fluentTheme(brand = …)`, then override its roles and component themes. Overriding only the roles of the default `fluentTheme()` leaves `FluentTokens` (the filled primary, hover and pressed steps) in Fluent blue; the M4 sample showed it. |
 | Windows high-contrast mode | Uses the OS high-contrast colors when the platform reports it (base note). |
 
 </KotlinOnly>
@@ -363,5 +364,6 @@ As in Kotlin: `density` sets the component themes' heights (`medium` 32, `small`
 | Mica on macOS, Linux, Windows 10 | `FluentMica.enable()` returns `false`; Solid. |
 | The plugin on mobile and web | Only `FluentMica` touches it, guarded by a Windows check, so other platforms never call it. |
 | `fluentSkin` with a non-Fluent theme | Works: renderers read core's roles, and `Subtle` falls back to an overlay (§3.1). |
+| A brand on Fluent | As in Kotlin: start from `fluentTheme(brand: …)` so `FluentTokens` follow the brand, then override roles and component themes. |
 
 </DartOnly>
