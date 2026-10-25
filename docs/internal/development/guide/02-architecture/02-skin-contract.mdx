@@ -245,16 +245,16 @@ val brandSkin = MinimalSkin.copy(tabs = CupertinoSkin.tabs, switch = CupertinoSk
 ### 4. Build steps
 
 1. Add the shared enums and `InteractionState` to core.
-2. Add the 39 `XState` / `XSlots` data classes, the `XRenderer` interfaces with `defaults(theme)` (fields from §3.2), and the merge step in core that resolves `style`.
-3. Add `SurfaceTreatment` and `InteractionFeedback` interfaces.
-4. Add `CamoSkin` with all 36 fields and `copy`.
-5. In `sample`, make a `DebugSkin` whose renderers draw a labelled grey box (`"Button: High"`) and whose surface and feedback are no-ops. This proves the contract end to end before any real skin exists, and is useful for tests.
-6. Write tests: `DebugSkin.copy(button = X)` changes only `button`; a skin that leaves out a field doesn't compile (a comment in the test file documents this, since compile errors can't be asserted at runtime).
+2. Add `SurfaceTreatment` and `InteractionFeedback` interfaces.
+3. Add `CamoSkin` with `name`, `surfaceTreatment`, `feedback` and `copy`.
+4. In `sample`, make a `DebugSkin` whose surface and feedback are no-ops. This proves the contract end to end before any real skin exists, and is useful for tests.
+5. Write tests: `copy` replaces one field and keeps the others identical; a skin that leaves out a field doesn't compile (a comment in the test file documents this, since compile errors can't be asserted at runtime).
+6. **With each component (M3 to M8, ADR-39):** its `XState` / `XSlots` data classes, its `XRenderer` interface with `defaults(theme)` (fields from §3.2), the merge step that resolves `style`, its required `CamoSkin` field, and a `DebugSkin` renderer that draws a labelled grey box (`"Button: High"`).
 
 **Done when**
-- [ ] Core compiles with every renderer interface.
-- [ ] `DebugSkin` implements all of them with no warnings.
-- [ ] `copy` replaces one renderer and keeps the other 37 fields identical (`===`).
+- [ ] Core compiles with the contract mechanism, and `DebugSkin` implements it with no warnings (M2).
+- [ ] `copy` replaces one field and keeps the others identical (`===`).
+- [ ] By M8, `CamoSkin` has all 39 renderers and `DebugSkin` implements every one.
 
 ### 5. Edge cases
 
@@ -432,18 +432,19 @@ internal object DebugButtonRenderer : ButtonRenderer {
 
 ### 4. Build steps {#kotlin-4-build-steps}
 
-1. `InteractionState`, the shared enums, and the 39 `XState` / `XSlots` classes (each one arrives with its component, M3–M8) (`@Immutable`; slots `@Stable`).
-2. The 39 renderer interfaces, plus `SurfaceTreatment` and `InteractionFeedback`.
-3. `CamoSkin`.
+1. `InteractionState` (`@Immutable`) and the shared enums.
+2. `SurfaceTreatment` and `InteractionFeedback`.
+3. `CamoSkin(name, surfaceTreatment, feedback)`.
 4. `ProvideContentStyle`, `rememberSkinIndication`, `Color.disabled`.
-5. `DebugSkin` in `:sample:shared`, with every renderer drawing a labelled box (like §3.5), `NoTreatment` and `NoFeedback`.
+5. `DebugSkin` in `:sample:shared`, with `NoTreatment` and `NoFeedback`.
 6. `commonTest`:
-   - `copy(button = X)` keeps the other 14 fields referentially equal;
-   - a renderer applying `modifier` makes the whole box clickable (`runComposeUiTest`: a click on the box's corner fires `onClick`).
+   - `copy(feedback = X)` keeps the other fields referentially equal;
+   - a renderer applying `modifier` makes the whole box clickable (`runComposeUiTest` with a test-only renderer: a click on the box's corner fires `onClick`).
+7. **With each component (M3–M8, ADR-39):** its `XState` (`@Immutable`) / `XSlots` (`@Stable`), its `XRenderer` interface, its `CamoSkin` field, and a `DebugSkin` renderer drawing a labelled box (like §3.5).
 
 **Done when**
-- [ ] `DebugSkin` compiles for all targets, with every renderer implemented.
-- [ ] A click anywhere on a DebugSkin button fires, and the focus border appears with keyboard Tab (desktop).
+- [ ] `DebugSkin` compiles for all targets (M2), and implements every renderer that exists at each later milestone.
+- [ ] A click anywhere on a renderer's box fires; from M3, the focus border on a DebugSkin button appears with keyboard Tab (desktop).
 
 ### 5. Edge cases {#kotlin-5-edge-cases}
 
@@ -618,15 +619,16 @@ class DebugButtonRenderer implements CamoButtonRenderer {
 
 ### 4. Build steps {#dart-4-build-steps}
 
-1. `InteractionState`, `CamoInteractionController`, the enums, and the 39 state/slot classes (each with its component, M3–M8).
-2. The 39 renderer interfaces, plus `SurfaceTreatment` and `InteractionFeedback`.
-3. `CamoSkin` + `copyWith`.
+1. `InteractionState`, `CamoInteractionController` and the enums.
+2. `SurfaceTreatment` and `InteractionFeedback`.
+3. `CamoSkin(name, surfaceTreatment, feedback)` + `copyWith`.
 4. `CamoContentStyle`.
-5. `DebugSkin` in the example.
-6. Widget tests: `copyWith(button: X)` keeps the other renderers `identical`; tapping anywhere inside a DebugSkin button fires `onPressed` (the wrapper owns the gestures).
+5. `DebugSkin` in the example, with no-op surface and feedback.
+6. Widget tests: `copyWith(feedback: X)` keeps the other fields `identical`; the controller reports press, hover and keyboard focus.
+7. **With each component (M3–M8, ADR-39):** its state/slot classes, its renderer interface, its `CamoSkin` field, and a `DebugSkin` placeholder renderer. From M3: tapping anywhere inside a DebugSkin button fires `onPressed` (the wrapper owns the gestures).
 
 **Done when**
-- [ ] `DebugSkin` renders every placeholder component. Keyboard Tab shows the focus border on desktop and web.
+- [ ] `DebugSkin` implements the contract (M2), and renders every placeholder component that exists at each later milestone. From M3, keyboard Tab shows the focus border on desktop and web.
 
 ### 5. Edge cases {#dart-5-edge-cases}
 

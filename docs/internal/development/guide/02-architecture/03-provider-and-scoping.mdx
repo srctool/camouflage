@@ -203,7 +203,7 @@ public fun CamouflageProvider(
     val effectiveTheme = remember(baseTheme, reduceMotion) {
         if (baseTheme != null && reduceMotion) baseTheme.copy(motion = baseTheme.motion.reduced()) else baseTheme
     }
-    // the icon component theme resolves straight to an IconStyle (size + color)
+    // the icon component theme resolves straight to an IconStyle (size + color); until the icon renderer exists (M3), core's default IconStyle(20.dp, onSurface) (ADR-39)
     val rootIcon: IconStyle? = effectiveSkin?.let { s -> effectiveTheme?.let { t -> s.icon.defaults(t).merge(t.components.icon) } }
     CompositionLocalProvider(
         LocalCamoSkin provides effectiveSkin,
@@ -290,7 +290,7 @@ Pass `isSystemInDarkTheme()` (common Compose API, works on every target) as the 
    - each of the seven inheritance rows from Provider and Scoping §3.1;
    - the exception message for "no provider" and "theme only";
    - a skin switch recomposes a child;
-   - a standalone `CamoDialogFrame` inside a nested provider reads the nested theme.
+   - (M6, with the frame, ADR-39) a standalone `CamoDialogFrame` inside a nested provider reads the nested theme.
 
 **Done when**
 - [ ] All seven inheritance rows pass on jvm and iOS simulator.
