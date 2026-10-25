@@ -276,7 +276,7 @@ public enum class Appearance { Solid, Soft, Raised, Outline, Ghost, Link }
 |---|---|
 | Hoisted `interactionSource` | Supported (the Compose convention), so apps can observe presses or share one source between two elements. |
 | Rapid double taps | Each completed tap fires. Debouncing is app logic. |
-| `text` is blank | Debug builds fail with `require(text.isNotBlank())`; release builds render it and log once (server text or a missing translation mustn't crash production). An icon-only button must be `CamoIconButton`. |
+| `text` is blank | Debug builds fail; release builds render it and log once (server text or a missing translation mustn't crash production). KMP has no debug flag of its own, so core exposes `DebugChecks.enabled` (on by default); a release build turns it off at startup. An icon-only button must be `CamoIconButton`. |
 | Long text in RTL | `Row` follows `LocalLayoutDirection`, so the prefix goes on the right automatically. |
 | Loading state | `loading = true` (base settled). The renderer keeps the text in layout with `Modifier.alpha(0f)` and draws `CamoProgressCircle` in a `Box` on top, so the width is the text's. The component sets `clickable(onClick = {}, …)` no-op while loading and `semantics { stateDescription = "Busy" }` (plus `progressBarRangeInfo = Indeterminate` on the circle). |
 | Full width | `CamoButton(…, modifier = Modifier.fillMaxWidth())`. The renderer centers its row content. |

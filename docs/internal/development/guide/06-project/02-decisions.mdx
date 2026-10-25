@@ -211,7 +211,7 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - Layers 0 (core) → 1 (skins, navigation3) → 2 (family packages and templates) → 3 (glue modules, samples, apps). Dependencies only go to lower layers, never within a layer. Build tools (generator, build-logic) depend on nothing from Camouflage.
   - Same-layer packages cooperate through callbacks or slots, connected by the app or a layer-3 glue module. Core components that need a family feature take callbacks (`CamoFileUploader(onPick)`).
   - The Kotlin BOM pins every package at versions tested together. Dart family packages use caret ranges on core and are re-released by CI when core's minor version bumps.
-  - A CI check enforces the layers on both platforms, including Dart `dev_dependencies`.
+  - A CI check enforces the layers on both platforms, including Dart `dev_dependencies`. **Test-only dependencies** (Kotlin `*Test*` configurations, Dart `dev_dependencies`) may also point at the **same** layer, never a higher one: they don't ship, and the skins test themselves with `camouflage-skin-testing`, a layer-1 package (ruling 2026-10-25).
 - **Consequences:** no cycles by construction. Apps import the BOM (Kotlin) or let pub resolve (Dart). Family packages carry a "works with core" table.
 
 ### ADR-28 Brand designs are expressed through themes first

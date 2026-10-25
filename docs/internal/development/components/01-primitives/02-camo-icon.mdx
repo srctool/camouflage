@@ -185,7 +185,7 @@ public object AppIcon {
 
 `contentDescription = null` is the right default for icons passed into components, because the component carries the label.
 
-**Renderer (DebugSkin and Material are the same):**
+**Renderer (DebugSkin and Material are the same):** core ships this as `IconImage(state, modifier)`, so most icon renderers are one line.
 
 ```kotlin
 val painter = when (s) { is Vector -> rememberVectorPainter(s.image); is Resource -> painterResource(s.drawable); is Paint -> s.painter }
