@@ -43,7 +43,7 @@ fun CamoSearchField(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,             // the keyboard's Search action / Enter
     placeholder: String = "Search",
-    leading: Widget? = null,                // null → the skin's search icon; pass e.g. a back CamoIconButton when active
+    leading: Widget? = null,                // null → the skin's search icon; pass e.g. a back CamoFieldAction when active
     trailing: Widget? = null,               // e.g. a mic or avatar; the clear button is automatic
     enabled: Boolean = true,
     onFocusChanged: ((Boolean) -> Unit)? = null,
@@ -71,12 +71,13 @@ fun CamoSearchField(
 | `shape` | Shape | `shapes.full` | container corners |
 | `textStyle` / `placeholderStyle` | CamoTextStyle | `bodyLarge` | input and placeholder |
 | `iconSize` | Dp | 24 | leading, trailing and clear icons |
+| `searchIcon` / `clearIcon` | Icon | the skin's magnifier / × | the leading icon and the clear action's icon (added in the M5 build) |
 | `colors` | SearchFieldColors(container, text, placeholder, icon) | `surfaceContainerHigh`, `onSurface`, `onSurfaceVariant`, `onSurfaceVariant` | every color it uses |
 
 #### Accessibility
 
 - A text field with a search role/hint and name = `placeholder`. The IME action is "Search".
-- The clear button is a `CamoIconButton` labelled "Clear search".
+- The clear button is a `CamoFieldAction` labelled "Clear search" (no container, so the field keeps its height; see the text field note).
 - Results that update while typing should be announced by the app ("12 results") through a polite live region. The docs show the pattern.
 
 ### 4. Build steps
@@ -99,7 +100,7 @@ fun CamoSearchField(
 |---|---|
 | Expanded full-screen search (M3 "search view") | Not in v1. Compose: navigate to a search route (Navigation 3). Flutter: push a page. The field is reused inside it. |
 | Suggestions dropdown | App content, either below the field or in a `CamoMenu` anchored to it. |
-| Voice search | The app passes a mic `CamoIconButton` as `trailing`. |
+| Voice search | The app passes a mic `CamoFieldAction` as `trailing`, so the field keeps its height. |
 
 ## Implementation {#implementation}
 
@@ -115,7 +116,7 @@ A search field is a text field with a search keyboard action, an automatic clear
 flowchart LR
     Call["CamoSearchField(query, onQueryChange, onSearch)"] --> In["BasicTextField(state, keyboardOptions = Search, onKeyboardAction)"]
     In --> R["skin.searchField.Render(SearchFieldState, SearchFieldSlots, theme, style, modifier)"]
-    R --> Clear["clear: CamoIconButton when query isNotEmpty"]
+    R --> Clear["clear: CamoFieldAction when query isNotEmpty"]
 ```
 
 ### 3. API {#kotlin-3-api}
@@ -138,7 +139,7 @@ public fun CamoSearchField(
 
 - **Controlled text:** the same two-way sync as `CamoTextField`: an internal `TextFieldState` mirrors `query`; edits call `onQueryChange`; external changes to `query` replace the text and keep the cursor at the end.
 - **IME:** `KeyboardOptions(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text, autoCorrectEnabled = false)` and `onKeyboardAction { onSearch(query) }`. On desktop and web, Enter does the same (`onKeyEvent`).
-- **Clear:** core builds a `CamoIconButton(contentDescription = "Clear search")` shown when `query.isNotEmpty()`; it calls `onQueryChange("")` and keeps focus in the field.
+- **Clear:** core builds a `CamoFieldAction(contentDescription = "Clear search")` (no container, so the field keeps its height) shown when `query.isNotEmpty()`; it calls `onQueryChange("")` and keeps focus in the field.
 - **Semantics:** `semantics { contentDescription = placeholder }` when there's no visible label; Compose exposes the field as an editable text; the clear button is a separate focusable node after the input.
 - **Debounce** is not in the field: apps (or `CamoAsyncSelect`) debounce `onQueryChange` themselves.
 
@@ -171,7 +172,7 @@ A text field with the search keyboard action, an automatic clear button and sear
 flowchart LR
     Call["CamoSearchField(query, onChanged, onSubmitted)"] --> In["EditableText(textInputAction: search, onSubmitted)"]
     In --> R["skin.searchField.render(context, SearchFieldState, SearchFieldSlots, theme, style)"]
-    R --> Clear["clear: CamoIconButton when query isNotEmpty"]
+    R --> Clear["clear: CamoFieldAction when query isNotEmpty"]
 ```
 
 ### 3. API {#dart-3-api}
@@ -185,9 +186,11 @@ class CamoSearchField extends StatefulWidget {
 
 - **Controlled text:** an internal `TextEditingController` mirrors `query`; external changes replace the text with the cursor at the end.
 - **IME:** `textInputAction: TextInputAction.search`, `autocorrect: false`, `onSubmitted` (Enter on desktop and web).
-- **Clear:** `CamoIconButton(semanticLabel: 'Clear search')` shown when not empty; clears and keeps focus.
+- **Clear:** `CamoFieldAction(semanticLabel: 'Clear search')` (no container, so the field keeps its height) shown when not empty; clears and keeps focus.
 - **Esc:** a `CallbackShortcuts` entry clears when non-empty, otherwise lets the key bubble (so an overlay can close).
 - **Semantics:** `Semantics(textField: true, label: placeholder)` when there's no visible label.
+- **Gestures:** the same `TextSelectionGestureDetectorBuilder` as `CamoTextField` (`rendererIgnoresPointer: true`), so taps, double-click word selection and long-press work the same in both fields.
+- **Disabled:** `enabled: false` is read-only and wrapped in `ExcludeFocus`, so a tap or Tab can't focus it.
 
 ### 4. Build steps {#dart-4-build-steps}
 
