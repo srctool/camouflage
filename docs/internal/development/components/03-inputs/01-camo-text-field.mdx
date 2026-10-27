@@ -56,7 +56,7 @@ fun CamoTextField(
     supportingText: String? = null,    // helper text below the field
     error: String? = null,             // non-null = error state; replaces supportingText
     prefixIcon: Widget? = null,        // e.g. AppIcon.mail(), decorative
-    suffixIcon: Widget? = null,        // e.g. AppIcon.clear(), or a CamoIconButton for an action
+    suffixIcon: Widget? = null,        // e.g. AppIcon.clear(), or a CamoFieldAction for an action
     prefixText: String? = null,        // e.g. "+62", "Rp"; never part of value
     suffixText: String? = null,        // e.g. "kg", ".com"
     enabled: Boolean = true,
@@ -74,7 +74,7 @@ fun CamoTextField(
 | `prefixText`, `suffixText` | fixed text inside the field, next to the input ("+62", "kg"). Not part of `value`. Drawn in the placeholder color, and shown only when the field is focused or non-empty, so it never collides with a floating label. Screen readers read it with the value. |
 | `label`, `placeholder`, `supportingText`, `error` | text values. The renderer draws them in the skin's styles. |
 | `prefixIcon` | a decorative icon widget at the start (mail, search) |
-| `suffixIcon` | an icon widget at the end. For an **action** (clear, show password), pass a `CamoIconButton`, which brings its own label and click. |
+| `suffixIcon` | an icon widget at the end. For an **action** (clear, show password), pass a `CamoFieldAction`, which brings its own label and click without a container, so the field keeps its height. |
 | `enabled`, `singleLine`, `secure` | behavior flags |
 | `onFocusChanged` | reports focus changes. Used by form fields for `OnUnfocus` validation. |
 
@@ -96,6 +96,7 @@ interface CamoInputFilter {
         fun digitsOnly(maxLength: Int? = null): CamoInputFilter
         fun maxLength(n: Int): CamoInputFilter
         fun pattern(regex: Regex): CamoInputFilter         // allowed characters
+        fun decimal(decimals: Int = 2, decimalSeparator: Char = ','): CamoInputFilter   // digits, one separator, at most `decimals` after it
     }
 }
 interface CamoDisplayFormat {
@@ -125,9 +126,15 @@ Platform extras (added in platform notes): keyboard type and IME action (`Keyboa
 ```kotlin
 var hidden by state(true)
 CamoTextField(value = pw, onValueChange = setPw, label = "Password", secure = hidden,
-    suffixIcon = CamoIconButton(icon = if (hidden) AppIcon.eye() else AppIcon.eyeOff(),
-                                contentDescription = if (hidden) "Show password" else "Hide password",
-                                onClick = { hidden = !hidden }))
+    suffixIcon = CamoFieldAction(icon = if (hidden) AppIcon.eye() else AppIcon.eyeOff(),
+                                 contentDescription = if (hidden) "Show password" else "Hide password",
+                                 onClick = { hidden = !hidden }))
+```
+
+**Field actions: `CamoFieldAction`, not `CamoIconButton` (changed in the M5 build).** A `CamoIconButton` brings its own container and touch target (40–48), which makes a field with an action taller than its neighbours. `CamoFieldAction` has no container: it takes the ambient icon style the renderer sets for the field's icons (size and color, so it turns `error` with the suffix), measures the icon plus `spacing.s` square, and uses the skin's interaction feedback. It's still its own focusable button, after the input, with its own label. The search field's clear action is one too.
+
+```kotlin
+fun CamoFieldAction(icon: Widget, contentDescription: String, onClick: () -> Unit, enabled: Boolean = true)
 ```
 
 **Building block (ADR-30): `CamoFieldFrame`.** The text field's frame (label with its `labelPlacement`, border and focus ring, prefix/suffix icons and texts, supporting and error text) around **any** input:
@@ -182,7 +189,7 @@ It's drawn by the same `TextFieldRenderer`, with `content` in the `input` slot, 
 - The error is announced: the field is marked invalid, and the error text is linked as its description and announced when it appears.
 - Supporting text is linked as the description.
 - `secure` fields are announced as password fields, and their content isn't read out.
-- `prefixIcon` is decorative. A `suffixIcon` that is a `CamoIconButton` is a separate focusable element with its own label, reached after the input.
+- `prefixIcon` is decorative. A `suffixIcon` that is a `CamoFieldAction` is a separate focusable element with its own label, reached after the input.
 - The whole field height is the touch target. Tapping the label or prefix focuses the input.
 
 ### 4. Build steps
@@ -197,7 +204,7 @@ It's drawn by the same `TextFieldRenderer`, with `content` in the `input` slot, 
 2. `secure` switches the node into obscured mode, with autocorrect and suggestions off.
 3. `DebugSkin` renderer: a bordered box with the label above, then prefix / input / suffix in a row, then supporting or error text below.
 4. Implement `inputFilter` and `displayFormat` in core with the platform mechanisms in the table, plus the built-ins (`digitsOnly`, `maxLength`, `pattern`, `grouping`, `decimal`).
-5. Sample: a login form with email (`prefixIcon = AppIcon.mail()`, supporting text), password (show-password pattern), a phone field (`digitsOnly` + `pattern("####-####-#####")`), an amount field (`grouping`), a search field with a clear `CamoIconButton`, and one disabled field.
+5. Sample: a login form with email (`prefixIcon = AppIcon.mail()`, supporting text), password (show-password pattern), a phone field (`digitsOnly` + `pattern("####-####-#####")`), an amount field (`grouping`), a search field with its clear action, and one disabled field.
 6. Tests:
    - typing calls `onValueChange`;
    - with `digitsOnly`, typing a letter doesn't call `onValueChange`;
@@ -207,7 +214,7 @@ It's drawn by the same `TextFieldRenderer`, with `content` in the `input` slot, 
    - ignored updates keep the old text;
    - `error` sets invalid semantics and replaces the supporting text;
    - the label is the accessible name;
-   - the suffix icon button is focusable with its own label;
+   - the suffix field action is focusable with its own label, and the field is as tall as one without it;
    - the prefix icon has no semantics;
    - **switching the skin while focused keeps focus and cursor position**.
 
@@ -227,7 +234,7 @@ It's drawn by the same `TextFieldRenderer`, with `content` in the `input` slot, 
 | RTL, and bidi input | The text direction follows the content. The prefix icon is at the start (right), and the suffix at the end. |
 | Very long single-line value | Scrolls horizontally inside the field. It doesn't wrap. |
 | `error` and `supportingText` both set | `error` wins, so there's one message at a time. |
-| `enabled = false` with a value | The text stays visible (dimmed), isn't focusable, and is announced as disabled. The suffix icon button is disabled too. |
+| `enabled = false` with a value | The text stays visible (dimmed), isn't focusable, and is announced as disabled. The suffix field action is disabled too. |
 | Formatting (dashes, thousand separators) | Done by `displayFormat` in core, with the cursor mapped, so there's no jump. `value` stays raw. |
 | The app changes `value` programmatically while focused (e.g. clears it) | The cursor moves to the end of the new text. Setting the cursor position from the app isn't supported in v1. A state-based overload can add it later without breaking anything. |
 | A filter rejects a paste entirely | Nothing changes, and `onValueChange` isn't called. Platform feedback (no sound or vibration) is default. |
@@ -313,7 +320,7 @@ public interface CamoInsertingFormat : CamoDisplayFormat {          // Kotlin fa
 A custom `CamoDisplayFormat` that only implements `format()` falls back to replacing the displayed text, with the cursor placed at the end of the change. Prefer the inserting form for anything typed mid-string.
 
 **Semantics:**
-- The field's root gets `semantics(mergeDescendants = true)`, so the label text the renderer draws merges into the text field's node and is announced as its name.
+- **The input is named through its decorator (changed in the M5 build).** Compose's text-field node merges its own descendants, so a parent merge can't reach it. Core's `TextFieldDecorator` adds a zero-size `Box` with `semantics { text = label }` inside the editable node, so the label is its name; `camoError` goes on the input too. Renderers hide the label, placeholder and error they draw (`clearAndSetSemantics`), so nothing is read twice.
 - Don't set `contentDescription`: on a text field it would replace the typed text in the announcement.
 - `error(message)` when `error != null`.
 - `password()` when `secure`.
@@ -424,7 +431,7 @@ abstract interface class CamoDisplayFormat {
 
 ```dart
 TextSelectionControls selectionControls(BuildContext context);            // handles
-EditableTextContextMenuBuilder contextMenuBuilder(BuildContext context);  // copy/paste toolbar
+Widget contextMenuBuilder(BuildContext context, EditableTextState state); // copy/paste toolbar
 ```
 
 - The Minimal skin (v1) returns its own minimal handles (`TextSelectionControls` subclass drawn with `primary`) and the platform-native context menu (`SystemContextMenu` where supported, else a small `CamoMenu`-styled toolbar). A Later Material skin would return `material_ui`'s controls and adaptive toolbar.
