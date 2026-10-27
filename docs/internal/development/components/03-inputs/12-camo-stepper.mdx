@@ -57,7 +57,7 @@ fun CamoStepper(
 - **Press and hold** repeats: after 400 ms, then faster, up to 10 changes per second.
 - With `allowTyping`, the value is a digits-only text field; the typed value is clamped to `range` and snapped to `step` when focus leaves.
 
-**State → renderer:** `StepperState(valueText, canDecrease, canIncrease, enabled, error: Boolean, interaction)`. **Slots:** `StepperSlots(decrease, increase, input)`: core-built icon buttons and the editable field.
+**State → renderer (M5 build):** `StepperState(valueText, enabled, error: Boolean, focused, decrease: StepperButton, increase: StepperButton)`. Each `StepperButton(enabled, interaction, behavior)` carries core's behavior (click, hold-to-repeat, label) and the renderer draws the button, so a `Split` layout can make ▲ ▼ half the field's height. **Slots:** `StepperSlots(input)`: core's editable field.
 
 #### Tokens used
 

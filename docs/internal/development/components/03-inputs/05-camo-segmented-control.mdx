@@ -18,7 +18,7 @@ A segmented control switches between 2–5 closely related options in a compact 
 ```mermaid
 flowchart LR
     Call["CamoSegmentedControl(options, selected, onSelectionChange)"] --> Core["core: row of segments, selection logic, semantics"]
-    Core --> R["skin.segmentedControl.render(SegmentedState, slots, theme, style)"]
+    Core --> R["skin.segmentedControl: renderContainer(SegmentedContainerState, …) + renderSegment(SegmentState, SegmentSlots, …)"]
     R --> M["Material: outlined pill, selected segment secondaryContainer + check icon"]
     R -.-> A["future Apple dialect: gray track with a sliding white thumb"]
 ```
@@ -46,7 +46,7 @@ A segment needs a `label` or an `icon`. Icon-only segments need a `contentDescri
 
 **Building blocks (ADR-30):** `CamoSegmentedContainer(content: Slot)` (the track, outer shape and radio-group semantics) and `CamoSegmentButton(segment, selected, onClick, position)` (one skin-styled segment with its radio semantics). They let a design put custom content in segments (an icon with a count, two-line segments) without losing the look or keyboard behavior.
 
-**State → renderer:** `SegmentedState(count, selectedIndex, enabled, interactions)`. **Slots:** one `SegmentSlot(label?, icon?)` per option.
+**State → renderer (M5 build):** the renderer has two parts, matching the building blocks: the container (`SegmentedContainerState(enabled, count)`, the track around the segments in a row) and each segment (`SegmentState(selected, enabled, position: ItemPosition, interaction)` with `SegmentSlots(label?, icon?, content?)`). Core gives the segments equal widths.
 
 #### Tokens used
 
@@ -66,7 +66,7 @@ A segment needs a `label` or an `icon`. Icon-only segments need a `contentDescri
 | `textStyle` | CamoTextStyle | `labelLarge` | segment labels |
 | `iconSize` | Dp | 18 | segment icons |
 | `showCheckIcon` | Boolean | true | Material's check mark on selected segments |
-| `colors` | SegmentedColors(border, selectedContainer, selectedContent, content) | `outline`, `secondaryContainer`, `onSecondaryContainer`, `onSurface` | every color it uses |
+| `colors` | SegmentedColors(container, border, selectedContainer, selectedContent, content) | transparent, `outline`, `secondaryContainer`, `onSecondaryContainer`, `onSurface` | every color it uses; `container` is the track (Minimal's `surfaceContainer`, added in the M5 build) |
 
 #### Accessibility
 
