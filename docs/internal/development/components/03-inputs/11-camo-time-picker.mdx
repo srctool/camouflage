@@ -100,6 +100,15 @@ fun CamoTimeInput(value: CamoTime?, onValueChange: (CamoTime) -> Unit, minuteSte
 | `minTime` > `maxTime` (an overnight window) | Allowed: the valid range wraps past midnight. |
 | Seconds | Not in v1. |
 
+:::info[Changed in the M5 build (2026-10-28)]
+
+- The theme's form is `form` (`TimePickerForm.Fields | Dial | Wheel`); words are `TimePickerTheme.strings` (`TimePickerStrings`).
+- The theme gains `dialTextStyle`, `wheelTextStyle`, `wheelItemHeight`, `fieldSize`, `dialSize`, `autoPopupMinWidth`, `contentPadding` and `clockIcon`.
+- The renderer has three parts: `Render(state, slots)` lays out core's hour and minute fields, the AM/PM control and the dial or wheels; `Dial(DialState)` draws the face (labels, an inner 13–23 ring on 24-hour dials, the hand); `Wheels`. Core maps touches to values (inner ring below 62% of the radius).
+- With `confirmButton = false`, each change inside `minTime`…`maxTime` is reported at once.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -210,5 +219,11 @@ class CamoTimeInput extends StatelessWidget { /* value, onChanged, minuteStep, u
 | Case | Decided behavior |
 |---|---|
 | Apps using `TimeOfDay` | `CamoTime.fromTimeOfDay` / `toTimeOfDay` live in the app (core can't import Material). |
+
+:::info[Changed in the M5 build (2026-10-28)]
+
+The renderer is `render` / `dial` / `wheels` with `DialState`; digit fields are bare `EditableText`s with adjustable semantics, and the wheels are `CamoWheelColumn`s (`ListWheelScrollView`).
+
+:::
 
 </DartOnly>

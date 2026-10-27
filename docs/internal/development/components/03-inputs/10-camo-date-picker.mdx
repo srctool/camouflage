@@ -137,6 +137,18 @@ fun CamoCalendar(
 | Range across months | The calendar scrolls or pages between months; the band continues. |
 | Very old dates (birth years) | The header opens a year list; the sheet starts on the month of `value`, else `maxDate`, else today. |
 
+:::info[Changed in the M5 build (2026-10-28)]
+
+- The theme's picker form is the field `form` (`DatePickerForm.Calendar | Wheel`), not `style`, so it doesn't read as `style.style`.
+- Built-in words live in the component theme (`DatePickerTheme.strings: DatePickerStrings`, English defaults), the way `CamoPagedList` carries its empty-state text; apps translate them through their theme.
+- The theme gains `contentPadding`, `headerStyle`, `weekdayStyle`, `dayStyle`, `wheelTextStyle`, `wheelItemHeight` and the `calendarIcon` / `previousIcon` / `nextIcon` icons.
+- The renderer has three parts: `Calendar(state, slots)` (header, weekday row, six weeks or the year list), `Cell(cell)` for day and year cells (`CalendarCell` carries core's behavior, a Kotlin `Modifier` / Flutter `wrap`), and `Wheels(wheels)` (the band behind the middle row). Core builds the wheel columns.
+- `CamoCalendar` takes `maxRangeLength` (the range field's `maxLength`); Flutter's also takes `autofocus`. The date panel moves focus to the calendar's focus day when it opens.
+- Day cells are named with the locale's full date and announce today, range ends, "in range" and "unavailable" as their state.
+- A picker taller than the sheet scrolls inside it.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -201,7 +213,7 @@ internal expect object CamoLocaleData {
 4. UI tests: selection flows, disabled days, keyboard, announcements, RTL.
 
 **Done when**
-- [ ] The four base samples run on Android, iOS, desktop and web in `en-US` (Sunday first) and `id-ID` (Monday first) with localized names.
+- [ ] The four base samples run on Android, iOS, desktop and web in `en-US` (Sunday first) and `de-DE` (Monday first; CLDR starts `id-ID` on Sunday) with localized names.
 
 ### 5. Edge cases {#kotlin-5-edge-cases}
 
@@ -210,6 +222,15 @@ internal expect object CamoLocaleData {
 | Web month names | `Intl` via `kotlinx.browser`/`js()` interop in the wasmJs actual. |
 | Process death with the sheet open | `visibleMonth` and the focused day are `rememberSaveable`; the field reopens on the same month. |
 | Apps on `java.time` (Android only) | Convert with `toJavaLocalDate()` / `toKotlinLocalDate()` (kotlinx-datetime's converters). |
+
+:::info[Changed in the M5 build (2026-10-28)]
+
+- `CamoYearMonth` and `CamoDateRange` are typealiases of kotlinx-datetime 0.8's `YearMonth` and `LocalDateRange`; `kotlinx-datetime` is an `api` dependency of core.
+- `CamoLocaleData` gives raw facts per platform (names, first day, CLDR skeleton formats, the short pattern, AM/PM, 24-hour); Android uses `android.icu` (API 24) rather than `java.time`. Custom `displayFormat` patterns and typed-date parsing are common code.
+- Typing on desktop and web reuses `CamoTextField` with `digitsOnly` and the pattern mask; the placeholder is the pattern ("mm/dd/yyyy").
+- The locale tests run on desktop, iOS and web (`android.icu` is a stub in host tests).
+
+:::
 
 </KotlinOnly>
 
@@ -271,5 +292,14 @@ class CamoCalendar extends StatelessWidget {
 |---|---|
 | A `DateTime` with a time part | Normalized to its date; the time is dropped (documented). |
 | `intl` not initialized for the locale | Falls back to `en` names and logs once in debug. |
+
+:::info[Changed in the M5 build (2026-10-28)]
+
+- Selections are `SingleDate(date)` and `DateRangeSelection(start, end)` (subclasses of a sealed `CalendarSelection`); `CamoYearMonth` and `CamoDateRange` are core's.
+- `CamoDateLocale` wraps `intl` (first day, names, formats, AM/PM); a locale the app hasn't initialized falls back to `en_US` with a debug message. The example calls `initializeDateFormatting()`.
+- The fields open their popup and sheet through internal routes that capture the skin and theme where they're opened; `CamoPickerField` is the shared read-only frame.
+- `CamoCalendar` has `autofocus`.
+
+:::
 
 </DartOnly>
