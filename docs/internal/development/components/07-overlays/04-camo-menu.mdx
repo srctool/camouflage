@@ -120,6 +120,12 @@ Selecting an item runs `onClick` and closes the menu, checkable items included (
 | Submenus | Not in v1. |
 | **Custom menu content** | `CamoMenuPanel` (ADR-30). Custom rows must be focusable and have a label; the panel moves focus with the arrow keys and closes on Esc or an outside tap. |
 
+:::info[Built early, in M5 (ruling 2026-10-27)]
+
+The anchored popup (`CamoAnchoredPopup` on Kotlin, an internal route on Flutter) and the panel part of the renderer (`MenuRenderer.Panel`, `CamoMenuPanel`) ship in M5 for the date and time fields; `MenuTheme` already carries every field. M6 adds the item part, `CamoMenuAnchor` and the entries. The popup takes focus when it opens.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>

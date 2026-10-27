@@ -110,6 +110,12 @@ fun CamoBottomSheet(
 | **Header** (settled 2026-09-27) | Built from `title`, `titleAlign`, `showCloseButton` and `showHandle`: handle only; handle + title; title + ✕; or nothing. No per-call header parameters. |
 | Keyboard open + drag | Dragging first hides the keyboard, then drags the sheet. |
 
+:::info[Built early, in M5 (ruling 2026-10-27)]
+
+`CamoSheetFrame`, `CamoBottomSheet` and the renderer ship in M5 for the date and time fields. Changes from the build: the theme gains `closeIcon`; `BottomSheetState` gains `centered` (a `WidePresentation.Centered` card); the frame focuses the sheet when it opens. Flutter's renderer gives the content the remaining height (`Flexible`), so long content can scroll. Flutter opens the sheet through an internal route in M5; `showCamoBottomSheet` / `CamoSheetRoute` become public in M6.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
