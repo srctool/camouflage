@@ -96,6 +96,14 @@ fun CamoSkeletonGroup(content: Slot)   // one shared animation phase for all ske
 | Font scale 200% | `.text` lines grow with the style's line height, like the real text will. |
 | RTL | The shimmer sweeps from right to left. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `SkeletonState` carries the resolved shape, the animation (already `None` under reduced motion) and the shared phase, read while painting. Core paints for the skins: Kotlin `Modifier.drawSkeleton`, Flutter `CamoSkeletonPaint`.
+- A text line is a block `lineHeight − textLineGap` tall inside a line of the style's line height, so lines match the real text.
+- Defaults: Minimal pulses, Fluent shimmers.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -193,5 +201,11 @@ class CamoSkeletonGroup extends StatefulWidget { const CamoSkeletonGroup({super.
 |---|---|
 | A skeleton outside a group | It creates its own controller. |
 | RTL | The gradient moves right to left. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `CamoSkeletonGroup` takes `active`: the clock stops when off (a paged list runs it only while it shows skeletons). Golden tests pump one frame instead of settling, because the clock never stops.
+
+:::
 
 </DartOnly>

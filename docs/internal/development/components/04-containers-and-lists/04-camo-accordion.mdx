@@ -97,6 +97,14 @@ fun <K> CamoAccordionGroup(
 | Nested accordions | Allowed; each has its own header and heading level. |
 | Deep links to a section ("#shipping") | The app sets `expanded = true` and scrolls to it; nothing special in the component. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `AccordionTheme` gains `headerPadding`, `iconSize`, `colors` (`AccordionColors(title, subtitle, indicator, expandedContainer)`, which replaces the top-level `expandedContainer`) and `strings` (`AccordionStrings`: the expanded and collapsed state words and the expand and collapse actions).
+- `AccordionState` gains `openFraction` (0 to 1 with the animation) for turning or morphing the indicator. Core pads, clips and animates the content; the renderer places it under the header.
+- In a group, an `Inset` divider starts at the header's start padding (headers have no leading slot to clear).
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -151,6 +159,12 @@ public class CamoAccordionItem<K>(val key: K, val title: String, val subtitle: S
 |---|---|
 | Inside a `LazyColumn` | Each accordion is an item; expanding animates the item height (`Modifier.animateItem()`). |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The renderer receives the header's behavior as `headerModifier`. The content is always composed and shown at a measured fraction of its height by a custom layout (not `AnimatedVisibility`); the header also has the expand and collapse semantics actions.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -200,5 +214,11 @@ class CamoAccordionItem<K> { const CamoAccordionItem({required this.key, require
 | Case | Decided behavior |
 |---|---|
 | In a `ListView.builder` | Works; the item's height animates with `AnimatedSize`. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The renderer wraps its header row in `slots.header(row)`. The header uses Flutter's `expanded` flag and the strings' expand and collapse words as its tap hint; the content is clipped and offstage (state kept) while closed.
+
+:::
 
 </DartOnly>

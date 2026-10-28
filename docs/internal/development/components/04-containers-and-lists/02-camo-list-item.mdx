@@ -109,6 +109,15 @@ fun CamoListSection(
 | Dividers in a section | Drawn by `CamoListSection` between rows, never after the last one. A hand-placed `CamoDivider` still works for one-off separators. Rows in a plain lazy list (no section) get no automatic dividers. |
 | Very long lists | The app uses the platform's lazy lists (`LazyColumn`, `ListView.builder`). `CamoListItem` is a plain row, so it works in them. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- One renderer draws rows and sections: `ListItemRenderer` has a `Render` part (a row) and a `Section` part (title, rows, footer), not a separate `skin.listSection`. Core lays the section's rows out with the dividers and hands them over as one slot.
+- `ListItemTheme` gains `sectionTitleStyle`, `sectionFooterStyle` and `dividerInsetStart`; `ListItemColors` gains `sectionTitle` and `sectionFooter`.
+- A display-only switch, checkbox or radio in a clickable row reports itself to the row, which is then announced as that control with its state ("Wi-Fi, switch, on") instead of a button.
+- The debug warning for an interactive trailing control isn't built yet.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -175,6 +184,12 @@ public fun CamoListSection(
 | Items inside a `LazyColumn` (no section) | Plain rows; dividers only via `CamoPagedList` or a hand-placed `CamoDivider`. |
 | Very long headline at 200% | Wraps; the slots keep their alignment rule. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The trailing control reports through a composition local (`RowToggle`), not a `CamoToggleInfo` semantics key: `CamoSwitch`, `CamoCheckbox` and `CamoRadio` report their role and state on the display-only path, and the row sets its role from it. Dividers are drawn by a shared `DividedColumn` layout.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -223,5 +238,11 @@ class CamoListSection extends StatelessWidget {
 |---|---|
 | Rows in a `ListView.builder` | Plain rows; dividers via `ListView.separated` or `CamoPagedList`. |
 | An interactive trailing control inside a tappable row | A debug assertion suggests `onChanged: null`. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- Display-only controls add their `toggled` / `checked` semantics only inside a row (a `RowToggleScope`), where they merge into the row node; the row drops `button` while a control is reported.
+
+:::
 
 </DartOnly>

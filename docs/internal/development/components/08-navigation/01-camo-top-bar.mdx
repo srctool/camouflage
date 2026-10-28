@@ -110,6 +110,14 @@ fun CamoTopBar(
 | **Title alignment and divider** (settled 2026-09-27) | `TopBarTheme.titleAlign` (`Start` \| `Center`) and `TopBarTheme.divider` (`Never` \| `WhenScrolled` \| `Always`), with skin defaults (ADR-28): a brand centers its titles without a renderer override. A centered title stays centered in the window, and shrinks (ellipsis) when navigation and actions take more space on one side. |
 | **Custom headers** | `CamoTopBarContainer` (ADR-30). A hidden bar (`visible = false`) reappears when the screen reader moves focus into it. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `TopBarTheme` gains `padding`, `actionGap` and `dividerWidth`; `TopBarColors` gains `divider`.
+- `TopBarState` is `(title, scrollOffset, insets)`; core applies `visible` (the slide) around the renderer.
+- The renderer has a `Container` part for `CamoTopBarContainer`, and core offers the row layout to renderers (Kotlin `TopBarRow`, Flutter `CamoTopBarRow`): navigation, the title at the start or centered in the full width, the actions at the end.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -201,6 +209,12 @@ It draws the bar's surface, the scrolled tint and divider, the status-bar insets
 | Collapsing bars / `nestedScroll` | The Minimal skin (v1) doesn't collapse. `scrollOffset` is enough for a later collapsing skin; no `nestedScroll` connection is needed. |
 | Search in the bar | `titleContent = { CamoSearchField(query, onQueryChange, onSearch) }`. The search field's focus doesn't change the bar. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `rememberHideOnScroll(LazyListState)` is in core now (the navigation bar reuses it in M8). The default insets are `TopBarDefaultInsets` (`safeDrawing`, top and sides).
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -271,5 +285,11 @@ class CamoTopBarScrollOffset extends ValueNotifier<double> {
 | `titleContent` set | `title` is exposed through `Semantics(header: true, label: title, child: ExcludeSemantics(...))` on an empty box first in order; the content keeps its own semantics. |
 | Landscape notch (side insets) | `start`/`end` padding from `MediaQuery.paddingOf`. |
 | Kotlin difference | Kotlin uses `WindowInsets` + a `LazyListState` helper. Flutter uses `MediaQuery` + a `ScrollController` notifier. The behavior is the same. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `CamoTopBar` isn't a `PreferredSizeWidget` (no Scaffold in Camouflage); `insets` overrides the `MediaQuery` padding. `CamoTopBarRow` is `minHeight` tall: it doesn't grow with a large title yet.
+
+:::
 
 </DartOnly>
