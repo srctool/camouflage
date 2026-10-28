@@ -95,6 +95,15 @@ fun CamoProgressCircle(
 | RTL | Bars fill from the right. |
 | A loading button | `CamoButton(loading = true)`: the button draws a small `CamoProgressCircle` itself and keeps its width (see [CamoButton](/components/actions/camo-button) §5). |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `ProgressTheme` gains `barHeight`, `trackGap` and `showStopIndicator`; the bar has its own renderer (`progressBar`), whose `defaults` return the same style as the circle's.
+- `ProgressStyle.colorsFor(tone, theme)`: the style's colors for the default tone, the tone's strong color over the same track otherwise.
+- A bar fills the width it's given; only an indeterminate one animates forever.
+- Minimal: 2 px ink on a hairline track, no gap or stop dot. Fluent: its 2 px ProgressBar.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -140,6 +149,12 @@ flowchart LR
 | Many indeterminate indicators on screen | Each has its own transition; acceptable (they're rarely many). Skeletons, which are, share one clock. |
 | Loading buttons | `CamoButton(loading = true)` uses `CamoProgressCircle(size = Small)` internally. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `CamoProgressBar(modifier, progress, tone, label)` with `progressSemantics`, like the circle; the skin field is `progressBar: ProgressBarRenderer`.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -184,5 +199,11 @@ class CamoProgressCircle extends StatelessWidget {
 | Case | Decided behavior |
 |---|---|
 | Tickers in tests | `pumpAndSettle` never settles with an indeterminate indicator; tests use `pump(duration)`. |
+
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `CamoProgressBar({value, tone, semanticLabel})` is its own semantics node (two bars in a column don't merge), announced as a percentage; the skin field is `progressBar`.
+
+:::
 
 </DartOnly>

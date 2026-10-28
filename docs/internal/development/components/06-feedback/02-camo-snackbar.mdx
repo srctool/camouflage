@@ -104,6 +104,15 @@ fun CamoMessengerInsets(bottom: Dp = 0.dp, top: Dp = 0.dp, content: Slot)   // k
 | Tone icons | With `showToneIcon`, the icon is decorative (the tone is already in the announcement for `Error`). Custom icons per tone come from `BannerTheme`'s tone icons, so banners and snackbars match. |
 | Snackbars on desktop and web | Bottom-start (Material desktop convention) on wide windows. It's a skin decision via `position` and alignment. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `SnackbarTheme` gains `alignment` (`Start` / `Center` / `End` along the edge; Fluent's toast is bottom-end), `padding`, `minHeight`, `textStyle`, `actionStyle`, `elevation`, `dismissIcon` and `strings`; the durations are `durationShortMillis` / `durationLongMillis` on Kotlin and `Duration`s on Flutter.
+- The state is `SnackbarState(message, action, tone, withDismiss, showToneIcon, position, interaction)`, and core builds `SnackbarSlots(icon, action, dismiss)`: the tone icon, the action button and the ✕ (a field action). The renderer provides their colors as the content color, so a skin chooses its own action color: Minimal's inverse snackbar takes the tone's fill, while Fluent's toast stays neutral and shows the tone in its icon.
+- The timer pauses while the snackbar is hovered, focused or dragged.
+- Found in the build: core's action and ✕ must be their own accessibility nodes, or the screen reader merges them into the snackbar's.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -177,6 +186,14 @@ LaunchedEffect(Unit) {
 | Nested providers | Only the root provider installs the messenger; nested providers reuse it, so snackbars don't stack per section. |
 | A dialog is open | The host layer is above the overlay layer, so the snackbar stays visible. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- The root `CamouflageProvider` installs the messenger (`Camouflage.messenger`); nested providers use it. The host emits nothing while idle and shows each snackbar in a popup created when it shows, so it sits above the dialogs and sheets open then.
+- The accessibility manager is read outside that popup, which has its own platform locals (a test caught an app-provided one being ignored).
+- `CamoMessengerInsets` registers with the messenger while its screen is composed; the latest one wins.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -244,5 +261,14 @@ useEffect(() {
 |---|---|
 | The page is disposed while a message waits | Its future still completes (`dismissed`) when the message times out; the page's listener is already cancelled. |
 | Nested providers | Only the root installs the messenger. |
+
+:::info[Changed in the M7 build (2026-10-28)]
+
+- The root `CamouflageProvider` installs the messenger (`CamoMessenger.of(context)`) and draws snackbars in a pass-through layer above its child; put it above the `Navigator` (in `WidgetsApp.builder`) so they sit above dialogs. Idle, the layer is an empty `Offstage`.
+- Dart futures can't be cancelled, so a queued snackbar stays until it's shown; `dismissCurrent()` replaces an outdated one.
+- With `MediaQuery.accessibleNavigation` on, a snackbar with an action stays until it's acted on or dismissed (Flutter has no recommended-timeout API).
+- It's a live region; Flutter has no assertive level, so errors are announced politely too.
+
+:::
 
 </DartOnly>
