@@ -125,6 +125,17 @@ Most proportions differ from Minimal, but the structures stay close to it.
 | Fluent's compact density on desktop vs touch on mobile | Uses a density option via component themes: small 24 and medium 32 on desktop (the sizes Graft uses), 40 on touch. See [Theme](/guide/foundations/theme). |
 | High contrast mode (Windows) | Uses the platform's high-contrast colors when the OS reports it. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- Acrylic is built without a third-party library (ruling 2026-10-28): it applies at elevation `Level4` and up (flyouts, menus, dialogs, sheets), so cards stay Solid; Fluent's popup panel moved from `Level3` to `Level4` (shadow16, Fluent's flyout depth).
+- Kotlin: `FluentBackdrop` records the app into a graphics layer; an Acrylic surface draws it blurred (30 dp) behind itself with the platform blur effect, then the 75% tint and a 2% noise. While the backdrop is recording, a surface inside it draws its fallback instead of itself, and where blur isn't supported (Android below 12) or there's no backdrop it falls back to tint and noise over a solid fill. `FluentPreview(surface = …)` wraps previews in the backdrop.
+- Flutter: `FluentAcrylic` is a `BackdropFilter` (σ 15) with the same tint and noise; `fluentSkin(surface: FluentSurface.acrylic)`.
+- Fluent's dialog and sheet scrim is **Smoke**: `colors.scrim` (black) at Fluent 2's `colorBackgroundOverlay` alpha, 40% in light and 50% in dark, instead of Minimal's value.
+- Flutter's Acrylic dialogs and sheets sample the page undimmed, like Kotlin's: the overlay routes paint the scrim with a hole where the overlay sits (the barrier stays, clear, for taps), and the frames animate the overlay in themselves, so the scrim never slides or scales.
+- **Mica beyond Windows** (an M8 option, not decided): Mica is drawn by the Windows 11 compositor from the wallpaper, so no other platform has it. macOS has a close cousin (vibrancy, `NSVisualEffectView`), Android 12+ can show the wallpaper blurred behind a full-screen window (an approximation), Linux depends on the compositor, and iOS and web can't see behind the window at all. The plan stays Solid elsewhere until M8 decides.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -256,6 +267,12 @@ public data class FluentTokens(
 | `FluentSkin` with a non-Fluent theme | Works: renderers read core's roles, and `Subtle` falls back to an overlay (§3.1). |
 | A brand on Fluent | Build the brand's theme from `fluentTheme(brand = …)`, then override its roles and component themes. Overriding only the roles of the default `fluentTheme()` leaves `FluentTokens` (the filled primary, hover and pressed steps) in Fluent blue; the M4 sample showed it. |
 | Windows high-contrast mode | Uses the OS high-contrast colors when the platform reports it (base note). |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- Haze is not used (open question closed by the 2026-10-28 ruling): see the base note's build changes for the in-house backdrop blur.
+
+:::
 
 </KotlinOnly>
 
