@@ -87,6 +87,16 @@ fun CamoBanner(
 | Many actions | Up to two recommended. More wrap to a second row. |
 | Sticky banners (top of the screen, global) | App layout: place the banner above the content in the page. It's not an overlay. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `BannerTheme` gains `accentWidth`, `borderWidth` (the Outline appearance), `dismissIcon` and `strings`; `toneIcons` is a `ToneIcons(info, success, warning, error)` with `ofTone(tone)`, shared with the snackbar.
+- `BannerStyle.colorsFor(appearance, tone, theme)` returns `BannerColors(container, content, accent, border?)`: Soft the tone's container, Solid its strong fill, Outline the surface with a tone border.
+- Ghost and Link buttons among the actions take the accent the renderer provides around them (core overrides their colors in a nested provider), so a Retry on a Solid error banner is readable. Apps pass plain Ghost buttons, no tone.
+- The ✕ is a field action, its own accessibility node; the texts and icon read as one node.
+- Fluent's MessageBar draws a light intent border.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -139,6 +149,12 @@ public fun CamoBanner(
 | Banner shown from the first frame | Not announced as an alert (it's part of the page); it's read in reading order. |
 | Many actions | Wrap to more rows; guidance stays two. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `actions: (@Composable RowScope.() -> Unit)?`; Minimal and Fluent lay them out in a `FlowRow` below the texts.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -181,5 +197,11 @@ class CamoBanner extends StatelessWidget {
 | Case | Decided behavior |
 |---|---|
 | Banner present from the first frame | Read in order, not as an alert (live regions only announce changes). |
+
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `actions: List<Widget>`, laid out in a `Wrap` below the texts; `icon: SizedBox.shrink()` shows none.
+
+:::
 
 </DartOnly>
