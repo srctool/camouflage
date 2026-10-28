@@ -119,6 +119,17 @@ It uses the tokens of the text field, menu, bottom sheet and list item. `SelectT
 | Async errors | Rendered by the picker's `CamoPagedList` (first-page error with Retry, or a retry row). The field keeps its value. |
 | Very long option labels | They wrap in the sheet, and ellipsize in the field (the full value is in semantics). |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- There's no select renderer, so `SelectStyle`'s defaults are core's (7 options, 600 wide, check on, 500 ms) and `SelectTheme` overrides them; it also gains `strings` (search placeholder, "No results").
+- The chevron is `TextFieldTheme.dropdownIcon`, so a brand's field theme styles it; the sheet's check is `MenuTheme.checkIcon`.
+- `Auto` decides by window width and option count only, and a `searchable` select is always a sheet.
+- The menu always marks the current option, since a radio item needs its check to be announced; `showCheckOnSelected` applies to the sheet's rows.
+- The menu is at least as wide as the field.
+- The async select's sheet always has a search field, and `onOpen` fires once each time it opens.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -198,6 +209,15 @@ public fun <T> CamoAsyncSelect(
 | Configuration change on Android | `open` and the search text use `rememberSaveable`; the sheet reopens after rotation. |
 | Async `selectedLabel` missing while options load | The field shows `value.toString()` and logs once in debug. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The field is the date field's read-only `PickerFieldFrame`, which gains `prefixIcon` and a `modifier` for the select's semantics (`stateDescription` "Expanded"/"Collapsed") and Down to open.
+- `SelectTheme.searchDebounceMillis: Int`, like the tooltip delays.
+- `Auto` reads `LocalWindowInfo.current.containerSize`, so tests fake a narrow window by providing a `WindowInfo`.
+- `CamoSelectFormField(options, modifier, key, …)` follows the other form fields' parameter order.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -256,5 +276,14 @@ class CamoSelectFormField<T> extends StatelessWidget { /* fieldKey, options, ini
 |---|---|
 | Opening from GoRouter pages | The sheet is a `PopupRoute` on the nearest `Navigator`, so it works inside a `ShellRoute` without router changes. |
 | `selectedLabel` missing while loading | The field shows `value.toString()` and asserts once in debug. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `SelectOption(value, label, {supporting, leading, enabled})`.
+- The field is `CamoPickerField`, which gains `prefixIcon` and announces `expanded`; Down opens it.
+- The async select's sheet is a route, so it doesn't rebuild with the page: the select hands it new `options` through a notifier, after the frame. During the page's build the route can't be marked dirty.
+- `CamoAsyncSelect.onRefresh` is `Future<void> Function()?`, like `CamoPagedList`'s.
+
+:::
 
 </DartOnly>
