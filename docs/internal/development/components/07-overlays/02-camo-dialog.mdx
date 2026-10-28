@@ -164,6 +164,14 @@ Dismissal (scrim tap, back, Esc) is handled by the **dialog frame**, and closes 
 | More than two actions, or custom layout | Put them in `content`: the developer owns that layout. |
 | A hero icon above the title (Material only) | Not in core (ADR-23). Put an icon at the top of `content`, or a future Material skin can offer it as a `DialogTheme` field. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `DialogTheme` gains `actionGap`, `sectionGap` (between the title, message, content and actions) and `closeIcon`.
+- The frame sizes the dialog from the space it's given (the window): at most `maxWidth`, 48 narrower than that space and never negative, 90% of its height.
+- Fluent's dialog sits at shadow64 (`Level5`), so with the Acrylic surface it's frosted glass.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -244,6 +252,12 @@ fun EntryProviderScope<NavKey>.sortOrderDialog(backStack: NavBackStack<NavKey>, 
 | Dialog from a sheet | Stacked entries. Back pops the dialog first. |
 | Very small windows | Width is min(`style.maxWidth`, window − 48 dp). |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The renderer gets the semantics (`paneTitle`, the dismiss action) as `modifier`; the message and content scroll in a `Column(Modifier.weight(1f, fill = false).verticalScroll(…))`.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -323,5 +337,11 @@ class SortOrderDialog extends HookWidget {
 |---|---|
 | **Replaced design** | An earlier draft had a declarative `CamoDialogPresenter` and an `onDismissRequest` parameter. With ADR-19, dismissal goes through `Navigator.maybePop` + `PopScope`, the Flutter way. |
 | Dialog from a sheet | A route above a route. Back pops the dialog first. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `CamoDialog` carries the route semantics (`scopesRoute`, `namesRoute`, the label); `end` and `center` action rows wrap when the labels don't fit.
+
+:::
 
 </DartOnly>

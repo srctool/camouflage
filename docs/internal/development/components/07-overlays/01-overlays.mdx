@@ -167,6 +167,14 @@ To veto (while saving, or to ask "discard changes?"), content uses `PopScope` (F
 | Deep links to a sheet | Compose: natural (it's a key). Flutter: a GoRouter page that opens `showCamoBottomSheet`, or a GoRouter `pageBuilder` returning a `CamoSheetPage`, a later addition. |
 | Snackbars, menus, tooltips | Later overlay kinds, following the same per-platform integration. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- Content can veto a dismissal on both platforms: `OnDismissRequest { … }` (Compose) covers the scrim, back, Esc, a drag, the close button and the screen-reader dismiss action; Flutter routes send all of them through `maybePop`, so one `PopScope` covers them.
+- `StackedScrim` is shared by dialogs and sheets (Kotlin: moved to the `overlay` package), and the stacking depth counts both kinds of frame.
+- Not built yet: returning focus to the opener on Compose, and GoRouter integration tests (the `Page` classes are tested with `Navigator.pages`, without a go_router dependency).
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -344,6 +352,14 @@ With your conventions:
 | **Navigation 2 (NavHost + graph)** | Registering sheets as graph destinations needs custom `Navigator`s plus `camoDialog { }` / `camoBottomSheet { }` builders (the approach of Google's `material-navigation` for Material's `bottomSheet { }`). It's a possible later `camouflage-navigation2` add-on if a Navigation 2 app needs it. Until then, use the standalone frames. |
 | Other routers (Voyager, Decompose) | The standalone frames. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The frames are full-window `Popup`s, not in-layer boxes, so a standalone frame covers the window wherever it's composed. Navigation 3 scenes compose the same frames.
+- `CamoOverlayExit` lets a navigator play a frame's exit animation before removing it; the scene strategies pass one and call it from `OverlayScene.onRemove`, so an entry the app pops (a confirm button) still slides or fades out.
+- Navigation 3 1.2.0: `NavDisplay(sceneStrategies = listOf(CamoDialogSceneStrategy(), CamoBottomSheetSceneStrategy()))`. `CamoNavResults` keys results by the entry key's `toString()` (data objects and data classes) and saves them, so values must be saveable; `showForResult` works on any snapshot-state back stack (`MutableList<K>`).
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -478,5 +494,13 @@ class CountryPickerSheet extends HookConsumerWidget {
 | Process death | `show`-pushed routes aren't restored (the same as `material_ui`). `restorableShowCamoBottomSheet` could come later with `RestorableRouteFuture`. |
 | GoRouter deep link to a sheet | Declare it with `CamoSheetPage` as a sub-route of the page it covers (above). |
 | `showDialog` from `material_ui` with a `CamoDialog` inside | Works only if the provider is above the app's navigator, and gets Material's frame. Use `showCamoDialog`. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The routes draw the skin's scrim as their barrier (`barrierColor` from the dialog or sheet theme), and the frames place the content; a frame used outside a route has no scrim.
+- `CamoSheetRoute` and `CamoDialogRoute` take the `context` they capture the skin and theme from (like Flutter's `DialogRoute`); `dismissible: false` also refuses system back (`popDisposition`), while `Navigator.pop` from the content still closes it.
+- Revised in the same build: the route's barrier is clear and the page paints the scrim with a hole where the overlay sits, so a see-through overlay (Fluent's Acrylic) samples the page undimmed; the frames slide, fade and scale the overlay themselves.
+
+:::
 
 </DartOnly>
