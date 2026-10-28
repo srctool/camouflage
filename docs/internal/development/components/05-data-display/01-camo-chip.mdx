@@ -119,6 +119,18 @@ It draws filter chips (`selected` set per option) with `ChipTheme.groupSpacing` 
 | `CamoChipGroup` with `multiSelect = false` and `required = false` | Tapping the selected chip deselects it (an empty set). With `required = true`, it stays selected. |
 | Status badge vs chip | Counts and dots are `CamoBadge`. Words with a status color are a static `CamoChip` (a tag). |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- The kind is a public `ChipKind` (`Action`, `Filter`, `Input`, `Tag`) with a `chipKind(…)` helper; renderers draw press feedback for every kind but `Tag`.
+- `ChipTheme` gains `iconPadding` (the tighter side next to a leading icon, the check or the remove button), `iconGap`, `borderWidth`, `checkIcon`, `removeIcon` and `strings` (the remove button's name, "Remove Ada").
+- The remove button is a field action (`CamoFieldAction`): no container, the chip's icon size and color, its own focusable button.
+- Interactive chips keep the 48 touch target in layout, so a row of filter chips is 48 tall whatever the visual height.
+- `Scroll` is a scrolling row, not a lazy one, so the arrow keys reach every chip; a chip that takes focus scrolls into view.
+- Found in the build: a chip in a horizontally scrolling row gets an unbounded width, where its flexible label collapses (Kotlin) or throws (Flutter). The skins bound the width there; a renderer test guards it.
+- Fluent's chip is its Tag: filled (`Soft`) by default, 32 tall, radius 4; a selected filter is brand. Neither skin shows the check.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -190,6 +202,16 @@ public fun <T> CamoChipGroup(
 | `selected` and `onRemove` both set | The chip toggles on tap; remove is its own button. |
 | Very many chips in `Scroll` | `LazyRow` only composes the visible ones. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `ChipStyle.colorsFor(state, theme)` and `chipAppearance(…)` resolve the colors; `chipGroupSelection(…)` is the group's selection rule, public for tests.
+- Filter chips are `toggleable(role = Checkbox)`; a single-choice group's chips are `selectable(role = RadioButton)` under `selectableGroup()`.
+- An input chip without `onClick` is still focusable, so Delete and Backspace reach it; the key handler sits above the focus target.
+- `Scroll` is a `Row` with `horizontalScroll`, not a `LazyRow`: roving focus can only reach composed chips.
+- The skins' chip renderers bound an unbounded width (a scrolling row), where the label's `weight` would measure to nothing.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -240,5 +262,14 @@ class CamoChipGroup<T> extends StatelessWidget {
 | Case | Decided behavior |
 |---|---|
 | `selected` and `onDeleted` both set | Toggles on tap; remove is its own button. |
+
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `CamoChip({label, onPressed, selected, onDeleted, leading, appearance, tone, enabled, focusNode})`; a single-choice group's chips use a private radio constructor (`inMutuallyExclusiveGroup`).
+- The chip's semantics node sits above its behavior, so the tap and focus actions join it; the remove button is its own container, never merged into the chip.
+- `Scroll` is a `SingleChildScrollView` with a `Row`; a chip that takes focus calls `Scrollable.ensureVisible`.
+- The skins wrap the chip's row in a small render object that bounds an unbounded width, where a `Flexible` label would throw.
+
+:::
 
 </DartOnly>

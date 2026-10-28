@@ -93,6 +93,17 @@ fun CamoAvatarGroup(avatars: List<Widget>, max: Int = 3)   // overlapping stack 
 | Emoji or empty names | The icon fallback. |
 | Image loading state | The initials show until the image widget reports success. The app's image widget decides the placeholder behavior. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `AvatarTheme` gains `textStyleSmall / Medium / Large`, `neutralColors` (the person icon and a group's "+N"), `presenceColors` (one per presence, plus the `ring`), `ringWidth`, `personIcon` and `strings` (the presence words, "2 more").
+- `AvatarState.colorSeed` is the 32-bit FNV-1a hash of the name's UTF-8 bytes, `null` for the icon and the "+N"; both libraries test the same vectors ("Dwiki Riyadi" → `0xCDC853E9`).
+- Initials need a letter: a name that starts with an emoji, a digit or a symbol gets the icon. Both platforms split graphemes with the same small rules (combining marks, variation selectors, skin tones, zero-width joins, flags).
+- In a `CamoListItem`'s leading slot the avatar is decorative: the list item marks its slot, so the row says the name once.
+- `CamoAvatarGroup` gains `size` (for the "+N").
+- Minimal: neutral circles, 24 / 36 / 48. Fluent: brand-tinted initials, 24 / 32 / 48.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -148,6 +159,13 @@ public fun CamoAvatar(
 | No `name` and no image | A generic person icon from the skin. |
 | Transparent PNG | Initials show through; apps with transparent logos set a background in their image composable. |
 
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `avatarInitials(name)` and `avatarColorSeed(name): UInt` are public; `AvatarStyle.colorsFor(state)`, `sizeOf`, `textStyleOf` and `shapeOf` resolve the rest.
+- The list item marks its leading slot with an internal composition local; the avatar then sets no description.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -195,5 +213,14 @@ class CamoAvatarGroup extends StatelessWidget { const CamoAvatarGroup({super.key
 |---|---|
 | Image still loading | Initials show until the image paints. |
 | No name, no image | The skin's generic person icon. |
+
+:::info[Changed in the M7 build (2026-10-28)]
+
+- `avatarColorSeed` splits the FNV multiply so it stays exact on the web, where integers are doubles.
+- The letter check for initials uses case (or a caseless-script range) instead of a Unicode category, which Dart lacks.
+- A group overlaps its avatars with `Align(widthFactor: …)`, since a `Row`'s spacing can't be negative.
+- Core doesn't depend on `characters`: the grapheme splitter is its own.
+
+:::
 
 </DartOnly>

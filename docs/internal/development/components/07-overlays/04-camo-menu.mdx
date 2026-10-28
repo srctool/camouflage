@@ -126,6 +126,17 @@ The anchored popup (`CamoAnchoredPopup` on Kotlin, an internal route on Flutter)
 
 :::
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The renderer gains an `Item` part: `MenuItemState(text, trailingText, tone, enabled, checked, reserveCheck, reserveIcon, interaction)` and `MenuItemSlots(leadingIcon)`. Core works out `reserveCheck` and `reserveIcon` across the menu, so text stays aligned when only some items have a check or an icon.
+- `MenuTheme` gains `checkIcon`: the checkmark of a checked item, and of the current option in a select's sheet.
+- The menu role sits on the menu's content, not on `CamoMenuPanel`, because the date and time pickers use the panel too.
+- Opening from the keyboard focuses the first item; a pointer or touch opening doesn't, so no focus ring shows after a click.
+- "Close then act": the action runs after the frame in which the menu closed, from a scope that outlives the popup (the anchor's).
+- Menu text takes the row's free space and the shortcut follows it; a menu wider than `maxWidth` ellipsizes the text.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -193,6 +204,16 @@ public class CamoMenuController { public fun open(); public fun close(); public 
 | iOS popups | CMP renders the popup in the same UIKit view; focus and VoiceOver move into it via `paneTitle`. |
 | Window resized while open | The position provider re-runs; if the anchor leaves the window, the menu closes. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `CamoMenuPanel(modifier, content)` keeps its M5 signature: the anchored popup already turns Esc, back and an outside tap into the close.
+- A secondary-button press isn't a "down" for Compose's gesture helpers, so `CamoContextMenuArea` reads right-clicks from the raw `PointerEventType.Press`; the touch long press is a separate gesture that consumes the rest of the press, so the content isn't clicked.
+- Compose for web already suppresses the browser's context menu over its whole canvas, so core adds nothing there.
+- The selected item's action runs in the anchor's `rememberCoroutineScope` a frame after the close. A scope inside the popup is cancelled when the popup leaves, which dropped the action on the web.
+- Rows use `Role.Button`, `Role.Checkbox` with `toggleableState`, or `Role.RadioButton` with `selected` inside `selectableGroup()`.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -252,5 +273,15 @@ class CamoContextMenuArea extends StatelessWidget { const CamoContextMenuArea({s
 |---|---|
 | `RawMenuAnchor` availability | It's in the widgets library in the pinned Flutter version (3.47). If an API detail differs at M6, the fallback is `OverlayPortal` + `CompositedTransformFollower`, with the same public API. |
 | Nested menus | Submenus are Later. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The menu opens through M5's anchored popup route, not `RawMenuAnchor`. "Close then act" falls out of awaiting the route: the picked item comes back from the pop and its `onPressed` runs in a post-frame callback.
+- `showCamoAnchoredPopupAt(context, rect)` (internal) anchors to a rect, for a context menu at the pointer.
+- The content carries `SemanticsRole.menu`; rows are `menuItem`, `menuItemCheckbox` (with `checked`), or `menuItemRadio` (with `checked` and `inMutuallyExclusiveGroup`), merged so the tap action joins the row node. Flutter's debug checks require a `menu` ancestor for every menu item, so `CamoMenuPanel` itself stays role-free.
+- The first item takes focus only when the anchor had keyboard focus at opening. On the web a mouse leaves the highlight mode `traditional`, so the highlight mode alone can't tell keyboard from mouse.
+- `CamoMenuController` is a `ChangeNotifier`: `open()`, `close()`, `isOpen`.
+
+:::
 
 </DartOnly>
