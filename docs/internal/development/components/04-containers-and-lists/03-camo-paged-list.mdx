@@ -154,6 +154,14 @@ fun <T> AsyncValue<List<T>>.toCamo(endReached: Boolean): CamoPagedListState<T>
 | Grid layouts, sticky section headers | Not in v1 (`CamoPagedGrid`, sections: Later). |
 | A `CamoListSection` around the list | Not supported (the list scrolls itself). Use `header` for a title, and `ListItemTheme.dividers` for separators. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The words are `PagedListTheme.strings` (`PagedListStrings`: the empty and error texts, retry, the next-page failure, and the loading announcements); the theme gains `refreshThreshold`.
+- The renderer has four parts instead of slots: `RefreshIndicator`, `RetryRow`, `Empty` and `Error`. Its state carries the pull as a fraction of the threshold, read while painting.
+- Fluent's "Spinner for loading more" isn't used: core shows skeleton rows for `More` in every skin.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -243,6 +251,12 @@ A short first page makes the end visible immediately, so `onLoadMore` fires unti
 | Refresh while scrolled down | After the refresh finishes, `listState.animateScrollToItem(0)`. |
 | Nested inside another vertical scroll | Not supported (a lazy list needs bounded height); a debug error explains it. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The pull counts only touch and stylus (a mouse wheel never pulls). A duplicate `itemKey` fails while `DebugChecks.enabled`.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -301,5 +315,11 @@ class CamoPagedList<T> extends StatefulWidget {
 | Inside a `CustomScrollView` | v1 is a box widget; a sliver version (`SliverCamoPagedList`) is Later. |
 | Refresh while scrolled down | After it completes, `controller.animateTo(0)`. |
 | iOS bouncing physics | The pull uses the bounce overscroll directly; Android's clamping physics uses `OverscrollNotification`. Both reach the same threshold logic. |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The trigger is `prefetchExtent` (pixels to the end), as the Flutter note planned, not a row count. Only rows new to a state fade in, once; a duplicate key fails an assert.
+
+:::
 
 </DartOnly>

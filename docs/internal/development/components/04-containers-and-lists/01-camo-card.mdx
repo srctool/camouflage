@@ -114,6 +114,14 @@ fun CamoCard(
 | **Pick one of several cards** | A recipe, not a component: the app keeps the selected value and sets `selected = (plan == chosen)` on each card; `Modifier.selectableGroup()` (Compose) / `Semantics(inMutuallyExclusiveGroup)` (Flutter) around them. |
 | `selected` without `onClick` | Display-only selection (a summary screen). No role or focus. |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- `CardTheme` gains `hoveredElevation` (the Raised card's depth while a clickable card is hovered, instead of one level up) and `toneBorderWidth` (the start strip a Raised card shows in a status tone: Minimal 4, Fluent 3).
+- `selected` without `onClick` merges the content into one node that announces the selection, with no role and no focus stop.
+- `Ghost` and `Link` resolve to `Outline` in core (`cardAppearance`), so `CardState.appearance` is never one of them.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -185,6 +193,12 @@ The renderer draws the feedback only when `state.clickable`. Hover elevation (`l
 | Hover on touch-only devices | `collectIsHoveredAsState` stays false. No special case needed. |
 | Desktop right-click / context menu | Wrap the card in `CamoContextMenuArea` ([CamoMenu](/components/overlays/camo-menu#implementation)). |
 
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The nested-clickable debug warning (`CamouflageDebug.nestedClickableWarnings`) isn't built yet: it needs a walk of the merged semantics tree after layout.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -235,5 +249,11 @@ class CamoCard extends StatefulWidget {
 |---|---|
 | A nested button inside a clickable card | The gesture arena gives the tap to the inner button. Semantics merging would hide it, so it's discouraged (base). A debug assertion warns when a clickable card's subtree contains another `CamoBehavior`. On by default in debug; `CamouflageDebug.nestedClickableWarnings = false` turns it off. |
 | Long-press or secondary click | Wrap the card in `CamoContextMenuArea` ([CamoMenu](/components/overlays/camo-menu#implementation)). |
+
+:::info[Changed in the M6 build (2026-10-28)]
+
+- The widget is `CamoCard(onPressed: …)`. Its `MergeSemantics` sits outside the behavior, so the tap action joins the button node.
+
+:::
 
 </DartOnly>
