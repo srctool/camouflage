@@ -327,3 +327,40 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - `CamoSkin` still has no defaults, so adding a field breaks every skin at compile time. Before v0.1 nothing is published, so that is the intended forcing function: a milestone isn't done until every skin implements its new renderers.
   - M2's behavior-modifier test (Kotlin) uses a test-only renderer. The `ButtonStyle.merge` test and `DebugSkin`'s labelled button come with `CamoButton` in M3.
   - Kotlin's "`CamoDialogFrame` inside a nested provider" test moves to M6 with the frame.
+
+### ADR-40 v0.1 ships all five skins and the full component set
+- **Context:** M0 to M7 are built with Minimal and Fluent (ADR-38). Material, Cupertino and Carbon, and the "Later" rows of [Component Inventory](/guide/foundations/component-inventory), waited for after v0.1. The user wants v0.1 to be the complete library: every skin, every component, and charts as a core component.
+- **Decision:**
+  - v0.1 ships **five skins**: Minimal, Fluent, Material, Cupertino (with Liquid Glass) and Carbon, on Kotlin and Flutter. Supersedes ADR-22's "Later" for the other skins and ADR-38's "Material, Cupertino and Carbon stay Later".
+  - Every "Later" row of the inventory moves into v0.1, plus **charts** in their own package, **`camouflage-charts` / `camouflage_charts`** (layer 1, ADR-27: it depends only on core, and no skin depends on it; pinned by the BOM with the core set): a family on one shared chart frame (axes, grid, legend, tooltip, series colors from the theme, animation, RTL, and an accessible data-table fallback), drawn without a third-party chart library: `CamoLineChart` (line, area, stacked area), `CamoBarChart` (vertical, horizontal, grouped, stacked), `CamoPieChart` (pie, donut with a center label) and `CamoSparkline` (axis-less inline trend). Other chart types (scatter, combo, radar, heatmap, candlestick, gauge, funnel, sankey, treemap, maps) come in later versions of the same package.
+  - **How a skin reaches a chart** without either package importing the other: (1) the theme's tokens (series palette from the color families, typography, shapes, spacing, motion); (2) the active skin's parts at runtime: the tooltip renderer, `CamoChip`/`CamoText` legend, `CamoSkeleton` loading, `CamoCard` frame, `Camouflage.skin.feedback` and `surfaceTreatment`; (3) a `ChartStyle` preset per skin name shipped as data in the charts package (minimal, fluent, material, cupertino, carbon), for what tokens can't say (gridlines, line width, markers, area opacity, bar corners); (4) overrides: a brand's `ChartTokens` token set (ADR-32), `CamoCharts.registerPreset(name)` for third-party skins, and a `ChartRenderer` through `CamoChartsProvider` for full control. Resolution order: theme-derived defaults → preset for `Camouflage.skin.name` → `ChartTokens` → per-chart parameters; an unknown skin gets the theme-derived defaults.
+  - Charts are not part of the skin contract: `CamoSkin` and `CamoComponentThemes` gain no chart fields.
+  - The milestones after M7 become: **M8** Navigation chrome (with the context layer, ADR-41, and the materials rule, ADR-42); **M9** Overlays and actions (popover, side sheet, toolbar, button group, split button); **M10** Data (data table, tree, carousel, image, rating, file uploader, pagination, breadcrumb, progress steps); **M11** Charts (the four chart components); **M12** Material skin; **M13** Cupertino skin; **M14** Carbon skin; **M15** Test + publish (the former M9).
+  - Components keep the ADR-39 rule: each lands with its Minimal and Fluent renderers. A skin milestone (M12 to M14) builds that skin's renderers for every component that exists by then.
+- **Consequences:**
+  - v0.1 moves later; its scope is fixed by this list. Anything new after this goes to v0.2.
+  - Each skin adds a module (`camouflage-skin-material`, `-cupertino`, `-carbon`; Flutter packages likewise) and joins the golden matrix.
+  - The GitHub milestone "M9 Test + publish" and its issues are renamed to M15; M9 to M14 are new milestones with their own issues on board #7.
+
+### ADR-41 The context layer: environment, breakpoints and adaptive themes
+- **Context:** Themes describe a brand, but UI conventions also depend on where the app runs: a phone or a desktop window, touch or a pointer, iOS or Windows. Tailwind (`md:` variants), Mantine (`theme.breakpoints`) and Material (window size classes) all model this. Camouflage didn't: skins hard-coded such choices (Fluent's density, the snackbar's alignment), and apps had no theme-level way to say "denser on desktop".
+- **Decision:**
+  - **`CamoEnvironment`**, computed by the root provider and overridable by any provider: `windowSize` (`Compact` / `Medium` / `Expanded` / `Large`), `input` (`Touch` / `Pointer`), `platform` (`Android`, `Ios`, `MacOs`, `Windows`, `Linux`, `Web`) and `capabilities` (ADR-42). Read with `Camouflage.environment` (Kotlin) and `Camouflage.environmentOf(context)` (Flutter). It updates on resize and when a pointer appears.
+  - **Breakpoints in the theme**: `CamoTheme.breakpoints` (defaults 600 / 840 / 1200, Material's window size classes), so a brand can move them.
+  - **Adaptive themes**: a theme can carry rules, `CamoTheme.adapt { env -> … }` returning a copy for that environment (denser component themes on `Pointer`, a larger type scale on `Expanded`, different token sets per platform). The provider applies them once per environment change, like reduced motion, so every component and renderer still reads one plain theme.
+  - The effective theme carries its environment (`theme.environment`), so a skin's `defaults(theme)` can follow a platform convention (touch-target size, hover affordances, density) without a contract change.
+- **Consequences:**
+  - M8's adaptive navigation (bar, rail, drawer) is the first consumer; Fluent's density and the snackbar's alignment become environment-driven defaults.
+  - Tests and previews set the environment explicitly; goldens add a `Pointer` + `Expanded` combo.
+  - The tokens JSON (Tooling) gains adaptive sections later; the runtime mechanism comes first.
+
+### ADR-42 Materials: the same behavior everywhere, the best surface each platform allows
+- **Context:** Some materials only exist on some systems: Mica is a Windows 11 window backdrop, Liquid Glass an iOS 26 material, Acrylic needs a backdrop blur. They can't be reproduced identically everywhere, and a design system that promised that would either fail or fake it badly.
+- **Decision:**
+  - Camouflage guarantees **behavior and layout parity**, not pixel parity, for materials. A material is a `SurfaceTreatment` with a **fallback chain** (Liquid Glass → Classic blur → opaque; Mica → Solid; Acrylic → own blur → tint + noise over Solid), chosen at runtime.
+  - **`CamoCapabilities`** in the environment (ADR-41): `backdropBlur`, `runtimeShaders`, `windowMaterial`, and the user's `reduceTransparency`. Skins choose their fallback from it, and apps can read it.
+  - Each skin note keeps a **material availability table** (material × platform × what's drawn), and the Skins overview a summary.
+  - Reduce Transparency (or its platform equivalent) always wins: the opaque end of the chain.
+- **Consequences:**
+  - The Fluent and Cupertino skins test each step of their chains (goldens with capabilities forced off).
+  - Platform interop (Windows backdrop, macOS vibrancy) stays inside the skin modules, behind the capability check.

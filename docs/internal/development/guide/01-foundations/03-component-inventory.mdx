@@ -23,11 +23,11 @@ The lists follow each system's published component catalog as of 2026-09: Materi
 
 | Status | Meaning |
 |---|---|
-| ✅ **v1** | in the v1 docs (M3–M8). Since ADR-21 this includes the former v2 wave. |
+| ✅ **v1** | in v0.1 (M3–M11). Since ADR-21 this includes the former v2 wave, and since ADR-40 the former Later rows and charts. |
 | 🟦 **v2** | (merged into v1 by ADR-21; kept here for history) |
 | 🟨 **Later** | valuable, but less common or more complex |
 | ⚪ **Composition** | not its own component: built from existing Camouflage parts, a variant of one, or a platform layout primitive |
-| ⛔ **Out of scope** | platform-level or domain-specific (OS menus, charts, windows). Apps use the platform's own. |
+| ⛔ **Out of scope** | platform-level or domain-specific (OS menus, windows). Apps use the platform's own. |
 
 Categories follow the order most catalogs use: actions, selection and input, containment, communication, navigation, overlays, text and media.
 
@@ -42,8 +42,8 @@ Categories follow the order most catalogs use: actions, selection and input, con
 | `CamoButton` | ✅ v1 | Buttons (elevated, filled, tonal, outlined, text) | Buttons | Button, CompoundButton, ToggleButton | Button |
 | `CamoIconButton` | ✅ v1 | Icon buttons | Buttons (icon-only) | Button (icon-only) | Button (icon-only) |
 | `CamoFab` (floating action button, extended) | ✅ v1 | FAB, Extended FAB, FAB menu | – | – | – |
-| `CamoButtonGroup` | 🟨 Later | Button groups, Connected button group | – | – | Button set |
-| `CamoSplitButton` / menu button | 🟨 Later | Split button | Pull-down / pop-up buttons | SplitButton, MenuButton | Menu buttons, Combo button |
+| `CamoButtonGroup` | ✅ v1 (M9, ADR-40) | Button groups, Connected button group | – | – | Button set |
+| `CamoSplitButton` / menu button | ✅ v1 (M9, ADR-40) | Split button | Pull-down / pop-up buttons | SplitButton, MenuButton | Menu buttons, Combo button |
 | Link | ⚪ Composition | – | Buttons (plain) | Link | Link |
 
 Link: `CamoButton(appearance = Link)` for actions, and `CamoText` link spans for inline links.
@@ -64,8 +64,8 @@ Link: `CamoButton(appearance = Link)` for actions, and `CamoText` link spans for
 | `CamoSearchField` | ✅ v1 | Search (bar, view) | Search fields | SearchBox | Search |
 | `CamoDatePicker` / `CamoTimePicker` | ✅ v1 (ADR-35) | Date pickers, Time pickers | Pickers (date) | – (separate package) | Date picker, Time picker |
 | `CamoStepper` (number input) | ✅ v1 (ADR-35) | – | Steppers | SpinButton | Number input |
-| `CamoRating` | 🟨 Later | – | Rating indicators | Rating | – |
-| `CamoFileUploader` | 🟨 Later (callbacks only: `onPick`; the app chooses filesystem or the system picker, so core never depends on filesystem, ADR-27) | – | Image wells (macOS) | – | File uploader |
+| `CamoRating` | ✅ v1 (M10, ADR-40) | – | Rating indicators | Rating | – |
+| `CamoFileUploader` | ✅ v1 (M10, ADR-40) (callbacks only: `onPick`; the app chooses filesystem or the system picker, so core never depends on filesystem, ADR-27) | – | Image wells (macOS) | – | File uploader |
 | Color picker | ⛔ Out of scope | – | Color wells | Swatch picker | – |
 
 **Containment and layout**
@@ -78,9 +78,10 @@ Link: `CamoButton(appearance = Link)` for actions, and `CamoText` link spans for
 | `CamoPagedList` (refresh, next page, empty, error) | ✅ v1 (ADR-29) | – (Lists + pull to refresh) | – (Lists + refresh control) | – (List) | – (Structured list + loading) |
 | `CamoDivider` | ✅ v1 | Divider | (separators) | Divider | – |
 | `CamoAccordion` (expandable section) | ✅ v1 (ADR-35) | – | Disclosure controls | Accordion | Accordion |
-| `CamoCarousel` | 🟨 Later | Carousel | – (collections) | Carousel | – |
-| `CamoDataTable` | 🟨 Later | – | Lists and tables (macOS), Outline views | DataGrid, Table | Data table |
-| `CamoTree` | 🟨 Later | – | Outline views | Tree | Tree view |
+| `CamoCarousel` | ✅ v1 (M10, ADR-40) | Carousel | – (collections) | Carousel | – |
+| `CamoDataTable` | ✅ v1 (M10, ADR-40) | – | Lists and tables (macOS), Outline views | DataGrid, Table | Data table |
+| `CamoTree` | ✅ v1 (M10, ADR-40) | – | Outline views | Tree | Tree view |
+| Charts: `CamoLineChart`, `CamoBarChart`, `CamoPieChart`, `CamoSparkline` (package `camouflage-charts`) | ✅ v1 (M11, ADR-40) | – | Swift Charts | Charting (Fluent UI web) | Carbon Charts |
 | Split / column layouts | ⚪ Composition | (canonical layouts) | Split views, Column views | – | UI shell |
 
 Split and column layouts are platform layout (adaptive layouts).
@@ -96,7 +97,7 @@ Split and column layouts are platform layout (adaptive layouts).
 | `CamoSkeleton` | ✅ v1 (ADR-29) | – | – | Skeleton | Skeleton states |
 | `CamoAvatar` (+ group) | ✅ v1 | – (used in lists and chips) | – | Avatar, AvatarGroup, Persona | – |
 | `CamoTooltip` | ✅ v1 | Tooltips (plain, rich) | Help tags (macOS) | Tooltip, InfoLabel | Tooltip, Toggletip |
-| `CamoProgressSteps` (wizard steps) | 🟨 Later | – | – | – | Progress indicator |
+| `CamoProgressSteps` (wizard steps) | ✅ v1 (M10, ADR-40) | – | – | – | Progress indicator |
 | Gauges, activity rings, charts | ⛔ Out of scope | – | Gauges, Activity rings, Charts | – | – (separate charts library) |
 
 **Navigation**
@@ -108,9 +109,9 @@ Split and column layouts are platform layout (adaptive layouts).
 | `CamoNavigationRail` | ✅ v1 | Navigation rail | – (sidebars on iPad) | Nav (collapsed) | UI shell left panel (rail) |
 | `CamoNavigationDrawer` / sidebar | ✅ v1 | Navigation drawer | Sidebars | Nav, Drawer | UI shell left panel |
 | `CamoTabs` | ✅ v1 | Tabs | Tab views, Segmented controls | TabList | Tabs |
-| `CamoToolbar` (bottom or floating) | 🟨 Later | Toolbars (docked, floating), Bottom app bar | Toolbars | Toolbar | – |
-| `CamoBreadcrumb` | 🟨 Later | – | Path controls (macOS) | Breadcrumb | Breadcrumb |
-| `CamoPagination` / page control | 🟨 Later | – | Page controls | – | Pagination |
+| `CamoToolbar` (bottom or floating) | ✅ v1 (M9, ADR-40) | Toolbars (docked, floating), Bottom app bar | Toolbars | Toolbar | – |
+| `CamoBreadcrumb` | ✅ v1 (M10, ADR-40) | – | Path controls (macOS) | Breadcrumb | Breadcrumb |
+| `CamoPagination` / page control | ✅ v1 (M10, ADR-40) | – | Page controls | – | Pagination |
 | Menu bar, dock menus, quick actions | ⛔ Out of scope | – | The menu bar, Dock menus, Home Screen quick actions | – | – |
 
 **Overlays**
@@ -120,8 +121,8 @@ Split and column layouts are platform layout (adaptive layouts).
 | `CamoDialog` | ✅ v1 | Dialogs (basic) | Alerts | Dialog | Modal |
 | `CamoBottomSheet` | ✅ v1 | Bottom sheets | Sheets | Drawer (bottom) | – |
 | `CamoMenu` (context and dropdown menus) | ✅ v1 | Menus | Menus, Context menus, Edit menus | Menu | Menu, Overflow menu |
-| `CamoPopover` | 🟨 Later | – (rich tooltip) | Popovers | Popover, TeachingPopover | Popover |
-| `CamoSideSheet` | 🟨 Later | Side sheets | Panels (macOS) | Drawer (side) | Side panel |
+| `CamoPopover` | ✅ v1 (M9, ADR-40) | – (rich tooltip) | Popovers | Popover, TeachingPopover | Popover |
+| `CamoSideSheet` | ✅ v1 (M9, ADR-40) | Side sheets | Panels (macOS) | Drawer (side) | Side panel |
 | Full-screen dialog | ⚪ Composition | Dialogs (full-screen) | Sheets (full-screen) | – | – |
 | Action sheet | ⚪ Composition | – | Action sheets | – | – |
 | Share sheet, windows, virtual keyboards | ⛔ Out of scope | – | Activity views, Windows, Virtual keyboards | – | – |
@@ -134,7 +135,7 @@ Full-screen dialogs are a `widePresentation`-style option on the dialog frame. A
 |---|---|---|---|---|---|
 | `CamoText` (+ rich text) | ✅ v1 | (typography) | Labels, Text views | Text, Label | (type) |
 | `CamoIcon` | ✅ v1 | (icons) | (SF Symbols) | (icons) | (icons) |
-| `CamoImage` (with shape, placeholder) | 🟨 Later | – | Image views | Image | – |
+| `CamoImage` (with shape, placeholder) | ✅ v1 (M10, ADR-40) | – | Image views | Image | – |
 | `CamoCodeSnippet` | ⛔ Out of scope | – | – | – | Code snippet |
 | Web views, charts | ⛔ Out of scope | – | Web views, Charts | – | – |
 
@@ -147,7 +148,7 @@ Full-screen dialogs are a `widePresentation`-style option on the dialog frame. A
 | Fluent 2 (~45) | ~10 | ~28 | accordion, data grid, tree, skeleton, popover, rating | swatch picker |
 | IBM Carbon (~40) | ~10 | ~26 | data table, date picker, tree, pagination, progress steps, file uploader | code snippet |
 
-Counts are approximate (catalogs group components differently). The takeaway: **the full v1 covers roughly 75–85% of every major system.**
+Counts are approximate (catalogs group components differently). The takeaway: **the full v1 covers roughly 75–85% of every major system**, and with the former Later rows (ADR-40) close to all of it; the "Remaining" column is now in v0.1.
 
 ### 3.3 The former v2 wave (now part of v1, ADR-21), in build order
 
