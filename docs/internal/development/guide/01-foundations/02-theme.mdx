@@ -427,6 +427,12 @@ val brand = Camouflage.tokens<BrandTokens>()      // Flutter: CamoTokens.of<Bran
 | **Brand theme moved to another skin** | Global tokens and any component values it set carry over. Everything unset uses the new skin's defaults. |
 | **Animated theme switch** | Themes support `lerp(a, b, t)` per token (colors blend, sizes interpolate, fonts switch at t = 0.5). |
 
+:::info[Changed in the M8 build (2026-10-29)]
+
+- `CamoTheme` gains `breakpoints`, `adaptation` (the rules) and `environment` (set on the theme components read, `null` on one you build). Lerp switches the three at the midpoint, like component themes.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>

@@ -152,6 +152,16 @@ Every component below re-renders with the new values. Component **state** (text 
 | **Reduced motion** | Applied once here (`theme.copy(motion = motion.reduced())`), so renderers need no checks. |
 | **App code reads `Camouflage.colors` outside any provider** | The same fail-fast. |
 
+:::info[Changed in the M8 build (2026-10-29)]
+
+- **ADR-41 is built.** `CamoEnvironment(windowSize, input, platform, capabilities)` is computed by the root provider and can be set by any provider; nested providers inherit it. `CamoBreakpoints` (600 / 840 / 1200) live on the theme; `CamoCapabilities(backdropBlur, runtimeShaders, windowMaterial, reduceTransparency)` is part of the environment (ADR-42).
+- **Adaptive themes:** `theme.adapt(rule)` adds a rule (they compose in order); `theme.forEnvironment(env)` runs them and attaches the environment. A provider keeps the theme *as written* beside the adapted one, so a nested provider with another environment adapts the original, not an already-adapted copy. A theme that already carries that environment (read from a provider and passed on) is returned as is, so rules never run twice.
+- **Order in a provider:** the rules run first, then reduced motion.
+- `Camouflage.theme.environment` is `null` for a theme you build and set for the one components read; skins read it in `defaults(theme)`.
+- Found in the build: `flutter test` runs as `TargetPlatform.android`, so an environment-following default (Fluent's density) differs from the desktop look under test. Goldens pin their density.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -308,6 +318,13 @@ Pass `isSystemInDarkTheme()` (common Compose API, works on every target) as the 
 | Reduced motion changing while the app runs (iOS, web) | The `actual`s listen for changes and recompose. On Android the setting is read on composition, and changing it usually recreates the activity anyway. |
 | Text scale | Handled by Compose's `LocalDensity.fontScale`. Camouflage never touches it. |
 
+:::info[Changed in the M8 build (2026-10-29)]
+
+- `CamouflageProvider` has an overload with `environment: CamoEnvironment` (a required argument, so the existing positional calls stay unambiguous). `Camouflage.environment` reads it; outside a provider it computes one.
+- The system environment follows the window's `containerSize` (so tests fake a width with a `WindowInfo`, like the select) and each platform's `expect`/`actual`: Android 12+ for blur and 13+ for shaders; iOS reads Reduce Transparency and its change notification; the desktop JVM detects the OS (Mica only on Windows 11); wasm reads `prefers-reduced-transparency`.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -421,5 +438,12 @@ Future<T?> showCamoDialog<T>({required BuildContext context, required WidgetBuil
 | Hot reload | Themes defined as `const`/top-level finals rebuild on hot reload. That's fine. |
 | Text scale | `MediaQuery.textScalerOf`, applied by `Text` automatically. Camouflage never touches it. |
 | Reduced motion changing at runtime | `MediaQuery` rebuilds its dependents, so the provider re-resolves. |
+
+:::info[Changed in the M8 build (2026-10-29)]
+
+- `CamouflageProvider(environment: …)` and `Camouflage.environmentOf(context)`; the scope also carries `sourceTheme` and `environment`. The system environment reads `MediaQuery` for the width and `defaultTargetPlatform` (`kIsWeb` first) for the platform.
+- Flutter reports blur and shaders as available everywhere and no Reduce Transparency setting (Flutter exposes none); detecting Mica is left to the Fluent skin in M8's last batch.
+
+:::
 
 </DartOnly>

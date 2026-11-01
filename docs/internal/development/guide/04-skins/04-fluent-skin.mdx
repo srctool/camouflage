@@ -136,6 +136,14 @@ Most proportions differ from Minimal, but the structures stay close to it.
 
 :::
 
+:::info[Changed in the M8 build (2026-10-29)]
+
+- `fluentTheme(density: null)` now follows the input: Medium with a pointer, Touch with fingers (a rule that keeps a brand's other button overrides). An explicit density wins.
+- The toast is bottom-end on wider windows and centered on a compact one.
+- Acrylic's fallback chain (ADR-42) is data-driven: the own blur, then tint and noise over a solid fill without `backdropBlur`, then the opaque Solid surface with Reduce Transparency; goldens cover each step.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
