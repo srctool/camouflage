@@ -94,6 +94,15 @@ Placement is **app layout** (Camouflage has no scaffold): the sample shows botto
 | RTL | Placement at bottom-end moves to the left. The icon doesn't mirror unless it's directional. |
 | **Hide on scroll** | `visible = rememberHideOnScroll(listState)`, or keep it visible and collapse it with `expanded` instead. A hidden FAB isn't focusable. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- `FabState` carries the label (`text`) and `expanded`, and `FabSlots` only the icon. A FAB with a `text` is extended; collapsing it keeps its accessible name (`text ?: contentDescription`).
+- Core hides the FAB itself (`visible = false`: a scale and fade, then out of the tree and focus order), so a renderer only draws a visible one. A hidden FAB can't be focused, tapped or read.
+- `FabTheme` gains `iconGap`, `extendedPadding` and `textStyle`. `FabStyle.colorsFor(state, theme)` gives the appearance's colors for `Tone.Default` and the tone's family otherwise (Solid a strong fill, Soft a container fill, Raised a lifted surface with the tone's strong content).
+- Minimal draws it flat (ink fill, a hairline on Raised); Fluent draws a circular brand button with `Level3` depth, since neither dialect has a FAB.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -153,6 +162,13 @@ public fun CamoFab(
 | Reduced motion | Enter/exit become instant (the provider's reduced `CamoMotion`). |
 | A FAB over the navigation bar and a snackbar | Wrap content in `CamoMessengerInsets(bottom = fabHeight + 16.dp)` so snackbars sit above it. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The caller's `modifier` goes on the `AnimatedVisibility` wrapper (so `Modifier.align` from a `Box` works); the click, semantics and touch target go on the renderer's node inside it.
+- A collapsed extended FAB keeps its accessible name through `semantics { contentDescription = text ?: contentDescription }`.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -201,5 +217,12 @@ class CamoFab extends StatefulWidget {
 |---|---|
 | Reduced motion | Durations are zero from the provider's reduced motion. |
 | A FAB above snackbars | `CamoMessengerInsets(bottom: fabHeight + 16)` around the content. |
+
+:::info[Changed in the M8 build (2026-11-01)]
+
+- `FabState` also carries `enabled` (`onPressed: null`), which a renderer draws as the disabled look.
+- A hidden FAB is `IgnorePointer` + `ExcludeFocus` + `ExcludeSemantics` around an `AnimatedScale` and `AnimatedOpacity`; it stays in the tree, so the app's layout doesn't jump.
+
+:::
 
 </DartOnly>
