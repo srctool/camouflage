@@ -101,6 +101,17 @@ data class CamoTab<T>(val value: T, val label: String? = null, val icon: Widget?
 | Tabs vs segmented control | Tabs switch views. A segmented control switches a *setting* or filter inside a view. |
 | **Custom tab bars** | `CamoTabsContainer` + `CamoTabItem`s (ADR-30). A tab item that isn't a `CamoTabItem` gets no indicator position; the container asserts in debug. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The renderer draws in two parts, the bar (`Container`: surface, divider and indicator around a row it is handed) and each tab (`Tab`). Core measures the tabs and animates the indicator; the renderer only paints `TabsState.indicator` (a start and width in pixels from the row's start), so the animation costs no recomposition or rebuild. `TabSlots` carries a handle (`contentModifier` / `contentKey`) the renderer puts on the node wrapping a tab's content, which is how the indicator can be as wide as the content.
+- `TabsTheme` has `solidColors` and `ghostColors` instead of one `colors` (Solid is the prominent bar, Ghost the quiet one), and gains `iconSize`, `iconGap` and `tabPadding`. `indicatorWidth` is the `IndicatorWidth` enum (`Content` | `Tab`).
+- `CamoTabs` and the container take an optional `indicatorPosition` (Kotlin) / `position` (Flutter): a fractional tab index the indicator follows instead of animating, which is how it tracks a swipe. The container also takes `appearance` and `enabled`.
+- The pager sync is a controller that holds the truth: the pager's current page is the selected tab, a tap animates the pager, and the sync's position feeds the indicator. The app keeps no separate selected state.
+- A selection that is not among the tabs draws no indicator; a disabled bar or tab ignores taps and keys.
+- Minimal: a hairline under the bar and a 2 px ink indicator as wide as the tab. Fluent: no divider and a 2 px rounded brand indicator as wide as the content.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -163,6 +174,15 @@ public fun <T> CamoTabs(
 | A tab that isn't a `CamoTabItem` inside the container | It gets no indicator bounds; a debug assertion. |
 | RTL | Tabs and indicator mirror; the pager mirrors on its own. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The indicator's bounds come from `onGloballyPositioned` on each item (and on the content wrapper the renderer marks), kept in a registry on the container; `positionInParent` mirrors on its own in RTL, since the indicator is drawn in the row's physical coordinates.
+- The first placement snaps; later ones animate with `animateFloatAsState`, read in the draw phase.
+- `rememberCamoTabsPagerSync(pagerState, tabs)` returns a `CamoTabsPagerSync` with `selected`, `onSelect` and `position`; pass them to `CamoTabs(selected, onSelect, tabs, indicatorPosition = position)`.
+- The scrollable row centers the selected tab with `scrollState.animateScrollTo`, using the registry's bounds and the viewport width.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -216,5 +236,14 @@ class CamoTabsPageSync<T> { CamoTabsPageSync({required PageController pageContro
 |---|---|
 | A non-`CamoTabItem` child in the container | No indicator rect; a debug assertion. |
 | RTL | Tabs and indicator mirror; `PageView` mirrors on its own. |
+
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The tab-bar semantics (`SemanticsRole.tabBar`) sit inside the scroll view, around the row: Flutter asserts that a tab bar's semantic children are all tabs, and the scroll view adds a node of its own between them.
+- The scrollable bar centers the selected tab in its own scroll controller (from the measured bounds and the viewport). `Scrollable.ensureVisible` is not used: it scrolls every scrollable around the bar, so a category bar in a page scrolled the page.
+- `CamoTabsPageSync` is a `ChangeNotifier` and a `ValueListenable<double>` (the fractional page): rebuild the tabs with a `ListenableBuilder` on it, pass `sync.selected`, `sync.select` and `position: sync`, and dispose it with the controller.
+- The container measures after each frame and when it changes size (`SizeChangedLayoutNotifier`), so the indicator follows a window resize.
+
+:::
 
 </DartOnly>
