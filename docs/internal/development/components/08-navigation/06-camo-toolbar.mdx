@@ -112,6 +112,16 @@ fun CamoToolbarContainer(placement: ToolbarPlacement = Docked, content: Slot)
 | A toggle in the overflow | A checkable menu item with the same state. |
 | Hide on scroll | `visible` like the bar and the FAB (`rememberHideOnScroll`). |
 
+:::info[Changed in the M9 build (2026-11-02)]
+
+- The renderer has one part, the container: `Container(state, theme, style, modifier, content)` with `ToolbarState(placement, count)`. The actions are ghost `skin.iconButton`s and core measures and lays out the row; there is no `ToolbarSlots` and no `overflowing` flag, because the fit is known only after the container is drawn.
+- The theme gains `actionSize` (the width one action takes when measuring), `padding` and `overflowIcon`; `ToolbarColors` is `(container, divider)`. `showLabels` is not built (labels beside icons come later).
+- Overflow: all actions, or as many as fit beside the overflow button, in order; the rest become menu items with their labels, icons, tones and enabled state, and a toggle becomes a checkable item. Arrow keys move over the actions and the overflow button without pressing them.
+- Neither Compose nor Flutter has a toolbar role: the toolbar is a named container. It measures its room as it lays out, so it has no intrinsic size; give it a width.
+- Not built: insets for a docked bottom toolbar, hide on scroll (`visible`), vertical toolbars, tooltips on the actions. Minimal draws a 48 bar with a hairline (floating: Level2); Fluent a flat 44 bar (floating: Level4).
+
+:::
+
  > - **Actions as data vs. children:** the data form gives automatic overflow; custom children (button groups, split buttons) go in `leading`/`trailing` or the building-block container and do not overflow. Say if you want children to overflow too (it needs a measured custom layout).
  > - **Vertical toolbars** are Later.
 
@@ -162,6 +172,14 @@ flowchart TB
 | Window resize | The split recomputes; focus stays on the same action when it is still visible, else on the overflow button. |
 | RTL | The row and the overflow mirror. |
 
+:::info[Changed in the M9 build (2026-11-02)]
+
+- Measuring is a `SubcomposeLayout`: the leading and trailing content are measured first, the actions are composed last with `fitActions(count, available, action, spacing)` (a pure function, tested alone). Each action is a `CamoIconButton` with `rovingFocusItem`; the overflow is a `CamoMenuAnchor` over the rest.
+- `CamoToolbarContainer(modifier, placement, contentDescription, content)` is the building block. Tests: the fit function, overflow at narrow widths and back, toggles in the toolbar and in the overflow, arrows skipping a disabled action, leading and trailing content, the floating placement.
+- Sample: the editor screen (a command bar in a `CamoToolbarContainer` with a split button and two groups, a floating action bar with a popover and a properties side sheet).
+
+:::
+
  > - None specific.
 
 </KotlinOnly>
@@ -208,6 +226,13 @@ class CamoToolbarContainer extends StatelessWidget { /* the building block */ }
 | Case | Decided behavior |
 |---|---|
 | Needs an Overlay for the overflow menu | As the menu does (inside a route). |
+
+:::info[Changed in the M9 build (2026-11-02)]
+
+- The toolbar is a `Row`: the leading content, an `Expanded` `LayoutBuilder` that fits the actions with `fitActions`, and the trailing content. Because of the `LayoutBuilder` it has no intrinsic size (a gallery cell needs a size); a row narrower than one action is clipped, not an overflow error.
+- `CamoToolbarContainer(child, placement, semanticLabel)` is the building block. Each action is a `CamoIconButton` with a `CamoRovingFocusItem` focus node; the overflow is a `CamoMenuAnchor`. Sample: the editor screen, narrow-safe (the docked properties sheet gives way to the document below 60% of the width).
+
+:::
 
  > - None specific.
 

@@ -102,6 +102,15 @@ The arrow part has its own accessible name (`menuContentDescription`) and opens 
 | Narrow window | The label ellipsizes; the arrow keeps its width. |
 | RTL | The arrow is on the left; the chevron is not mirrored. |
 
+:::info[Changed in the M9 build (2026-11-02)]
+
+- The renderer takes a **behavior** with the two hit areas: the label part's and the arrow part's. A menu button (`onClick == null`) has one part, drawn with the arrow inside it.
+- There is no `colors` field: the split button draws with the button's colors, `skin.button`'s style resolved for the appearance and tone, so the two always match. The theme gains `padding` (the label part's start and end).
+- The menu opens below the whole button. The arrow announces expanded or collapsed (neither Compose nor Flutter has a "has popup" state); while Flutter's menu route is open, the page behind it is hidden from screen readers. Focus returns to the first part, not necessarily the part that opened the menu.
+- Minimal draws a 40 tall button with a divider line between the parts; Fluent a 32 tall one with a 1 px gap. Not built: a menu as wide as the button.
+
+:::
+
  > - **Menu button mode:** one component with `onClick = null` instead of a separate `CamoMenuButton` (Fluent has both). Say if you want a separate name.
 
 ## Implementation {#implementation}
@@ -144,6 +153,13 @@ flowchart LR
 | Case | Decided behavior |
 |---|---|
 | Touch targets | Each part keeps the 48 minimum (`minimumTouchTarget`). |
+
+:::info[Changed in the M9 build (2026-11-02)]
+
+- `CamoSplitButton` wraps the whole button in `CamoMenuAnchor` with a `CamoMenuController`; `SplitButtonBehavior(main, arrow)` holds the two parts' `Modifier`s (key handling for Down, semantics, `clickable`, touch target). The arrow's `contentDescription` is `menuContentDescription`, its `stateDescription` Expanded or Collapsed.
+- Tests: the main action and the menu, the menu button, the arrow's state, Down to open, disabled. Sample: the editor's Save with Save as, Save a copy and Export.
+
+:::
 
  > - None specific.
 
@@ -188,6 +204,13 @@ class CamoSplitButton extends StatefulWidget {
 | Case | Decided behavior |
 |---|---|
 | `onPressed: null` | A menu button: the whole button opens the menu. |
+
+:::info[Changed in the M9 build (2026-11-02)]
+
+- `CamoSplitButton` is a `StatefulWidget` with a `CamoMenuController` and one `CamoInteractionController` per part. `SplitButtonBehavior.main` and `.arrow` wrap a renderer's visuals in `CamoBehavior`, `Semantics` and a touch target; `CallbackShortcuts` opens the menu on Down and Alt+Down.
+- While the menu route is open, the page behind it (and so the arrow's expanded state) is hidden from screen readers; tests read the state from the skin. Sample: the editor's Save with its menu.
+
+:::
 
  > - None specific.
 
