@@ -107,6 +107,15 @@ Each button reports its **position** (first, middle, last, only) so the renderer
 | Single-select toggles ("align left / center / right") | Allowed: the app keeps one `selected` true; for a setting-like choice prefer the segmented control. |
 | RTL | Order and end rounding mirror. |
 
+:::info[Changed in the M9 build (2026-11-02)]
+
+- `ButtonGroupState(count, connected, appearance, tone, enabled)` for the container and `GroupButtonState(selected, enabled, position, connected, appearance, tone, interaction)` for each button; `GroupColors` has one set for the default tone, and other tones use their family's strong color.
+- The renderer has two parts, the container and the button. A connected Outline group shares one outline: Kotlin overlaps the buttons' borders by one border width, Flutter draws one outline with lines between the buttons. Appearances: Outline is bordered and transparent, Ghost and Link are transparent, Soft, Solid and Raised are filled; a pressed toggle takes `selectedContainer`.
+- Core owns the interaction: one Tab stop, the arrow keys move focus (wrapping, skipping disabled buttons) and do not press, Space and Enter press. An icon-only button without a description fails a debug check.
+- Not built: the container and button as ADR-30 building blocks, a built-in selection helper, and a rounder pressed shape.
+
+:::
+
  > - **Selection modes:** v0.1 has commands and independent toggles only; the app owns `selected`. A built-in single or multiple selection helper (like `CamoChipGroup`) can come with the sample if you want it.
 
 ## Implementation {#implementation}
@@ -149,6 +158,13 @@ flowchart LR
 |---|---|
 | Touch target | Each button keeps the 48 target through `minimumTouchTarget` even when the visual is 40. |
 
+:::info[Changed in the M9 build (2026-11-02)]
+
+- `CamoGroupButton(key, onClick, text, icon, contentDescription, selected, enabled)`; a command is a `clickable` and a toggle a `toggleable`, both with the button role (a toggle announces its state). The group carries collection info ("2 of 3") and `contentDescription` names it.
+- Roving focus is `rememberRovingFocus` with `rovingFocusItem(…, onSelect = {})`, so the arrows move without selecting. Tests: commands, toggles, positions, arrows (skipping a disabled button), the disabled group, the icon-only check.
+
+:::
+
  > - None specific.
 
 </KotlinOnly>
@@ -190,6 +206,13 @@ class CamoButtonGroup extends StatelessWidget {
 | Case | Decided behavior |
 |---|---|
 | Disabled group | Every button is disabled with the disabled look. |
+
+:::info[Changed in the M9 build (2026-11-02)]
+
+- `CamoGroupButton(id, onPressed, text, icon, semanticLabel, selected, enabled)`; each button is a `CamoRovingFocusItem` around a `CamoBehavior` with `Semantics(button, toggled)`, so the arrows move without pressing. The group is a semantic container named by `semanticLabel`.
+- The touch target is the whole group's (as in the segmented control), so a connected outline hugs the buttons. `Row` spacing can't be negative, so a connected Outline group draws one clipped outline with lines between the buttons.
+
+:::
 
  > - None specific.
 
