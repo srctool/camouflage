@@ -165,6 +165,11 @@ These are each renderer's `defaults(theme)`. Every field of each component theme
 | CamoNavigationBar | 64 tall, `surface` + top hairline, `showLabels` Always, `indicator` None, `placement` Pinned: selected = ink icon + label, unselected `onSurfaceVariant` |
 | CamoNavigationRail | 72 wide, `alignment` Top, `indicator` None, `showLabels` Always, the same selection style as the bar, a hairline on the end edge |
 | CamoNavigationDrawer | 280 wide, items 40, `indicator` Fill (a radius 8 `surfaceContainerHigh` selected row), sections in `titleSmall` 600 |
+| CamoPopover | radius 8, `surface` + hairline, no shadow, padding 16, max width 320, no arrow; title `titleSmall` 600 |
+| CamoSideSheet | 320 wide, `surface` + a hairline on the start edge (standard), the same as the drawer when modal; title `titleLarge` 600, close = a ghost icon button |
+| CamoToolbar | 48 tall, `surface` + hairline on the docked edge, ghost icon buttons 32, selected = `surfaceContainerHigh` fill + ink; floating: radius 12 + hairline, no shadow |
+| CamoButtonGroup | connected: hairline outline, radius 8 outer, 0 inner, selected = `surfaceContainerHigh` + ink; spaced: gap 4; height 32 |
+| CamoSplitButton | height 32, radius 8 outer / 0 inner, a hairline divider (gap 0), chevron 16; default appearance Outline |
 
 ### 4. Build steps
 
