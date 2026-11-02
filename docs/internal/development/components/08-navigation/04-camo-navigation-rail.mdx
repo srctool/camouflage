@@ -78,6 +78,13 @@ The same as the navigation bar, with `colors.surface` as the container.
 | Expanded rail (M3 2025, labels beside icons) | Later. The drawer covers wide windows in v1. |
 | RTL | The rail is on the right. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The rail's header is drawn by the renderer above the scrolling item column and stays fixed. `RailAlignment.Center` centers the group (Minimal and Fluent use Top). Minimal's rail has a hairline on the end edge; Fluent's is 48 wide, icons only, with a brand line on the start edge of the selected item.
+- Flutter: the rail has no `SemanticsRole.tabBar`. Flutter requires a tab bar's semantic children to all be tabs, and the rail's scroll view sits between them; its items are still tabs.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
