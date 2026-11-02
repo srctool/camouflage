@@ -92,8 +92,8 @@ fun fluentTheme(brand: Color = FluentBrandBlue, dark: Boolean = false, fontFamil
 | CamoTooltip | Tooltip | neutral or inverted, radius 4 |
 | CamoTopBar | (app header) | 48 tall, title start-aligned |
 | CamoTabs | TabList | a rounded brand underline, 2 px, as wide as the tab's content; no divider |
-| CamoNavigationBar | – | a bottom bar in Fluent style (for mobile) |
-| CamoNavigationRail / Drawer | Nav (collapsed / expanded) | 48 rail, 260 pane, `indicator` Line (a brand start-edge line) |
+| CamoNavigationBar | – | a 56 bottom bar with a 2 px brand line on the selected item (for mobile) |
+| CamoNavigationRail / Drawer | Nav (collapsed / expanded) | 48 rail (icons only), 260 pane, items 40, `indicator` Line (a brand start-edge line), subtle selected row |
 | CamoPagedList | List | no pull gesture on desktop (refresh from a command); Spinner for loading more |
 | CamoSkeleton | Skeleton | shimmer, Fluent's skeleton colors |
 | CamoDivider | Divider | 1 px `neutralStroke2` |
@@ -132,7 +132,7 @@ Most proportions differ from Minimal, but the structures stay close to it.
 - Flutter: `FluentAcrylic` is a `BackdropFilter` (σ 15) with the same tint and noise; `fluentSkin(surface: FluentSurface.acrylic)`.
 - Fluent's dialog and sheet scrim is **Smoke**: `colors.scrim` (black) at Fluent 2's `colorBackgroundOverlay` alpha, 40% in light and 50% in dark, instead of Minimal's value.
 - Flutter's Acrylic dialogs and sheets sample the page undimmed, like Kotlin's: the overlay routes paint the scrim with a hole where the overlay sits (the barrier stays, clear, for taps), and the frames animate the overlay in themselves, so the scrim never slides or scales.
-- **Mica beyond Windows** (an M8 option, not decided): Mica is drawn by the Windows 11 compositor from the wallpaper, so no other platform has it. macOS has a close cousin (vibrancy, `NSVisualEffectView`), Android 12+ can show the wallpaper blurred behind a full-screen window (an approximation), Linux depends on the compositor, and iOS and web can't see behind the window at all. The plan stays Solid elsewhere until M8 decides.
+- **Mica beyond Windows** (an M8 option, not decided): Mica is drawn by the Windows 11 compositor from the wallpaper, so no other platform has it. macOS has a close cousin (vibrancy, `NSVisualEffectView`), Android 12+ can show the wallpaper blurred behind a full-screen window (an approximation), Linux depends on the compositor, and iOS and web can't see behind the window at all. Decided in M8: Solid elsewhere (below).
 
 :::
 
@@ -141,6 +141,15 @@ Most proportions differ from Minimal, but the structures stay close to it.
 - `fluentTheme(density: null)` now follows the input: Medium with a pointer, Touch with fingers (a rule that keeps a brand's other button overrides). An explicit density wins.
 - The toast is bottom-end on wider windows and centered on a compact one.
 - Acrylic's fallback chain (ADR-42) is data-driven: the own blur, then tint and noise over a solid fill without `backdropBlur`, then the opaque Solid surface with Reduce Transparency; goldens cover each step.
+
+:::
+
+:::info[Changed in the M8 build (2026-11-01)]
+
+- `FluentSurface.Mica` / `fluentSkin(surface: mica)` is a surface treatment with a fallback chain (ADR-42): where the platform reports `CamoCapabilities.windowMaterial` (Windows 11 on the desktop JVM), the base layers (elevation below Level2: the window background and the navigation chrome) draw nothing, so the backdrop the app enabled on its window shows through. Everywhere else, and with Reduce Transparency, they are the opaque Fluent surface. Raised surfaces (cards, flyouts, dialogs) are always Solid.
+- Camouflage does not draw Mica and does not set up the window backdrop: the app enables Mica on its window (and drops its opaque window background). Choosing the Mica surface is the opt-in. Flutter reports no window material by itself, so the app passes `capabilities.windowMaterial` through the provider's `environment` where it sets the backdrop up.
+- Not verified on Windows in this build (there is no Windows machine in the loop): the chain is tested through the capabilities, with the fallback goldens on the other platforms.
+- Mica beyond Windows stays Solid (macOS vibrancy and Android's blurred wallpaper are not approximated).
 
 :::
 

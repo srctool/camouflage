@@ -130,6 +130,16 @@ fun <T> CamoAdaptiveNavigation(
 | The keyboard is open | The bar stays below the keyboard (it doesn't ride up with the IME), per platform convention. |
 | Reselecting the current item | `onSelect` fires again. Apps commonly scroll to top, and the docs show the pattern. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The three kinds of chrome share `CamoNavItem`, `NavIndicator`, `LabelVisibility`, `NavColors` and a per-item renderer call (`NavItemState` + `NavItemSlots(label, icon, badge)`): the icon is already the selected one when selected, and `showLabel` is already decided from the theme's `LabelVisibility`. `CamoNavItemButton` asks the renderer of the chrome it sits in (bar, rail or drawer).
+- Each renderer draws a container and its items. The bar's container state carries the bottom system inset (`insets`), which the renderer paints its background under and pads its content by; the rail carries the start-side and vertical insets.
+- `CamoNavigationBar` asserts 3 to 5 items in debug. `visible = false` slides the bar out and removes it from focus and semantics; the slide uses `theme.motion`, so `hideAnimation` is no theme field. `NavigationBarTheme` gains `floatingElevation`; `Floating` is the renderer's margin, corners and depth.
+- `CamoAdaptiveNavigation` takes its breakpoints from the theme (`breakpoints`, ADR-41), not from a navigation-bar field: Compact is the bar, Medium and Expanded the rail, Large the permanent drawer. The screen keeps its state across the switch (Kotlin `movableContentOf`, Flutter a `GlobalKey`).
+- Skins: Minimal draws a hairline bar with no indicator (the selected item turns ink); Fluent a 56 bar with a 2 px brand line on the selected item. Both draw through the skin's surface treatment, so Fluent's Mica shows through the bar, the rail and the drawer.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
@@ -196,6 +206,14 @@ public fun <T> CamoAdaptiveNavigation(items: List<CamoNavItem<T>>, selected: T, 
 | Reselecting the current item | `onSelect` fires again (apps scroll to top). |
 | Web and desktop | `WindowInsets.navigationBars` is zero; the same code. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- `CamoNavItemButton` is generic over the app's key and reads the chrome it sits in from a composition local; `CamoNavBarContainer` provides it with the roving focus for the arrow keys.
+- The bar's slide is an `AnimatedVisibility` (slide and fade from `theme.motion`) around the renderer's container.
+- `CamoAdaptiveNavigation` keeps the screen in `movableContentOf`, so its state survives the switch between bar, rail and drawer.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -259,5 +277,13 @@ class CamoAdaptiveNavigation<T> extends StatelessWidget {
 |---|---|
 | Keyboard open | The bar isn't lifted by `viewInsets` (it stays behind the keyboard). |
 | Reselecting | `onChanged` fires again (GoRouter: `goBranch(i, initialLocation: i == current)` pops to the branch root). |
+
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The bar's `visible` is a tween on a `ClipRect` + `Align(heightFactor)`, so the bar gives its space back; hidden, it is `IgnorePointer` + `ExcludeFocus` + `ExcludeSemantics`.
+- `CamoAdaptiveNavigation` keeps the screen under a `GlobalKey`, so its state survives the switch between bar, rail and drawer.
+- An item is a `Semantics(role: tab, selected)` that merges its label and badge text; the bar sets `SemanticsRole.tabBar` around the items.
+
+:::
 
 </DartOnly>

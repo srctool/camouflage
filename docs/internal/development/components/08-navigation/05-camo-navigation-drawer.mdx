@@ -106,6 +106,15 @@ The modal drawer's visibility is **state** (`open`), not a route: a menu button 
 | Long destination lists | The drawer scrolls. The header stays fixed. |
 | Nested destinations (expandable groups) | Later. |
 
+:::info[Changed in the M8 build (2026-11-01)]
+
+- The drawer renderer draws a container (with the fixed header above a scrolling column), the section titles and the items. Items inside a `CamoModalDrawer` close it when chosen.
+- `CamoModalDrawer(open, onDismissRequest)`: the popup stays until the slide-out finishes; a scrim tap, back, Esc and a drag toward the start edge all call `onDismissRequest`; RTL slides in from the right. Kotlin uses a focus-trapping popup; Flutter an `OverlayPortal` (so it needs an `Overlay` above it, as inside any route) with an autofocus `FocusScope` and a `PopScope` for back.
+- `edgeSwipeToOpen` is not built (it is off by default).
+- Fluent's pane is 260 wide with items 40, a 2 px brand line and a subtle selected row.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
