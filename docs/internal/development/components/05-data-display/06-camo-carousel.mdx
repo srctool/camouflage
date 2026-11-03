@@ -94,6 +94,14 @@ fun <T> CamoCarousel(
 | Many items | Lazy: only the visible ones compose. |
 | RTL | The strip and the buttons mirror. |
 
+:::info[Changed in the M10 build (2026-11-03)]
+
+- The renderer has three parts: `Container`, `Item` (each item's mask) and `Button` (previous and next); the page dots are `CamoPagination`'s dots form. `CarouselTheme` has `itemShape`, `itemSpacing`, `peek`, `buttonSize`, the two icons and `CarouselColors(buttonContainer, buttonContent)`. The layouts are `Paged` and `Peek`; multi-browse and hero layouts are not built.
+- The buttons show on pointer devices by default (`showButtons`) and flip in right-to-left layouts. Left and Right (reading direction), Home and End step and jump; each item announces "item 2 of 5" and the previous and next buttons are named. There is no auto-play. A single item has no buttons or dots.
+- Position is the platform's own pager state, so the app can read and move it: no new state type.
+
+:::
+
  > - **Auto-play** is not in v0.1 (an accessibility hazard); say if you want it with a pause control.
 
 ## Implementation {#implementation}
@@ -136,6 +144,12 @@ flowchart TB
 | Case | Decided behavior |
 |---|---|
 | Drag on desktop | Mouse drag scrolls (a scroll behavior with the mouse as a drag device). |
+
+:::info[Changed in the M10 build (2026-11-03)]
+
+- `state` is Compose's `PagerState` (`rememberPagerState { items.size }` by default); items are a `HorizontalPager` with the peek as `contentPadding`.
+
+:::
 
  > - None specific.
 
@@ -180,6 +194,12 @@ class CamoCarousel<T> extends StatefulWidget {
 | Case | Decided behavior |
 |---|---|
 | Nested vertical scroll | The pager scrolls horizontally only. |
+
+:::info[Changed in the M10 build (2026-11-03)]
+
+- The controller is a `PageController` (a `peek` layout uses a viewport fraction, so a controller you pass must match). The carousel needs a height: the items fill it.
+
+:::
 
  > - None specific.
 
