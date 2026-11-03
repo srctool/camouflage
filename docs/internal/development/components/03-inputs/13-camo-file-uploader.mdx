@@ -98,6 +98,14 @@ fun CamoFileUploader(
 | No drop target (mobile) | The zone is just the button. |
 | Many files | The list scrolls inside the parent's constraints. |
 
+:::info[Changed in the M10 build (2026-11-03)]
+
+- The renderer has two parts, `Zone` and `Row`; core builds each row's remove and retry buttons (ghost icon buttons) and the renderer draws the progress with the skin's progress bar. `UploaderTheme` has `zoneShape`, `dashed`, `zoneHeight`, the zone, remove and retry icons, `titleStyle`, `hintStyle` and `UploaderColors(zone, border, dragBorder, error, text, mutedText)`.
+- The app's picker and drop API stay outside core (ADR-27): `onPick` opens the picker, and `dropTarget` (Kotlin, a function from `DropTargetCallbacks` to a `Modifier`) or `dropTargetBuilder` (Flutter, a wrapper around the zone) lets the app attach its platform's drop API, reporting through `setDragOver` and `onDropped`; `onFilesDropped` receives `DroppedFile(name, sizeBytes, handle)`. There is no `multiple` parameter: the app's picker decides.
+- A row announces "1.0 MB, 45%", "Too large" or "Done"; a failed row is an assertive live region. The words ("Remove", "Retry", "Waiting") are English constants, not theme strings.
+
+:::
+
  > - **Which drop-target APIs per platform** (Compose's `dragAndDropTarget`, the web drop event, Flutter's desktop drop plugin) are decided in the build; v0.1 may ship drop on desktop and web only.
 
 ## Implementation {#implementation}
@@ -137,6 +145,12 @@ flowchart TB
 | Case | Decided behavior |
 |---|---|
 | Drop on Flutter | Via the app's `dropTargetBuilder`; the example uses none (button only) so core stays plugin-free. |
+
+:::info[Changed in the M10 build (2026-11-03)]
+
+- The zone is a `clickable` button with the label as its description; rows merge their content and carry the state as `stateDescription`.
+
+:::
 
  > - None specific.
 
@@ -180,6 +194,12 @@ class CamoFileUploader extends StatelessWidget {
 | Case | Decided behavior |
 |---|---|
 | Drop on Flutter | Same. |
+
+:::info[Changed in the M10 build (2026-11-03)]
+
+- The zone is a `CamoBehavior` button; rows are a container with the name as the label and the detail as the value.
+
+:::
 
  > - None specific.
 
