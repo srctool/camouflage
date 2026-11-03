@@ -102,6 +102,14 @@ fun <T> CamoTree(
 | Multi-select | Space toggles; Shift+arrows extend a range (desktop). |
 | RTL | Indent and chevrons mirror; Left and Right swap. |
 
+:::info[Changed in the M10 build (2026-11-02)]
+
+- The renderer has one part, `Node`, with `TreeNodeState` (level, expanded, hasChildren, loading, selected, interaction) and slots for the icon, the label and the chevron's toggle behavior (Kotlin a `Modifier`, Flutter a `wrapToggle`). `TreeTheme` has `rowHeight`, `indent`, `showLines`, `chevron`, `iconSize`, `textStyle` and `TreeColors(selected, hover, line, text, chevron)`; built-in strings are not built.
+- Keys: Right expands, then enters the first child; Left collapses, then goes to the parent; Home and End jump; Enter and Space select; Up and Down move. Left and Right are handled before the group's arrow keys (Flutter's `CamoRovingFocusItem` gained an `onKey` hook for this). Not built: type-ahead, Shift+arrow ranges.
+- A node whose children aren't loaded shows a spinner when it expands and asks for them once (`onLoadChildren`). Nodes announce "Expanded" or "Collapsed" with their level, and offer expand and collapse actions to screen readers. The tree needs a height (lazy rows).
+
+:::
+
  > - **Drag and drop to move nodes** is v0.2.
  > - **Checkbox trees** (tri-state parents) are not in v0.1; say if you want them.
 
@@ -148,6 +156,12 @@ flowchart TB
 |---|---|
 | Focus on a collapsed child | When the parent collapses, focus moves to the parent. |
 
+:::info[Changed in the M10 build (2026-11-02)]
+
+- Rows are a `LazyColumn` over the flattened visible nodes (`remember`ed on the roots and the expanded set); the tree keys use `onPreviewKeyEvent` before `rovingFocusItem`; `Role.Button` on the toggle.
+
+:::
+
  > - None specific.
 
 </KotlinOnly>
@@ -193,6 +207,12 @@ class CamoTree<T> extends StatefulWidget {
 | Case | Decided behavior |
 |---|---|
 | Row focus nodes | They live in the row's state and are disposed with it. |
+
+:::info[Changed in the M10 build (2026-11-02)]
+
+- Rows are a `ListView.builder`; each node is a `CamoRovingFocusItem` with `onKey` around a `CamoBehavior`; the expanded and collapsed state reaches screen readers as the value and the expand and collapse actions.
+
+:::
 
  > - None specific.
 
