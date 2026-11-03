@@ -110,6 +110,15 @@ fun <T> CamoDataTable(
 | No rows | `empty` shows in the body; with `loading`, skeleton rows. |
 | RTL | Columns and alignment mirror. |
 
+:::info[Changed in the M10 build (2026-11-02)]
+
+- The renderer has five parts: `Container`, `HeaderRow`, `HeaderCell`, `Row` and `Cell`; core sizes the columns once, so the header and every row line up. `TableTheme` has `headerHeight`, `rowHeight`, `cellPadding`, `striped`, `dividers`, `headerStyle`, `cellStyle`, `sortIcon` and `TableColors` (container, header, row, stripedRow, selectedRow, divider, text, headerText); density and built-in strings are not built.
+- Column widths are `Fixed` or `Weight` (a share of what the fixed columns leave). Content-measured widths, horizontal scrolling, column resizing and row expansion are not built. The header sits above the lazy body, so it stays put; the table needs a height.
+- Sorting: a click on a sortable header calls `onSortChange` (a new column sorts ascending; the sorted one flips); the app sorts the rows. Selection: a click or Space toggles the row, unless `onRowClick` is set (then a click calls it); the select column holds a checkbox per row and a select-all in the header (checked only when every row is; no indeterminate state yet). Up and Down move between rows; focus only moves among the rows that are composed.
+- States: `empty` fills the body of an empty table; with `loading` and no rows a progress circle shows, and the table announces "Loading".
+
+:::
+
  > - **Cell editing, column resizing and reordering, row expansion and frozen columns** are v0.2.
  > - **Selection is a set of keys** the app owns (like `CamoChipGroup`); say if you want a built-in single-select mode.
 
@@ -157,6 +166,12 @@ flowchart TB
 |---|---|
 | Variable row height | Rows measure their own height (min = density). |
 
+:::info[Changed in the M10 build (2026-11-02)]
+
+- `CamoColumn(key, header, width, align, sortable, cell)`; rows are a `LazyColumn` (`itemsIndexed` with the row key) and each carries `collectionItemInfo`; the header and the cells share `Modifier.weight` or `Modifier.width`.
+
+:::
+
  > - None specific.
 
 </KotlinOnly>
@@ -202,6 +217,12 @@ class CamoDataTable<T> extends StatelessWidget {
 | Case | Decided behavior |
 |---|---|
 | Table in an unbounded height | An assertion with the fix (give it a height or `shrinkWrap: true`, which disables laziness). |
+
+:::info[Changed in the M10 build (2026-11-02)]
+
+- `CamoColumn(id, header, cell, width, align, sortable)`; rows are a `ListView.builder` under the header row, widths are `Expanded(flex)` or `SizedBox`. In Flutter Space and Enter both activate the row, so Space calls `onRowPressed` when it is set.
+
+:::
 
  > - None specific.
 
