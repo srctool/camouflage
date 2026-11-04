@@ -22,7 +22,7 @@ This note fixes how the pieces of Camouflage connect before any code exists: whi
 | **Written by** | the app, or generated from Figma | a skin library | `camouflage-core` |
 | **Swapped by** | `CamouflageProvider(theme = …)` | `CamouflageProvider(skin = …)` | never swapped |
 
-The dependency direction is one way: **Component → Skin → Theme**. A Theme never knows which skin draws it, so the same brand theme works on Material and, later, Cupertino.
+The dependency direction is one way: **Component → Skin → Theme**. A Theme never knows which skin draws it, so the same brand theme works on Material and Cupertino.
 
 ### 2.2 The render path
 
@@ -58,23 +58,27 @@ Step by step, for one button press:
 ```mermaid
 flowchart TB
     App["your app"] --> Core["camouflage-core"]
-    App --> SkinMin["camouflage-skin-minimal (v1)"]
+    App --> SkinMin["camouflage-skin-minimal"]
     SkinMin --> Core
-    SkinM["camouflage-skin-material (Later)"] -.-> Core
-    SkinC["camouflage-skin-cupertino (Later, incl. Liquid Glass)"] -.-> Core
-    SkinF["camouflage-skin-fluent (v1, ADR-38)"] --> Core
-    SkinCb["camouflage-skin-carbon (Later)"] -.-> Core
-    BP["camouflage-blueprint (Later): UI from JSON"] -.-> Core
+    SkinF["camouflage-skin-fluent"] --> Core
+    SkinM["camouflage-skin-material (M12)"] --> Core
+    SkinC["camouflage-skin-cupertino (M13, incl. Liquid Glass)"] --> Core
+    SkinCb["camouflage-skin-carbon (M14)"] --> Core
+    Nav["camouflage-navigation3 (Compose)"] --> Core
+    Charts["camouflage-charts"] --> Core
+    BP["camouflage-blueprint (after M15): UI from JSON"] -.-> Core
 ```
 
 | Module | Contains | Depends on |
 |---|---|---|
-| `camouflage-core` | `CamoTheme` and its groups, `CamoSkin` plus every renderer interface, `SurfaceTreatment`, `InteractionFeedback`, `CamouflageProvider`, the 11 components | the platform UI toolkit only (Compose foundation / Flutter widgets) |
-| `camouflage-skin-minimal` (v1) | `MinimalSkin` (Camouflage's own dialect), its renderers, the Flat surface treatment, Fade feedback, `minimalTheme` | `camouflage-core` |
-| `camouflage-skin-fluent` (v1, ADR-38) | `FluentSkin` (Fluent 2), its renderers, the Solid, Acrylic and Mica surface treatments, Subtle feedback, `fluentTheme` | `camouflage-core` |
-| `camouflage-skin-material`, `-cupertino`, `-carbon` (Later) | the other dialects ([Skins](/guide/skins)) | `camouflage-core` |
+| `camouflage-core` | `CamoTheme` and its groups, `CamoSkin` plus every renderer interface, `SurfaceTreatment`, `InteractionFeedback`, `CamouflageProvider`, `CamoEnvironment`, the components | the platform UI toolkit only (Compose foundation / Flutter widgets) |
+| `camouflage-skin-minimal` | `MinimalSkin` (Camouflage's own dialect), its renderers, the Flat surface treatment, Fade feedback, `minimalTheme` | `camouflage-core` |
+| `camouflage-skin-fluent` (ADR-38) | `FluentSkin` (Fluent 2), its renderers, the Solid, Acrylic and Mica surface treatments, Subtle feedback, `fluentTheme` | `camouflage-core` |
+| `camouflage-skin-material`, `-cupertino`, `-carbon` (M12 to M14, ADR-40) | the other dialects ([Skins](/guide/skins)) | `camouflage-core` |
+| `camouflage-navigation3` (Compose only) | scene strategies that open dialogs and sheets as Navigation 3 entries | `camouflage-core`, Navigation 3 |
+| `camouflage-charts` (ADR-40) | the chart family on one shared chart frame. Charts aren't part of the skin contract. | `camouflage-core` |
 | Later skins | one module each | `camouflage-core` |
-| `camouflage-storybook`, `camouflage-filesystem`, … (Later, family packages in the same repo, ADR-26) | a component catalog built with Camouflage; a file layer with a browser/picker built with Camouflage. See [Roadmap](/guide/project/roadmap). | both → core (never the reverse) |
+| `camouflage-storybook`, `camouflage-filesystem`, … (family packages in the same repo, ADR-26) | a component catalog built with Camouflage; a file layer with a browser/picker built with Camouflage. See [Roadmap](/guide/project/roadmap). | both → core (never the reverse) |
 | `camouflage-blueprint` (Later) | server-driven UI: builds Camouflage components, forms and `CamoRule`s from JSON through a type registry | `camouflage-core` (never the reverse) |
 
 Dart package names use underscores: `camouflage_core`, `camouflage_skin_minimal`.
@@ -110,7 +114,35 @@ Most design languages share a structure: a button is a container with a label. W
 | Apple, Liquid Glass (iOS 26+) | glass | translucent, blurs and refracts what is behind it |
 | Microsoft, Fluent | acrylic / mica | frosted blur (acrylic) or a wallpaper tint (mica) |
 
-So `SurfaceTreatment` is a separate, reusable part of a skin (see [Skin Contract](/guide/architecture/skin-contract)). This is why a future Fluent skin could reuse most Material renderers and swap only the surface treatment.
+So `SurfaceTreatment` is a separate, reusable part of a skin (see [Skin Contract](/guide/architecture/skin-contract)). This is why one skin can reuse another's renderers and swap only the surface treatment.
+
+Camouflage guarantees the same behavior and layout on every platform, not the same pixels (ADR-42). A material a platform can't draw falls back along a chain (Liquid Glass → Classic blur → opaque, Mica → Solid), chosen at runtime from `CamoCapabilities`. The user's Reduce Transparency setting always wins.
+
+### 2.6 Environment
+
+A theme describes a brand, but conventions also depend on where the app runs (ADR-41). The root provider computes a `CamoEnvironment`: window size, input (touch or pointer), platform and capabilities. A theme can adapt to it (`CamoTheme.adapt { env -> … }`), and the provider applies that once per environment change, so components and renderers still read one plain theme.
+
+### 2.7 Where Camouflage sits in an app
+
+Camouflage is the UI half of an app's `libraries` layer, and Sinew is the rest. It's called from the presentation layer, and nothing below the state holder imports it.
+
+```mermaid
+flowchart TB
+    A["app: root CamouflageProvider, chosen skin"] --> F["products and features: pages call Camo components"]
+    F --> S["shared presentation: brand CamoTheme, renderer overrides, shared widgets"]
+    F --> D["domain, data, core: no Camouflage"]
+    F --> C["Camouflage packages"]
+    S --> C
+```
+
+| App module | Holds | Why there |
+|---|---|---|
+| `app` | the root `CamouflageProvider(skin, theme)` | Swapping a skin or theme is one change in one place |
+| shared presentation | the brand theme, renderer overrides, widgets used by 2+ modules | Every feature shares one brand, and no feature depends on another |
+| products, features | pages that call `Camo*`, passing plain state and callbacks | A component holds no app state and never fetches |
+| navigation | route setup for overlays (`camouflage-navigation3` on Compose) | Modules never import the router; pages leave by callback |
+
+Camouflage never depends on Sinew: it takes plain values, and only `sinew_camouflage` knows both. The full structure, with its dependency rules and one screen through every layer, is in App Architecture.
 
 ## 3. API
 
@@ -126,9 +158,10 @@ This note introduces no new API. It is the map of the API defined elsewhere:
 | `CamouflageProvider(skin, theme, content)` | component | [Provider and Scoping](/guide/architecture/provider-and-scoping) | puts a skin and a theme into the tree |
 | `Camouflage.skin`, `Camouflage.theme` | accessors | [Provider and Scoping](/guide/architecture/provider-and-scoping) | read the current skin and theme |
 | `CamoText` … `CamoBottomSheet`, `CamoForm` | components | [Components — Overview](/components) | what apps call |
-| `MinimalSkin` | skin | [Minimal Skin](/guide/skins/minimal-skin) | the v1 skin (Camouflage's own dialect) |
-| `FluentSkin` | skin | [Fluent Skin](/guide/skins/fluent-skin) | the second v1 skin (Fluent 2, ADR-38) |
-| `MaterialSkin`, `CupertinoSkin`, `CarbonSkin` | skins | [Skins](/guide/skins) | Later dialects |
+| `CamoEnvironment`, `CamoCapabilities` | data | §2.5 and §2.6, ADR-41, ADR-42 | where the app runs, and what the platform can draw |
+| `MinimalSkin` | skin | [Minimal Skin](/guide/skins/minimal-skin) | Camouflage's own dialect |
+| `FluentSkin` | skin | [Fluent Skin](/guide/skins/fluent-skin) | Fluent 2 (ADR-38) |
+| `MaterialSkin`, `CupertinoSkin`, `CarbonSkin` | skins | [Skins](/guide/skins) | the other v0.1 dialects (ADR-40) |
 
 **The full render path as pseudocode** (one button):
 
