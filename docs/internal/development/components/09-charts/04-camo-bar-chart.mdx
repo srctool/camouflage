@@ -79,6 +79,13 @@ fun CamoBarChart(
 **Done when**
 - [ ] The dashboard's regional bars switch between grouped and stacked and between vertical and horizontal.
 
+:::note[Changed in the M11 build (2026-11-03)]
+
+- `yAxis` is always the value axis and `xAxis` the category axis, whichever way the bars run; their titles are drawn.
+- The bar under the pointer is the one whose column (row, when horizontal) is nearest across the category axis, so the pointer above a short bar still finds it. Value labels sit at the free end; a stack shows its side's total there and draws them after the draw-in.
+
+:::
+
 ### 5. Edge cases
 
 | Case | Decided behavior |
@@ -128,6 +135,15 @@ internal fun barRects(plot: Rect, categories: Int, series: List<List<Double?>>, 
 **Done when**
 - [ ] Works by touch, mouse, keyboard and screen reader.
 
+:::note[Changed in the M11 build (2026-11-03)]
+
+- `yAxis` is always the value axis and `xAxis` the category axis, whichever way the bars run; their titles are drawn.
+- The bar under the pointer is the one whose column (row, when horizontal) is nearest across the category axis, so the pointer above a short bar still finds it. Value labels sit at the free end; a stack shows its side's total there and draws them after the draw-in.
+- Bars mirror in right-to-left layouts (vertical bars run from the right, horizontal bars start at the right edge); the radius goes on the free end only (a stack's outermost segment).
+- Keyboard walk and announcement as in the line chart ("Q1, North, 42"); `plotHeight` and `style` parameters added.
+
+:::
+
 ### 5. Edge cases {#kotlin-5-edge-cases}
 
 | Case | Decided behavior |
@@ -170,6 +186,15 @@ class CamoBarChart extends StatelessWidget {
 
 **Done when**
 - [ ] Works by touch, mouse, keyboard and screen reader.
+
+:::note[Changed in the M11 build (2026-11-03)]
+
+- `yAxis` is always the value axis and `xAxis` the category axis, whichever way the bars run; their titles are drawn.
+- The bar under the pointer is the one whose column (row, when horizontal) is nearest across the category axis, so the pointer above a short bar still finds it. Value labels sit at the free end; a stack shows its side's total there and draws them after the draw-in.
+- Bars mirror in right-to-left layouts (vertical bars run from the right, horizontal bars start at the right edge); the radius goes on the free end only (a stack's outermost segment).
+- Keyboard walk and announcement as in the line chart ("Q1, North, 42"); `plotHeight` and `style` parameters added.
+
+:::
 
 ### 5. Edge cases {#dart-5-edge-cases}
 

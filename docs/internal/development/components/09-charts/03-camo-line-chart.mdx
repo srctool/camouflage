@@ -81,6 +81,14 @@ fun CamoLineChart(
 **Done when**
 - [ ] The dashboard's revenue chart switches between line, area and stacked area, reads as a table and follows the skin.
 
+:::note[Changed in the M11 build (2026-11-03)]
+
+- `times` (epoch milliseconds, ascending) and `timeZoneOffsetMinutes` place the categories on a time axis with calendar ticks (minute to ten years, weeks start on Monday, quarters and years on round starts); there is no time library, the app passes the zone as a UTC offset. Unsorted `times` fall back to even spacing. The time axis keeps its direction in right-to-left layouts.
+- `xAxis.title` and `yAxis.title` are drawn (value title above the plot at the start edge, category title below the labels).
+- `ChartStyle.curveTension` was not built: monotone cubic and Catmull-Rom need no tension. `LineCurve` has `Linear`, `Smooth`, `CatmullRom` and `Step`.
+
+:::
+
 ### 5. Edge cases
 
 | Case | Decided behavior |
@@ -139,6 +147,17 @@ internal fun monotonePath(points: List<Offset>): Path
 **Done when**
 - [ ] Works by touch, mouse, keyboard and screen reader.
 
+:::note[Changed in the M11 build (2026-11-03)]
+
+- `times` (epoch milliseconds, ascending) and `timeZoneOffsetMinutes` place the categories on a time axis with calendar ticks (minute to ten years, weeks start on Monday, quarters and years on round starts); there is no time library, the app passes the zone as a UTC offset. Unsorted `times` fall back to even spacing. The time axis keeps its direction in right-to-left layouts.
+- `xAxis.title` and `yAxis.title` are drawn (value title above the plot at the start edge, category title below the labels).
+- `ChartStyle.curveTension` was not built: monotone cubic and Catmull-Rom need no tension. `LineCurve` has `Linear`, `Smooth`, `CatmullRom` and `Step`.
+- A hidden series leaves a stacked area's stack and the scale recomputes; stacked areas treat negatives as zero; a gap in one series leaves the others' stack intact.
+- The tooltip, crosshair and keyboard walk (Left and Right between categories, Up and Down between series, Home and End) announce "Jan, Sales, 42"; `plotHeight` and `style` parameters added.
+- `CamoLineChart` and `CamoBarChart` take `plotHeight: Dp`; `ChartRenderer` gained `drawLineChart` and `drawBarChart` with default implementations, so a custom renderer overrides only the marks it wants.
+
+:::
+
 ### 5. Edge cases {#kotlin-5-edge-cases}
 
 | Case | Decided behavior |
@@ -182,6 +201,17 @@ class CamoLineChart extends StatelessWidget {
 
 **Done when**
 - [ ] Works by touch, mouse, keyboard and screen reader.
+
+:::note[Changed in the M11 build (2026-11-03)]
+
+- `times` (epoch milliseconds, ascending) and `timeZoneOffsetMinutes` place the categories on a time axis with calendar ticks (minute to ten years, weeks start on Monday, quarters and years on round starts); there is no time library, the app passes the zone as a UTC offset. Unsorted `times` fall back to even spacing. The time axis keeps its direction in right-to-left layouts.
+- `xAxis.title` and `yAxis.title` are drawn (value title above the plot at the start edge, category title below the labels).
+- `ChartStyle.curveTension` was not built: monotone cubic and Catmull-Rom need no tension. `LineCurve` has `Linear`, `Smooth`, `CatmullRom` and `Step`.
+- A hidden series leaves a stacked area's stack and the scale recomputes; stacked areas treat negatives as zero; a gap in one series leaves the others' stack intact.
+- The tooltip, crosshair and keyboard walk (Left and Right between categories, Up and Down between series, Home and End) announce "Jan, Sales, 42"; `plotHeight` and `style` parameters added.
+- `ChartRenderer` is now an abstract class (not an interface) with `paintLineChart` and `paintBarChart` defaults: extend it to override only some marks. `CamoChartFrame` no longer excludes its child's semantics, so the plot's focus announcement reaches a screen reader (the plot itself adds none otherwise).
+
+:::
 
 ### 5. Edge cases {#dart-5-edge-cases}
 
