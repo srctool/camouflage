@@ -81,6 +81,16 @@ fun CamoPieChart(
 **Done when**
 - [ ] The dashboard's traffic donut shows a total in its center and selects slices by touch and keys.
 
+:::note[Changed in the M11 build (2026-11-04)]
+
+- The legend lists every slice as "Search: 4500, 45%" (label, value, share) and toggles slices; a hidden slice leaves the pie and the angles recompute. The value format is a `valueFormat` parameter.
+- Slices are separated by an angular gap (`sliceGap`), not by a line in the surface color; a single visible slice has no gap and fills the circle. Shares under 1% read `<1%`; share labels sit on slices of at least `labelThreshold` and use black or white by the slice color's luminance.
+- Selection is the app's: a tap or click, or Enter or Space on the focused slice, passes the slice's index (original list position) to `onSelect` / `onSelected`, or `null` when it was already selected. The selected slice moves out by `selectedOffset`.
+- Keyboard: all four arrows walk the slices clockwise (a pie has one direction), Home and End jump; the announcement reads "Search, 45%, 4500", with ", selected" when it is.
+- Negative values count as zero in release and debug alike (no debug-only rejection was built); the table shows them as zero. `startAngle` has a public default `PIE_TOP` / `pieTop` (-90).
+
+:::
+
 ### 5. Edge cases
 
 | Case | Decided behavior |
@@ -129,6 +139,18 @@ internal fun sliceAngles(values: List<Double>, startAngle: Float): List<Pair<Flo
 **Done when**
 - [ ] Works by touch, mouse, keyboard and screen reader.
 
+:::note[Changed in the M11 build (2026-11-04)]
+
+- The legend lists every slice as "Search: 4500, 45%" (label, value, share) and toggles slices; a hidden slice leaves the pie and the angles recompute. The value format is a `valueFormat` parameter.
+- Slices are separated by an angular gap (`sliceGap`), not by a line in the surface color; a single visible slice has no gap and fills the circle. Shares under 1% read `<1%`; share labels sit on slices of at least `labelThreshold` and use black or white by the slice color's luminance.
+- Selection is the app's: a tap or click, or Enter or Space on the focused slice, passes the slice's index (original list position) to `onSelect` / `onSelected`, or `null` when it was already selected. The selected slice moves out by `selectedOffset`.
+- Keyboard: all four arrows walk the slices clockwise (a pie has one direction), Home and End jump; the announcement reads "Search, 45%, 4500", with ", selected" when it is.
+- Negative values count as zero in release and debug alike (no debug-only rejection was built); the table shows them as zero. `startAngle` has a public default `PIE_TOP` / `pieTop` (-90).
+- The center content sits in a box the size of the hole, so a donut's total can fill it; it is a separate node for a screen reader, not part of the image's text. `plotHeight` and `style` parameters added.
+- `ChartRenderer.drawPieChart` has a default implementation, like the line and bar marks. A tap is read through `rememberUpdatedState`, because the scene is rebuilt on every hover and would restart the gesture.
+
+:::
+
 ### 5. Edge cases {#kotlin-5-edge-cases}
 
 | Case | Decided behavior |
@@ -171,6 +193,19 @@ class CamoPieChart extends StatelessWidget {
 
 **Done when**
 - [ ] Works by touch, mouse, keyboard and screen reader.
+
+:::note[Changed in the M11 build (2026-11-04)]
+
+- The legend lists every slice as "Search: 4500, 45%" (label, value, share) and toggles slices; a hidden slice leaves the pie and the angles recompute. The value format is a `valueFormat` parameter.
+- Slices are separated by an angular gap (`sliceGap`), not by a line in the surface color; a single visible slice has no gap and fills the circle. Shares under 1% read `<1%`; share labels sit on slices of at least `labelThreshold` and use black or white by the slice color's luminance.
+- Selection is the app's: a tap or click, or Enter or Space on the focused slice, passes the slice's index (original list position) to `onSelect` / `onSelected`, or `null` when it was already selected. The selected slice moves out by `selectedOffset`.
+- Keyboard: all four arrows walk the slices clockwise (a pie has one direction), Home and End jump; the announcement reads "Search, 45%, 4500", with ", selected" when it is.
+- Negative values count as zero in release and debug alike (no debug-only rejection was built); the table shows them as zero. `startAngle` has a public default `PIE_TOP` / `pieTop` (-90).
+- The center content sits in a box the size of the hole, so a donut's total can fill it; it is a separate node for a screen reader, not part of the image's text. `plotHeight` and `style` parameters added.
+- `ChartRenderer.paintPieChart` has a default implementation, like the line and bar marks. A tap is a pointer down and up within 18 px; `PlotInputRegion` carries `linear`, `onActivate` and `onTap` for it.
+- A chart's plot uses `LayoutBuilder`, which has no intrinsic size, so a chart cannot sit in an `IntrinsicWidth` or a golden group's table cell without a fixed width.
+
+:::
 
 ### 5. Edge cases {#dart-5-edge-cases}
 
