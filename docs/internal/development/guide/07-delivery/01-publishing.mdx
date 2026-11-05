@@ -103,6 +103,16 @@ mavenPublishing {
 
 :::
 
+:::info[M15 start (2026-11-05): where publishing stands, and the plan]
+
+**Already built (M0):** the `com.srctool.publish` convention plugin (vanniktech, signing, POM), `publish.yml` (a `vX.Y.Z` tag on `main`, one macOS job: `check`, then `publishAndReleaseToMavenCentral`, then a GitHub Release), the BOM that pins every `camouflage-*` module, and `version=0.1.0-SNAPSHOT` overridden by the tag.
+**Published set for 0.1.0:** `camouflage-core`, the five skins (minimal, fluent, material, cupertino, carbon), `camouflage-charts`, `camouflage-navigation3`, `camouflage-skin-testing` (test helper: decide whether it ships) and `camouflage-bom`. The coordinates table above lists only core, minimal, navigation3 and the BOM; it predates ADR-40.
+**Left for M15 (needs the owner's accounts, so I cannot do these):** verify the `com.srctool` namespace on the Central Portal (DNS TXT on `srctool.com`), create the PGP key and publish its public half, add `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD` and the signing secrets to the `maven-central` environment, and push the tag.
+**Left that I can do:** `publishToMavenLocal` and a consumption test from a fresh Android app and a fresh KMP app (all four targets), Dokka HTML to GitHub Pages, per-module README and the CHANGELOG for 0.1.0, the library's `description` and POM fields, and a dry run of the release workflow without the publish step.
+**Open for review:** the group id (`com.srctool.camouflage`, the fallback `io.github.srctool.camouflage` if the DNS verification fails), whether `camouflage-skin-testing` is published, and the `0.1.0` tag date. Publishing is irreversible, so the tag waits for an explicit go.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -176,5 +186,14 @@ resolution: workspace
 | A mistake in a release | `dart pub retract` within 7 days, or publish a patch. |
 | Workspace `resolution: workspace` in published packages | It's ignored by consumers. Local development still resolves packages from the workspace. |
 | Different versions between Kotlin and Flutter | Allowed. Each platform versions independently. The changelog notes which base milestone each version implements. |
+
+:::info[M15 start (2026-11-05): where publishing stands, and the plan]
+
+**Already built (M0):** `publish.yml` (a tag publishes through pub.dev's OIDC with the `pub.dev` environment) and a pub workspace. **Published set for 0.1.0:** `camouflage_core`, the five skins, `camouflage_charts`, and `camouflage_skin_testing` if it is meant for apps' tests; the workspace packages depend on each other by `^0.1.0-dev.1` and must move to `^0.1.0` before publishing.
+**Needs the owner:** create the pub.dev publisher (verified domain), enable automated publishing from GitHub Actions for each package with the tag pattern, and approve the first publish of each package (a first publish can't be automated).
+**I can do:** `dart pub publish --dry-run` for every package (README, CHANGELOG, `topics`, `screenshots`, example), fixing what it reports, the version bump from `0.1.0-dev.1` to `0.1.0`, and a fresh Flutter app consuming the packages from path and from the dry-run archive.
+**Open for review:** the publisher name, whether the skins ship as separate packages (they do) or a bundle, and the order of the first publishes (core first).
+
+:::
 
 </DartOnly>
