@@ -9,9 +9,9 @@ slug: "/guide/skins/material-skin"
 
 ## Concept {#concept}
 
-:::info[Milestone: Later]
+:::info[Milestone: M12, in v0.1 (ADR-40)]
 
-The v1 skin is [Minimal Skin](/guide/skins/minimal-skin) (ADR-22). This note keeps the full Material 3 dialect documented. It's also the **reference dialect** used by the "Material mapping preview" in the component notes. Shipping it is a separate decision.
+Minimal ([Minimal Skin](/guide/skins/minimal-skin)) and Fluent were the first two skins; Material is the third, built in M12 once every component exists. It's also the **reference dialect** used by the "Material mapping preview" in the component notes. The mapping table below already covers all 52 components, M9 to M11 included.
 
 :::
 
@@ -136,6 +136,10 @@ These values are the renderers' `defaults(theme)`: the complete component themes
 | CamoBreadcrumb | Breadcrumb | `bodyMedium` links in `primary`, chevron separators, an overflow button |
 | CamoProgressSteps | Progress indicator | 24 dp circles, `primary` complete and current, `outlineVariant` upcoming, 2 dp connectors |
 
+#### 3.4a Material under ADR-42 (materials rule)
+
+Material draws no blur, glass or window material, so it reads **none** of the `CamoCapabilities` and needs no fallback chain: **Paper** and **Ripple** draw the same on every target, including with `reduceTransparency` on. The only context it reads is the input kind (`CamoEnvironment.input`): hover layers and the 3 dp keyboard focus ring show for a pointer or keyboard, touch shows the ripple alone.
+
 **Dialect alignment (required, [Design Language](/guide/foundations/design-language) §3.4): Appearance × Tone for buttons** (`f` = the tone's family; Material 3 has no status buttons, so tones are Camouflage's consistent extension):
 
 | Appearance | Material 3 style | `Default` | Status tone `x` |
@@ -184,7 +188,26 @@ Typography: the M3 baseline type scale. **The skin doesn't bundle Roboto** (skin
 | bodyLarge / Medium / Small | 16/24, 14/20, 12/16 | 400 | 0.5, 0.25, 0.4 |
 | labelLarge / Medium / Small | 14/20, 12/16, 11/16 | 500 | 0.1, 0.5, 0.5 |
 
+#### 3.6 Chart preset
+
+Charts are not in the skin contract (ADR-40): Material reaches them through the preset registered for `skin.name == "material"` (see [Chart Frame](/components/charts/chart-frame)). The preset ships inside the charts package, next to Minimal and Fluent, so the skin module does not depend on it.
+
+| `ChartStyle` field | Material | Why |
+|---|---|---|
+| `lineWidth` | 3 | M3 indicators are 4 dp strokes; 3 keeps two lines apart |
+| `markerSize` | 8 | the M3 "handle" feel, round dots |
+| `areaOpacity` | 0.16 | the tonal container steps are about 16% of the accent |
+| `barRadius` | 8 | `shapes.small` on the free end, as the progress bar's end caps |
+| `barGap` | 2 | the gap of connected button groups |
+| `gridDashed` | false | `outlineVariant` hairlines, solid |
+| `sliceGap` | 4 | the 4 dp gap M3 puts between segments |
+| `donutThickness` | 0.3 | a thick ring, like the circular indicator |
+
+The palette stays the theme's (the color families), and the tooltip uses the `inverseSurface` roles like the Material tooltip. Tokens can change any of it per brand (`ChartTokens`).
+
 ### 4. Build steps
+
+M12 builds the skin in four reviewed batches that follow the five task cards (the platform notes list them): the module and theme, then the renderers by group, then the M9 to M11 renderers and the chart preset. The steps below are the order inside them.
 
 1. Implement `Paper` and `Ripple` first. Test them on a bare `CamoSurface` with `DebugSkin.copy(surfaceTreatment = Paper, feedback = Ripple)`.
 2. Implement the renderers in checklist order: text → icon → surface → button → iconButton → card → checkbox → switch → textField → topBar → dialog → bottomSheet. M3 ("Hello skin") needs only text, icon, surface and button. The rest land in M5/M6.
@@ -194,7 +217,7 @@ Typography: the M3 baseline type scale. **The skin doesn't bundle Roboto** (skin
 6. Build the M4 demo: the same screen with `materialBaselineLight` and a custom brand theme, switched live.
 
 **Done when**
-- [ ] All 39 renderers are implemented, using only core's public API.
+- [ ] All 52 renderers are implemented, using only core's public API, and the M9 to M11 components render in Material.
 - [ ] Baseline themes validate cleanly, and the status colors are pinned by a snapshot.
 - [ ] The screenshot matrix is reviewed and recorded as goldens.
 - [ ] A custom brand theme visibly rebrands every component without code changes.
@@ -209,13 +232,22 @@ Typography: the M3 baseline type scale. **The skin doesn't bundle Roboto** (skin
 | A renderer overridden by the app (`MaterialSkin.copy(button = X)`) | Other renderers are unaffected. Dialog buttons are the caller's `CamoButton`s, so they use the override too. |
 | Material Expressive (the 2025 M3 update: new shapes and motion) | Out of v1. It could arrive as a skin option or a separate skin. |
 
+:::info[Changed in the M12 build (2026-11-05)]
+
+- **Expressive progress** waves the linear indicator only; the circular one stays.
+- **Time picker field** is 64, not the 72 first planned (a 45 sp digit fits, and the popup is narrow on a phone).
+- **Defaults:** the card's default form is Filled (`Soft`, `surfaceContainerHighest`); text fields float their label; the switch shows thumb icons; the segmented control is outlined with a check on the selected segment.
+- Both platforms ship the chart preset in §3.6 as `"material"`.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>
 
-:::info[Milestone: Later]
+:::info[Milestone: M12, in v0.1 (ADR-40)]
 
-The v1 skin is Minimal ([Minimal Skin](/guide/skins/minimal-skin), ADR-22). This note stays as the complete platform plan for the Material skin, for when you decide to ship it.
+Read the base note first: Material Skin. Minimal and Fluent came first, so the module follows the layout of `camouflage-skin-fluent` (`MaterialSkin.kt`, `MaterialTheme.kt`, `Paper.kt`, `Ripple.kt`, and `renderer/Material*.kt` grouped like Fluent's). This note is the platform plan.
 
 :::
 
@@ -296,8 +328,12 @@ public val materialBaselineDark: CamoTheme
 
 ### 4. Build steps {#kotlin-4-build-steps}
 
+M12 is built in one pass (the user's ruling, 2026-11-05: `CamoSkin` has no defaults, so a Material skin can't compile as a skin until every renderer exists), then reviewed as a whole. The five task cards close together.
+
+Steps:
+
 1. `Paper`, `MaterialIndication` (ripple + state layer + focus ring), `Ripple`.
-2. Renderers in checklist order. M3 needs text, icon, surface, button, iconButton. The rest come in M5/M6.
+2. The renderers of the batch, in checklist order.
 3. `materialSkin()` / `MaterialSkin`.
 4. The baseline themes + the snapshot test.
 5. Run `assertRendererAppliesBehavior` (from [Skin Contract](/guide/architecture/skin-contract#implementation) §5) on every clickable renderer.
@@ -308,7 +344,9 @@ public val materialBaselineDark: CamoTheme
 **Done when**
 - [ ] `:camouflage-skin-material` has no `material3` dependency (`./gradlew :camouflage-skin-material:dependencies`).
 - [ ] Every renderer passes the behavior and no-literals tests.
-- [ ] Goldens are recorded for Android and desktop, and iOS where Roborazzi supports it.
+- [ ] Goldens are recorded for Android and desktop, and iOS where Roborazzi supports it. Local macOS renders are replaced by CI's Linux ones.
+- [ ] The module is at layer 1 (`checkModuleLayers`), in the BOM, and the sample switches Minimal / Fluent / Material live.
+- [ ] `CamoCharts` has the `"material"` preset and the four charts render in the skin.
 
 ### 5. Edge cases {#kotlin-5-edge-cases}
 
@@ -319,13 +357,28 @@ public val materialBaselineDark: CamoTheme
 | M3 spec updates (Expressive) | Out of v1 (base note). |
 | App overrides a renderer | `MaterialSkin.copy(button = X)`: the other renderers keep reading `Camouflage.skin.feedback`, so feedback stays consistent. |
 
+:::info[Changed in the M12 build (2026-11-05)]
+
+- **One pass, not four batches.** `CamoSkin` requires every renderer, so the skin was built whole. The module started as a copy of `camouflage-skin-minimal` (Minimal's renderers are overlay-based like Material's), with every default, shape and structure reworked to the M3 table in the base note.
+- **Files:** `Paper.kt`, `Ripple.kt`, `MaterialTheme.kt` (`materialTheme(seed, dark, fontFamily)`, `materialColors`, the baselines, `MaterialBaselineSeed`), `MaterialSkin.kt` (`materialSkin(expressiveProgress)`, `MaterialSkin`, `MaterialPreview`), `renderer/Material*.kt` grouped like Fluent's, and `renderer/MaterialWavy.kt`.
+- **Ripple** is a `DelegatingNode`: the touch ripple is material-ripple's `createRippleModifierNode` (`RippleAlpha`: pressed 10%, dragged 16%); the 8% hover and 10% focus state layer and the 3 dp keyboard focus ring are drawn by the skin. `material-ripple` is the only Material artifact (`composeLibs.ripple`).
+- **Paper** is `Modifier.shadow(...).background(...).clip(...)`; shadows are the theme's elevation levels (1, 3, 6, 8, 12 dp).
+- **Baseline:** the M3 roles are literals; the status families are literals too, and `MaterialBaselineTest` fails if `fromSeed` would generate different ones. `materialTheme(seed)` uses `fromSeed(primary = seed, neutral = seed)`.
+- **Defaults that differ from the first plan:** the text field is floating-label by default (56 dp, `extraSmall`); the switch shows thumb icons by default; the slider is the 2024 handle-bar slider with stop marks; segmented buttons share one outline; the card defaults to the Filled (`Soft`) form; the FAB defaults to `primaryContainer`; the time picker's field is 64 dp; the dialog is `surfaceContainerHigh` at level 3.
+- **`expressiveProgress`** waves the linear indicator only (`MaterialWavyProgressBarRenderer`: a 3 dp amplitude, 40 dp wavelength, drifting; static under reduced motion). The circular indicator stays.
+- **Charts:** the `"material"` preset is in `CamoCharts` (line 3, markers 8, area 16%, bar radius 8, bar gap 2, slice gap 4, donut 0.3); the charts goldens gained `material_light` and `material_dark`.
+- **Sample:** `SampleSkin.Material` (with the brand seed through `materialTheme(seed)`); `BrandThemeTest` covers it. Layer 1 in `build.gradle.kts`; the BOM picks it up by name.
+- The goldens are macOS renders; CI's Linux ones replace them after the first run.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
 
-:::info[Milestone: Later]
+:::info[Milestone: M12, in v0.1 (ADR-40)]
 
-The v1 skin is Minimal ([Minimal Skin](/guide/skins/minimal-skin), ADR-22). This note stays as the complete platform plan for the Material skin, for when you decide to ship it.
+Read the base note first: Material Skin. The package follows the layout of `camouflage_skin_fluent` (`lib/src/material_theme.dart`, `paper.dart`, `ripple.dart`, `renderer/material_*.dart` grouped like Fluent's). This note is the platform plan.
 
 :::
 
@@ -393,8 +446,12 @@ class Ripple implements InteractionFeedback {
 
 ### 4. Build steps {#dart-4-build-steps}
 
+M12 is built in one pass (the user's ruling, 2026-11-05: `CamoSkin` has no defaults, so a Material skin can't compile as a skin until every renderer exists), then reviewed as a whole. The five task cards close together.
+
+Steps:
+
 1. `Paper`, `_MaterialFeedback` (ripple + state layer + focus ring), `Ripple`.
-2. Renderers in checklist order. M3 needs text, icon, surface, button, iconButton.
+2. The renderers of the batch, in checklist order.
 3. `materialSkin` / `materialSkinWith`.
 4. The baseline themes + the snapshot test against the shared JSON fixture.
 5. The "no literals" test per renderer (odd component-theme values are measured in the render tree).
@@ -404,7 +461,9 @@ class Ripple implements InteractionFeedback {
 **Done when**
 - [ ] `camouflage_core` still has no `material_ui` dependency, and only the skin does.
 - [ ] The Material baseline colors match Kotlin's (the shared fixture test passes in both repos).
-- [ ] Every renderer passes the no-literals test. Goldens are recorded.
+- [ ] Every renderer passes the no-literals test. Goldens are recorded (`test/goldens/ci`; macOS renders ignored).
+- [ ] `tool/check_layers.dart` has the package at layer 1, `check_no_material.dart` allows `material_ui` in this package only, and the example switches Minimal / Fluent / Material live.
+- [ ] `CamoCharts` has the `'material'` preset and the four charts render in the skin.
 
 ### 5. Edge cases {#dart-5-edge-cases}
 
@@ -414,5 +473,20 @@ class Ripple implements InteractionFeedback {
 | `material_ui` releasing faster than Flutter | Pin a compatible range, and test against the lowest and highest versions in CI occasionally. |
 | iOS look | This skin looks Material on iOS by design. A Cupertino skin (Later) would use `cupertino_ui` machinery the same way. |
 | Kotlin/Flutter pixel differences | Expected (different text engines and shadows). The colors, sizes and structure must match the base note. |
+
+:::info[Changed in the M12 build (2026-11-05)]
+
+- **One pass, not four batches** (see the Kotlin note). The package started as a copy of `camouflage_skin_minimal`, reworked to the M3 table.
+- **Files:** `lib/src/paper.dart`, `ripple.dart`, `material_theme.dart` (`materialTheme(seed, brightness, fontFamily)`, `materialColors`, `materialBaselineLight` / `Dark`, `materialBaselineSeed`), `renderer/material_*.dart` grouped like Fluent's, `renderer/material_wavy.dart`; `materialSkin` and `materialSkinWith(expressiveProgress)`.
+- **Ripple:** `InkRipple` from `material_ui`, created on each `pressDowns` position and confirmed on `pressEnds`. The widget that creates the ripples sits **below** the transparent `Material` (like `InkWell`), so they are disposed before it; above it, a test that ends mid-ripple fails with "disposed with an active Ticker". Every live ripple is tracked and disposed.
+- **Paper** is a `PhysicalShape` with the elevation as its shadow.
+- **`check_no_material`** lets `package:material_ui/` through in `camouflage_skin_material` only; `layers.yaml` has it at layer 1.
+- **The same literals as Kotlin:** the baseline and status colors are the same hex values; the package test pins the status ones against `fromSeed`.
+- **Differences from Kotlin:** `BorderRadius` has no directional form in the style types, so the drawer's end corners and the side sheet's start corners are physical (right and left); text selection controls were not added (the field keeps core's).
+- **Chart preset** `'material'` in `CamoCharts`; chart goldens have the two Material scenes.
+- **Example:** `SampleSkin.material`; the docked side sheet in the example is `Flexible`, since Material's is 360 wide and a phone is narrower.
+- Goldens: `test/goldens/ci` only (macOS ignored).
+
+:::
 
 </DartOnly>
