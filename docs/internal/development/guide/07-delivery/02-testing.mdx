@@ -102,6 +102,15 @@ Kover on core logic (theme, rules, filters and formats, form state, provider): *
 
 :::
 
+:::tip[M15 review answers and the accessibility pass (2026-11-05)]
+
+- **Decided:** Android host and iOS goldens are required for v0.1 (not built yet); the 200% text and RTL axes run on a representative set of twelve galleries per skin (buttons, icon buttons, inputs, text inputs, structure, data display, navigation, navigation chrome, actions, small data, lists, collections), not on all eighteen; `camouflage-skin-testing` is published; the group id stays `com.srctool.camouflage`.
+- **Built:** `accessibilityProblems` in `camouflage-skin-testing` (every clickable node has a name, a role or state, and a 44 dp touch target; parts scrolled out of a row or column are not measured along the scroll axis), and a `*AccessibilityTest` in each skin over those galleries: light, dark, 200% text and right to left. The two "deliberately broken" guards of Done when already exist as `SelfTest`.
+- **Found and fixed in core:** the tree's expand chevron had no name (it now says "Expand" or "Collapse"); a navigation item whose label is not drawn (the Carbon and Fluent rail, Never labels) had no name for a screen reader (it now carries its label as a description); the gallery's bare checkboxes were unnamed (named without changing how they look).
+- **Not done:** the by-hand TalkBack and VoiceOver pass; Android's `enableAccessibilityChecks()` (needs the Android host test setup, which comes with the Android host goldens).
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -195,6 +204,21 @@ It's the same axes as Kotlin: skin, theme, text scale, direction, and component 
 **Already in place:** `camouflage_skin_testing` (the galleries), unit and widget tests, Alchemist CI goldens (text as blocks, the same on every OS) for all five skins in light, dark and brand, `check_layers`, `check_no_material`, analyze and format in CI.
 **Left for M15:** font scale 2.0 and RTL goldens per skin, `meetsGuideline` accessibility checks (`androidTapTargetGuideline`, `iOSTapTargetGuideline`, `labeledTapTargetGuideline`, `textContrastGuideline`) over every gallery, the TalkBack and VoiceOver pass by hand on the same devices as Kotlin, and the two deliberately broken renderer checks as permanent tests.
 **Open for review:** the same two questions as Kotlin's note (platform goldens, the font scale set).
+
+:::
+
+:::warning[M15 accessibility pass: findings (2026-11-05)]
+
+`expectAccessibleScreen` (in `camouflage_skin_testing`) runs Flutter's own `androidTapTargetGuideline`, `iOSTapTargetGuideline` and `labeledTapTargetGuideline` over the same twelve galleries, in light, dark, 200% text and right to left, and each skin has an `*_accessibility_test.dart`.
+**Flutter is behind Kotlin here.** On Kotlin the controls' touch targets are bigger than their drawing (`minimumTouchTarget`), so the gallery check passes; on Flutter the semantics rectangle is the drawn box, so many controls report their drawn size: the stepper buttons (30 × 20), the clear and show-password buttons (26), the chip remove button (24), the segmented control and the tabs (40 high), checkboxes and switches without a label, and the navigation chrome. Seven to nine of the twelve galleries per skin fail, and they are **skipped by name** in each test (`gaps`) so the rest stay guarded; that is a list of follow-ups, not a pass.
+**The fix** is one shared piece in core: a minimum touch target for Flutter whose semantics rectangle and hit area are 48 (the Kotlin `minimumTouchTarget`), used by those controls; each fix removes a name from the skins' `gaps` lists.
+
+:::
+
+:::tip[M15: the Flutter touch targets (2026-11-05)]
+
+Fixed with one core piece, `CamoTouchSemantics` (next to `CamoTouchTarget`): a render object that makes the *semantics* of one control cover at least 48 × 48, centered, without changing layout or painting (what Kotlin's `minimumTouchTarget` does for its touch bounds; the hit area is unchanged). `CamoBehavior` takes `touchSemantics: true`, used by buttons, icon buttons, the field actions (clear, show password, a chip's remove), segments, tabs, navigation items, button-group buttons and the split button's parts. An icon-only navigation item (labels hidden) now carries its label, the data table's rows are named "Row n", and the gallery's bare checkboxes are labelled.
+**Remaining gaps** (skipped by name in each skin's test, a follow-up each): `actions` in every skin (the toolbar and group buttons sit inside a clip, so their semantics cannot grow past the 40 high row), `buttons` and `navigation chrome` (layout overflow at 200% text), and in some skins `lists` (the table's select-all box is 40 high), `inputs`, `data display` and `structure`. Minimal and Fluent 4 to 5 galleries, Material 5, Cupertino 6, Carbon 3 (down from 7 to 9).
 
 :::
 
