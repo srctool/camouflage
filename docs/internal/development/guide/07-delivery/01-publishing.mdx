@@ -113,6 +113,12 @@ mavenPublishing {
 
 :::
 
+:::tip[M15 publishing prep, checked locally (2026-11-06)]
+
+Nothing was published. `publishToMavenLocal -Pversion=0.1.0-localcheck` ran for the whole set (core, charts, navigation3, the five skins, skin-testing and the BOM, with the iOS and wasm artifacts). A fresh KMP project (jvm, wasmJs, iosSimulatorArm64, android) and a fresh Android-only app both resolved the BOM and the modules from Maven Local and compiled. `dokkaGenerate` passes for every module, and the release workflow now attaches the API reference as `camouflage-kotlin-api-<version>.zip` (no Pages setup). **Still the owner's:** the Central Portal namespace and its DNS record, the PGP key and the four secrets in the `maven-central` environment, and the go for the `v0.1.0` tag.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -193,6 +199,12 @@ resolution: workspace
 **Needs the owner:** create the pub.dev publisher (verified domain), enable automated publishing from GitHub Actions for each package with the tag pattern, and approve the first publish of each package (a first publish can't be automated).
 **I can do:** `dart pub publish --dry-run` for every package (README, CHANGELOG, `topics`, `screenshots`, example), fixing what it reports, the version bump from `0.1.0-dev.1` to `0.1.0`, and a fresh Flutter app consuming the packages from path and from the dry-run archive.
 **Open for review:** the publisher name, whether the skins ship as separate packages (they do) or a bundle, and the order of the first publishes (core first).
+
+:::
+
+:::tip[M15 publishing prep, checked locally (2026-11-06)]
+
+Every package and constraint moved from `0.1.0-dev.1` to `0.1.0` (the publish workflow needs the pubspec to equal the tag), and `flutter pub publish --dry-run` is clean for all eight packages. **Still the owner's:** the pub.dev publisher, the automated-publishing setting per package, each package's first publish approval, and the go for the tags `camouflage_core-v0.1.0` (first) and the rest.
 
 :::
 
