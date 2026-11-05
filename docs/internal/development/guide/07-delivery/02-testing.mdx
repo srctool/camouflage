@@ -90,6 +90,18 @@ Kover on core logic (theme, rules, filters and formats, form state, provider): *
 | Flaky iOS screenshot support | Allowed to fail in CI until Roborazzi's iOS support leaves experimental. |
 | Web | Unit and component tests only. |
 
+:::info[M15 start (2026-11-05): where the testing stands, and the plan]
+
+**Already in place** (built with the milestones): `camouflage-skin-testing` (`assertRendererAppliesBehavior`, `assertNoLiterals`, the galleries, the golden font), unit, component (`skikoTest`) and Roborazzi JVM goldens for all five skins (light, dark, brand; Linux renders from CI), Kover, ABI, Detekt and the layer check in `check`, and CI on JVM, Android, iOS simulator and wasm.
+**Left for M15:**
+1. The matrix axes the milestones skipped: **font scale 2.0** and **RTL** for every skin's galleries (today only a few components have them), and one brand theme per skin (done for four, Carbon has it).
+2. **Accessibility:** Compose's `enableAccessibilityChecks()` on the Android host over every gallery, and the TalkBack and VoiceOver checklist per component family, run by hand on the Galaxy A15 and the iPhone (the results go in this note).
+3. Android host goldens (Robolectric) and iOS goldens: still allowed to fail while Roborazzi's support is experimental; decide whether v0.1 ships without them.
+4. The two "deliberately broken" checks of Done when, as permanent tests (a renderer without the behavior modifier, a hard-coded height) so the guards are proven to bite.
+**Open for review:** whether Android host goldens are required for v0.1 (they triple the golden count); whether the 200% font scale axis runs on every gallery or on a representative set per family.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -177,5 +189,13 @@ It's the same axes as Kotlin: skin, theme, text scale, direction, and component 
 | Animations in goldens | `pumpAndSettle` before capture, and reduced motion in `camoTestApp` removes the timing flakiness. |
 | Web-specific behavior | `flutter test --platform chrome` for the few web-sensitive tests (text input, links). |
 | **Brand theme in the matrix** | From M3, one extra golden per component: `brandTheme`, light, text scale 1.0, LTR. It catches renderers that ignore the theme without doubling the goldens. |
+
+:::info[M15 start (2026-11-05): where the testing stands, and the plan]
+
+**Already in place:** `camouflage_skin_testing` (the galleries), unit and widget tests, Alchemist CI goldens (text as blocks, the same on every OS) for all five skins in light, dark and brand, `check_layers`, `check_no_material`, analyze and format in CI.
+**Left for M15:** font scale 2.0 and RTL goldens per skin, `meetsGuideline` accessibility checks (`androidTapTargetGuideline`, `iOSTapTargetGuideline`, `labeledTapTargetGuideline`, `textContrastGuideline`) over every gallery, the TalkBack and VoiceOver pass by hand on the same devices as Kotlin, and the two deliberately broken renderer checks as permanent tests.
+**Open for review:** the same two questions as Kotlin's note (platform goldens, the font scale set).
+
+:::
 
 </DartOnly>
