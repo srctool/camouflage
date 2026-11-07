@@ -119,6 +119,12 @@ Nothing was published. `publishToMavenLocal -Pversion=0.1.0-localcheck` ran for 
 
 :::
 
+:::tip[Released: v0.1.0 (2026-11-06)]
+
+Published to Maven Central from the tag `v0.1.0` (commit `9a3fc30`): `com.srctool.camouflage:*:0.1.0`, 15 artifacts, signed, with the API reference zip on the GitHub Release. **How the workflow ended up:** a `vX.Y.Z` tag on `main` pauses for the `maven-central` environment's reviewer; it then requires the two CI jobs (JVM/Android and iOS) to have passed on exactly the tagged commit (instead of rerunning `check`, which also failed once on the macOS runner's reduced-motion setting), builds the Dokka API reference, publishes and releases on the Central Portal, and creates the GitHub Release. **Lessons:** keep the Dokka step before the upload; a failed run before the upload leaves nothing to clean, so the tag can be moved; the Portal token lasts six months, so renew it before the next release.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -205,6 +211,12 @@ resolution: workspace
 :::tip[M15 publishing prep, checked locally (2026-11-06)]
 
 Every package and constraint moved from `0.1.0-dev.1` to `0.1.0` (the publish workflow needs the pubspec to equal the tag), and `flutter pub publish --dry-run` is clean for all eight packages. **Still the owner's:** the pub.dev publisher, the automated-publishing setting per package, each package's first publish approval, and the go for the tags `camouflage_core-v0.1.0` (first) and the rest.
+
+:::
+
+:::tip[Released: v0.1.0 (2026-11-06)]
+
+All eight packages are at 0.1.0 on pub.dev under the publisher `srctool.com` (the repo tag `v0.1.0` is on `4325ade`). The first publish of each package was by hand, in dependency order (core first), then moved to the publisher and set to publish from GitHub Actions with the tag pattern `<package>-v{{version}}` and the `pub.dev` environment (required reviewer). **Lessons:** read the files the dry run lists, not only its warning count (every LICENSE was a `TODO` stub and six READMEs the template, and `--dry-run` said "0 warnings"); a repo-level tag like `v0.1.0` does not match the publish pattern, which is why it is safe to tag a release; the next versions publish from `camouflage_core-v0.1.1` style tags.
 
 :::
 
