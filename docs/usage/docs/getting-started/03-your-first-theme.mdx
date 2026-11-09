@@ -1,0 +1,133 @@
+---
+title: Your first theme
+sidebar_label: Your first theme
+description: Give the app a brand color, a font and dark mode.
+---
+
+# Your first theme
+
+Every skin ships a starter theme function. You give it your brand color, a font and light or dark; it returns a complete theme.
+
+## A brand color
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import androidx.compose.ui.graphics.Color
+
+val brand = Color(0xFF0B57D0)
+
+CamouflageProvider(
+    skin = MaterialSkin,
+    theme = materialTheme(seed = brand),
+) { App() }
+```
+
+Each skin names the parameter for its own idea of a brand color: `seed` (Material), `accent` (Minimal, Cupertino, Carbon) and `brand` (Fluent).
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+const brand = Color(0xFF0B57D0);
+
+CamouflageProvider(
+  skin: materialSkin,
+  theme: materialTheme(seed: brand),
+  child: child!,
+)
+```
+
+Each skin names the parameter for its own idea of a brand color: `seed` (Material), `accent` (Minimal, Cupertino, Carbon) and `brand` (Fluent).
+
+</TabItem>
+</LangTabs>
+
+## Dark mode
+
+Dark mode is a flag on the theme, not a second theme you maintain. Follow the system setting:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import androidx.compose.foundation.isSystemInDarkTheme
+
+@Composable
+fun App() {
+    val dark = isSystemInDarkTheme()
+    CamouflageProvider(
+        skin = MaterialSkin,
+        theme = materialTheme(seed = brand, dark = dark),
+    ) { Home() }
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+builder: (context, child) {
+  final dark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+  return CamouflageProvider(
+    skin: materialSkin,
+    theme: materialTheme(
+      seed: brand,
+      brightness: dark ? Brightness.dark : Brightness.light,
+    ),
+    child: child!,
+  );
+},
+```
+
+</TabItem>
+</LangTabs>
+
+## A font
+
+Skins never bundle fonts. Add the font to your app the normal way (Compose resources or a Flutter `fonts:` entry) and pass its family name:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+materialTheme(seed = brand, fontFamily = myFontFamily) // a Compose FontFamily
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+materialTheme(seed: brand, fontFamily: 'Inter') // a family declared in pubspec.yaml
+```
+
+</TabItem>
+</LangTabs>
+
+## Check it
+
+Brand colors can fail contrast. `validate()` tells you which pairs; it never changes your colors behind your back.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+val theme = materialTheme(seed = brand)
+theme.validate().forEach { println(it) }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final theme = materialTheme(seed: brand);
+for (final issue in theme.validate()) {
+  debugPrint('$issue');
+}
+```
+
+</TabItem>
+</LangTabs>
+
+Go deeper in [Theming](/docs/theming/colors).

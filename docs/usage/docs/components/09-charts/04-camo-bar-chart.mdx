@@ -1,0 +1,86 @@
+---
+title: CamoBarChart
+sidebar_label: BarChart
+sidebar_position: 4
+description: "Bars comparing values across categories: vertical or horizontal, grouped side by side or stacked, with a legend that toggles series, a tooltip on the bar under the pointer and a data table."
+---
+
+# CamoBarChart
+
+Bars comparing values across categories: vertical or horizontal, grouped side by side or stacked, with a legend
+that toggles series, a tooltip on the bar under the pointer and a data table. `yAxis` is always the value axis and
+`xAxis` the category axis, whichever way the bars run. `valueLabels` writes each bar's value at its free end (a
+stack's total at its end). The plot is one image node; focusing it walks the bars (Left and Right between
+categories, Up and Down between series) and announces "Q1, North, 42". Bars grow from zero; negative bars go the
+other way. In a right-to-left layout vertical bars run from the right and horizontal bars start at the right edge.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoBarChart(
+    categories: List<String>,
+    series: List<ChartSeries>,
+    title: String,
+    modifier: Modifier = Modifier,
+    orientation: BarOrientation = BarOrientation.Vertical,
+    mode: BarMode = BarMode.Grouped,
+    valueLabels: Boolean = false,
+    xAxis: ChartAxis = ChartAxis(),
+    yAxis: ChartAxis = ChartAxis(),
+    loading: Boolean = false,
+    empty: (@Composable () -> Unit)? = null,
+    showTable: Boolean = false,
+    plotHeight: Dp = DefaultBarPlotHeight,
+    style: ChartStyle? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `categories` | `List<String>` | `required` |
+| `series` | `List<ChartSeries>` | `required` |
+| `title` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `orientation` | `BarOrientation` | `BarOrientation.Vertical` |
+| `mode` | `BarMode` | `BarMode.Grouped` |
+| `valueLabels` | `Boolean` | `false` |
+| `xAxis` | `ChartAxis` | `ChartAxis()` |
+| `yAxis` | `ChartAxis` | `ChartAxis()` |
+| `loading` | `Boolean` | `false` |
+| `empty` | `(@Composable () -> Unit)?` | `null` |
+| `showTable` | `Boolean` | `false` |
+| `plotHeight` | `Dp` | `DefaultBarPlotHeight` |
+| `style` | `ChartStyle?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `categories` | `List<String>` | `required` | The category labels. |
+| `series` | `List<ChartSeries>` | `required` | The series. |
+| `title` | `String` | `required` | The chart's title. |
+| `orientation` | `BarOrientation` | `BarOrientation.vertical` | Which way bars run. |
+| `mode` | `BarMode` | `BarMode.grouped` | Side by side or stacked. |
+| `valueLabels` | `bool` | `false` | Whether values are written at the bars' ends. |
+| `xAxis` | `ChartAxis` | `const ChartAxis()` | The category axis (its title). |
+| `yAxis` | `ChartAxis` | `const ChartAxis()` | The value axis. |
+| `loading` | `bool` | `false` | Whether a skeleton stands in for the plot. |
+| `empty` | `Widget?` |  | What shows with no data; "No data" by default. |
+| `showTable` | `bool` | `false` | Whether the data shows as a table at first. |
+| `plotHeight` | `double` | `220` | The height of the plot. |
+| `style` | `ChartStyle?` |  | Style changes for this chart. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoBarChart works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/charts/camo-bar-chart).
+:::

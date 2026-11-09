@@ -1,0 +1,34 @@
+---
+title: Changelog
+description: What changed in each release of the Kotlin and Flutter libraries.
+---
+
+# Changelog
+
+Camouflage follows [Semantic Versioning](https://semver.org). Before 1.0, a minor version can still change the API. The full history, with every pull request, is in each repository:
+
+- Kotlin: [CHANGELOG](https://github.com/srctool/camouflage-kotlin/blob/main/CHANGELOG.md) and [releases](https://github.com/srctool/camouflage-kotlin/releases)
+- Flutter: [CHANGELOG](https://github.com/srctool/camouflage-dart/blob/main/CHANGELOG.md) and the [packages on pub.dev](https://pub.dev/publishers/srctool.com/packages)
+
+## Flutter 0.1.2
+
+`camouflage_skin_fluent` and `camouflage_skin_material`: require `camouflage_core` ^0.1.1. 0.1.1 of these two skins used a widget that exists only from core 0.1.1, so resolving core 0.1.0 failed to build.
+
+## Flutter 0.1.1
+
+All eight packages.
+
+- **Documentation on pub.dev:** a full README for every package, an example, screenshots, topics and a link to these docs. Every package now scores 160/160 on pub.dev.
+- **Accessibility:** the navigation bar grows with large text, connected button groups and segmented controls no longer clip their touch targets, a semantics-only way to enlarge a touch target (`CamoTouchSemantics`) and a clip that keeps touch targets whole (`CamoClipRRect`), and labels on data table rows and select-all.
+
+## 0.1.0
+
+The first release, Kotlin and Flutter.
+
+- **52 components:** text and icons, buttons, inputs and forms, containers and lists, data display, feedback, overlays, navigation, and adaptive layout.
+- **A theme system:** colors from a seed, type, shape, spacing, elevation, motion, component overrides, brand token sets, contrast validation, animated changes.
+- **Five skins:** Minimal, Material 3, Cupertino (Classic and Liquid Glass), Fluent (Solid, Acrylic and Mica) and Carbon.
+- **Charts** without a chart library: line, area, bar, pie, donut and sparkline.
+- **Navigation 3** integration (Kotlin).
+- **Testing packages** that check a screen for names, roles, states and touch targets.
+- **Platforms:** Android, iOS, desktop and web for Kotlin; Android, iOS, macOS, Windows, Linux and web for Flutter.

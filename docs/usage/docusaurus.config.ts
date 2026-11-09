@@ -37,7 +37,20 @@ const config: Config = {
   markdown: {
     mermaid: true,
   },
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        // Search runs in the browser over an index built at build time; no service to run.
+        hashed: true,
+        indexBlog: false,
+        docsRouteBasePath: '/docs',
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+      },
+    ],
+  ],
 
   i18n: {
     defaultLocale: 'en',
@@ -60,6 +73,7 @@ const config: Config = {
           path: 'docs',
           routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
+          sidebarCollapsed: false,
         },
         blog: false,
         theme: {
@@ -81,8 +95,13 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {to: '/docs', label: 'Docs', position: 'right'},
+        {to: '/docs/getting-started/installation', label: 'Get started', position: 'right'},
+        {to: '/docs/components', label: 'Components', position: 'right'},
+        {to: '/docs/skins', label: 'Skins', position: 'right'},
+        {to: '/docs/theming/colors', label: 'Theming', position: 'right'},
+        {to: '/docs/guides/accessibility', label: 'Guides', position: 'right'},
         {href: INTERNAL_URL + '/contributing', label: 'Contributing', position: 'right'},
+        {type: 'search', position: 'right'},
         {
           href: 'https://github.com/srctool/camouflage',
           position: 'right',
@@ -96,7 +115,13 @@ const config: Config = {
       links: [
         {
           title: 'Docs',
-          items: [{label: 'Introduction', to: '/docs'}],
+          items: [
+            {label: 'Get started', to: '/docs/getting-started/installation'},
+            {label: 'Components', to: '/docs/components'},
+            {label: 'Skins', to: '/docs/skins'},
+            {label: 'Theming', to: '/docs/theming/colors'},
+            {label: 'Accessibility', to: '/docs/guides/accessibility'},
+          ],
         },
         {
           title: 'Platform',
@@ -109,6 +134,9 @@ const config: Config = {
         {
           title: 'More',
           items: [
+            {label: 'Changelog', to: '/docs/resources/changelog'},
+            {label: 'Kotlin on Maven Central', href: 'https://central.sonatype.com/search?q=com.srctool.camouflage'},
+            {label: 'Flutter on pub.dev', href: 'https://pub.dev/publishers/srctool.com/packages'},
             {label: 'Contributing', href: INTERNAL_URL + '/contributing'},
             {label: 'GitHub', href: 'https://github.com/srctool/camouflage'},
           ],

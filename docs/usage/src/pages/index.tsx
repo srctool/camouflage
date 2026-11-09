@@ -63,7 +63,7 @@ function HomepageHeader() {
           <div ref={menuRef} className={styles.jbSplit}>
             <Link
               className={clsx(styles.jbBtn, styles.jbLeft)}
-              to="/docs"
+              to="/docs/getting-started/installation"
             >
               Get Started with
             </Link>

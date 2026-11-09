@@ -1,0 +1,74 @@
+---
+title: Component overrides
+description: Change one component's size, shape or colors for the whole app without writing a skin.
+---
+
+# Component overrides
+
+A theme can carry **overrides** for single components. Every field is optional; `null` keeps the skin's default. This is the right tool for "our buttons are 44 high and soft by default" without touching the skin.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import androidx.compose.ui.unit.dp
+import com.srctool.camouflage.core.button.ButtonTheme
+import com.srctool.camouflage.core.theme.Appearance
+import com.srctool.camouflage.core.theme.CamoComponentThemes
+
+val theme = materialTheme(seed = brand).copy(
+    components = CamoComponentThemes(
+        button = ButtonTheme(height = 44.dp, defaultAppearance = Appearance.Soft),
+    ),
+)
+
+CamouflageProvider(skin = MaterialSkin, theme = theme) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final theme = materialTheme(seed: brand).copyWith(
+  components: const CamoComponentThemes(
+    button: CamoButtonTheme(height: 44, defaultAppearance: Appearance.soft),
+  ),
+);
+
+CamouflageProvider(skin: materialSkin, theme: theme, child: child!)
+```
+
+</TabItem>
+</LangTabs>
+
+Every component has its own override type (`ButtonTheme`, `CheckboxTheme`, `ProgressTheme`, …). The fields are the same as what the skin resolves: sizes, shapes, paddings, text styles and per-appearance colors. The parameters are listed on each [component's page](/docs/components) and in the API reference.
+
+## Scoping an override
+
+A provider with a `null` skin or theme **inherits** from the one above. Nest providers to restyle one part of the app, for example a dark panel inside a light screen:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamouflageProvider(theme = materialTheme(seed = brand, dark = true)) {
+    SidePanel() // inherits the skin, gets the dark theme
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+CamouflageProvider(
+  theme: materialTheme(seed: brand, brightness: Brightness.dark),
+  child: const SidePanel(), // inherits the skin, gets the dark theme
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## Your own token sets
+
+A brand can also bring its own data (for example a `BrandTokens` with a logo color and a gradient) on the theme, and read it back anywhere below the provider. The token set interpolates, so [animated theme changes](/docs/theming/animating-themes) include it.

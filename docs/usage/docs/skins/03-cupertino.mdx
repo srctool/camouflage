@@ -1,0 +1,86 @@
+---
+title: Cupertino skin
+sidebar_label: Cupertino
+sidebar_position: 3
+description: "An iOS feel: grouped surfaces, opacity feedback, system blue and the San Francisco proportions."
+---
+
+# Cupertino skin
+
+An iOS feel: grouped surfaces, opacity feedback, system blue and the San Francisco proportions. Optionally the newer Liquid Glass look.
+
+| Light | Dark |
+|---|---|
+| ![Cupertino skin, light](/img/skins/cupertino-light.png) | ![Cupertino skin, dark](/img/skins/cupertino-dark.png) |
+
+**Look and feel.** Classic opaque surfaces and blur materials, or Liquid Glass; fades on press.
+
+## Install
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+implementation("com.srctool.camouflage:camouflage-skin-cupertino")
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```sh
+flutter pub add camouflage_skin_cupertino
+```
+
+</TabItem>
+</LangTabs>
+
+## Use
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import com.srctool.camouflage.skin.cupertino.*
+
+CamouflageProvider(skin = CupertinoSkin, theme = cupertinoTheme()) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+import 'package:camouflage_skin_cupertino/camouflage_skin_cupertino.dart';
+
+CamouflageProvider(
+  skin: cupertinoSkin,
+  theme: cupertinoTheme(),
+  child: child!,
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## Options
+
+`accent`: the tint color (system blue by default). `surface`: `Classic` or `LiquidGlass`.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+cupertinoSkin(surface = CupertinoSurface.LiquidGlass)
+cupertinoTheme(accent = brand, dark = true)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+cupertinoSkinWith(surface: CupertinoSurface.liquidGlass)
+```
+
+</TabItem>
+</LangTabs>
+
+Every skin implements the same 52 renderers, so anything you build works in all of them. See [Skins and themes](/docs/concepts/skins-and-themes) for how that works, and [Writing your own skin](/docs/guides/custom-skin) to add another.

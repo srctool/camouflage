@@ -1,0 +1,60 @@
+---
+title: CamoBadge
+sidebar_label: Badge
+sidebar_position: 2
+description: "A count (\"3\") or, with no count, a dot, usually in a CamoBadgedBox on an icon or avatar."
+---
+
+# CamoBadge
+
+A count ("3") or, with no `count`, a dot, usually in a `CamoBadgedBox` on an icon or avatar. Above `max` it
+shows "99+"; a count of 0 (or less) shows nothing. A badge is never focusable: its `contentDescription`
+(default "3 new" / "New") joins its anchor's announcement. Count changes aren't announced; apps announce
+the ones that matter.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoBadge(
+    modifier: Modifier = Modifier,
+    count: Int? = null,
+    max: Int = 99,
+    tone: Tone? = null,
+    appearance: Appearance? = null,
+    contentDescription: String? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `count` | `Int?` | `null` |
+| `max` | `Int` | `99` |
+| `tone` | `Tone?` | `null` |
+| `appearance` | `Appearance?` | `null` |
+| `contentDescription` | `String?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `count` | `int?` |  | The count; `null` makes a dot. |
+| `max` | `int` | `99` | Above it the badge shows "$max+". |
+| `tone` | `Tone?` |  | `null` uses `CamoBadgeTheme.defaultTone`. |
+| `appearance` | `Appearance?` |  | `null` uses `CamoBadgeTheme.defaultAppearance`. |
+| `semanticLabel` | `String?` |  | What the anchor says about the badge ("3 unread messages"). |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoBadge works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-badge).
+:::

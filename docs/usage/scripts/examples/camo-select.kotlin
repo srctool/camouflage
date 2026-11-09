@@ -1,0 +1,14 @@
+var country by remember { mutableStateOf<String?>(null) }
+
+CamoSelect(
+    value = country,
+    onValueChange = { country = it },
+    options = listOf(
+        SelectOption("id", "Indonesia"),
+        SelectOption("nl", "Netherlands"),
+        SelectOption("us", "United States"),
+    ),
+    label = "Country",
+    placeholder = "Choose one",
+    searchable = true,
+)

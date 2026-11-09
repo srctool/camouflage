@@ -1,0 +1,87 @@
+---
+title: Testing
+description: Check a screen for accessibility problems in your own tests.
+---
+
+# Testing
+
+The testing packages are test-only. They run the same checks Camouflage runs on its own components against **your** screens.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+// build.gradle.kts: testImplementation("com.srctool.camouflage:camouflage-skin-testing")
+
+@OptIn(ExperimentalTestApi::class)
+class SignUpAccessibilityTest {
+    @Test
+    fun signUpIsAccessible() = runComposeUiTest {
+        val problems = accessibilityProblems(
+            skin = MaterialSkin,
+            theme = materialTheme(),
+            fontScale = 2f,   // 200% text
+            rtl = false,
+        ) { SignUpScreen() }
+        assertTrue(problems.isEmpty(), problems.joinToString("\n"))
+    }
+}
+```
+
+`accessibilityProblems` returns one line per problem: a missing name, a missing role or state, or a touch target under 44 dp.
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+// dev_dependencies: camouflage_skin_testing
+
+testWidgets('sign up is accessible', (tester) async {
+  await expectAccessibleScreen(
+    tester,
+    skin: materialSkin,
+    theme: materialTheme(),
+    child: const SignUpScreen(),
+    textScale: 2,                        // 200% text
+    textDirection: TextDirection.ltr,
+  );
+});
+```
+
+It runs Flutter's own `androidTapTargetGuideline`, `iOSTapTargetGuideline` and `labeledTapTargetGuideline` on the screen.
+
+</TabItem>
+</LangTabs>
+
+## Run it across skins and directions
+
+Loop over what you support so a change in one place cannot break another:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+for ((skin, theme) in listOf(MaterialSkin to materialTheme(), CupertinoSkin to cupertinoTheme())) {
+    for (rtl in listOf(false, true)) {
+        // accessibilityProblems(skin, theme, rtl = rtl) { SignUpScreen() }
+    }
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+for (final (skin, theme) in [(materialSkin, materialTheme()), (cupertinoSkin, cupertinoTheme())]) {
+  for (final dir in TextDirection.values) {
+    // await expectAccessibleScreen(tester, skin: skin, theme: theme, textDirection: dir, child: …);
+  }
+}
+```
+
+</TabItem>
+</LangTabs>
+
+## Validate the theme too
+
+Add one test that your brand colors pass `theme.validate()`; see [Validating a theme](/docs/theming/validation).

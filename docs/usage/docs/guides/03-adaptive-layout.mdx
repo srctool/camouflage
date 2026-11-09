@@ -1,0 +1,40 @@
+---
+title: Adaptive layout
+description: One layout that follows the window, the input device and the platform.
+---
+
+# Adaptive layout
+
+The provider measures the **environment** and shares it, so your screens and the theme's adaptive rules can react to it.
+
+| Part | Values |
+|---|---|
+| Window size class | `Compact` (under 600 dp), `Medium` (600), `Expanded` (840), `Large` (1200) |
+| Input | `Touch`, or `Pointer` for a mouse and trackpad (hover, denser UI) |
+| Platform | Android, iOS, macOS, Windows, Linux, Web |
+| Capabilities | what the device supports (for example hover) |
+
+The breakpoints are the Material window size classes by default, and a brand can move them in its theme.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+`CamoEnvironment` has `windowSize`, `input`, `platform` and `capabilities`. Use the window size class to choose between a navigation bar, a rail and a drawer for the same destinations.
+
+```kotlin
+// Set it yourself, for example in a preview or a test:
+CamouflageProvider(skin = MaterialSkin, theme = materialTheme(), environment = myEnvironment) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final env = Camouflage.environmentOf(context);
+final wide = env.windowSize.index >= WindowSizeClass.expanded.index; // compact < medium < expanded < large
+```
+
+</TabItem>
+</LangTabs>
+
+See [CamoNavigationBar, CamoNavigationRail and CamoNavigationDrawer](/docs/components/navigation) for one set of destinations in all three forms.

@@ -1,0 +1,72 @@
+---
+title: CamoListItem
+sidebar_label: ListItem
+sidebar_position: 2
+description: "One list row: up to three lines of text with a leading and a trailing slot."
+---
+
+# CamoListItem
+
+One list row: up to three lines of text with a leading and a trailing slot. With `onClick` the whole row is one
+target, announced as one element; without it the row is plain content, with no focus stop. For a settings row
+with a switch, pass the switch display-only (`onCheckedChange = null`) as `trailing` and toggle in `onClick`:
+the row is then announced as the switch ("Wi-Fi, switch, on").
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoListItem(
+    headline: String,
+    modifier: Modifier = Modifier,
+    supporting: String? = null,
+    overline: String? = null,
+    leading: (@Composable () -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
+    selected: Boolean = false,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `headline` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `supporting` | `String?` | `null` |
+| `overline` | `String?` | `null` |
+| `leading` | `(@Composable () -> Unit)?` | `null` |
+| `trailing` | `(@Composable () -> Unit)?` | `null` |
+| `onClick` | `(() -> Unit)?` | `null` |
+| `selected` | `Boolean` | `false` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `headline` | `String` | `required` | The main line. |
+| `supporting` | `String?` |  | The line below. |
+| `overline` | `String?` |  | The small line above. |
+| `leading` | `Widget?` |  | Before the text. |
+| `trailing` | `Widget?` |  | After the text. |
+| `onPressed` | `VoidCallback?` |  | Makes the row one target; `null` keeps it plain content. |
+| `selected` | `bool` | `false` | Highlights the row. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoListItem works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/containers-and-lists/camo-list-item).
+:::

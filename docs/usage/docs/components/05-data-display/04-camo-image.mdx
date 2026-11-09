@@ -1,0 +1,60 @@
+---
+title: CamoImage
+sidebar_label: Image
+sidebar_position: 4
+description: "A picture with a shape, a placeholder while it loads and an error look when it fails."
+---
+
+# CamoImage
+
+A picture with a shape, a placeholder while it loads and an error look when it fails. `contentDescription`
+describes it, or is `null` to hide a decorative image from screen readers; a failed image adds "could not
+load". `aspectRatio` fixes the frame's proportions.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoImage(
+    source: ImageSource,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    shape: ShapeRole = ShapeRole.Medium,
+    contentScale: ContentScale = ContentScale.Crop,
+    aspectRatio: Float? = null,
+    alignment: Alignment = Alignment.Center,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `source` | `ImageSource` | `required` |
+| `contentDescription` | `String?` |  |
+| `modifier` | `Modifier` | `Modifier` |
+| `shape` | `ShapeRole` | `ShapeRole.Medium` |
+| `contentScale` | `ContentScale` | `ContentScale.Crop` |
+| `aspectRatio` | `Float?` | `null` |
+| `alignment` | `Alignment` | `Alignment.Center` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `source` | `ImageSource` | `required` | What to show. |
+| `semanticLabel` | `label =` | `required` |  |
+| `shape` | `ShapeRole` | `ShapeRole.medium` | The corner role. |
+| `aspectRatio` | `ratio =` |  |  |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoImage works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-image).
+:::

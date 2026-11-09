@@ -1,0 +1,112 @@
+---
+title: CamoButton
+sidebar_label: Button
+sidebar_position: 1
+description: "A button with a text label."
+---
+
+# CamoButton
+
+A button with a text label. `appearance` is its visual weight (`null` uses the theme's default), `tone` its
+color family (`Error` for destructive actions). While `loading`, it shows a progress circle in place of the
+text, keeps its width and focus, and ignores clicks. The parent sets the width (`Modifier.fillMaxWidth()`).
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+CamoButton(text = "Save", onClick = { save() })
+
+// Weight and meaning
+CamoButton("Cancel", onClick = cancel, appearance = Appearance.Ghost)
+CamoButton("Delete", onClick = delete, appearance = Appearance.Outline, tone = Tone.Error)
+
+// Loading: keeps its width and focus, ignores clicks
+CamoButton("Saving", onClick = save, loading = true)
+
+// Full width
+CamoButton("Continue", onClick = next, modifier = Modifier.fillMaxWidth())
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+CamoButton(text: 'Save', onPressed: save)
+
+// Weight and meaning
+CamoButton(text: 'Cancel', onPressed: cancel, appearance: Appearance.ghost)
+CamoButton(text: 'Delete', onPressed: delete, appearance: Appearance.outline, tone: Tone.error)
+
+// Loading: ignores taps
+CamoButton(text: 'Saving', onPressed: save, loading: true)
+
+// Disabled: a null callback
+const CamoButton(text: 'Continue', onPressed: null)
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    enabled: Boolean = true,
+    loading: Boolean = false,
+    prefixIcon: (@Composable () -> Unit)? = null,
+    suffixIcon: (@Composable () -> Unit)? = null,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `text` | `String` | `required` |
+| `onClick` | `() -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `enabled` | `Boolean` | `true` |
+| `loading` | `Boolean` | `false` |
+| `prefixIcon` | `(@Composable () -> Unit)?` | `null` |
+| `suffixIcon` | `(@Composable () -> Unit)?` | `null` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `text` | `String` | `required` | The label. |
+| `onPressed` | `VoidCallback?` | `required` | Called on a tap or Enter / Space; `null` disables the button. |
+| `appearance` | `Appearance?` |  | The visual weight; `null` uses `CamoButtonTheme.defaultAppearance`. |
+| `tone` | `Tone` | `Tone.defaultTone` | The color family. |
+| `loading` | `bool` | `false` | Shows a progress circle and ignores taps. |
+| `prefixIcon` | `Widget?` |  | An icon before the text, e.g. `const AppIcon.save()`. |
+| `suffixIcon` | `Widget?` |  | An icon after the text. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoButton works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/actions/camo-button).
+:::

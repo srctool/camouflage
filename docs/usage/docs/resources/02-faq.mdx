@@ -1,0 +1,42 @@
+---
+title: FAQ
+description: Common questions about Camouflage.
+---
+
+# FAQ
+
+## Is it a replacement for Material or Cupertino?
+
+It sits *above* them. Camouflage's components are drawn by a skin; the Material and Cupertino skins give you those looks. Apart from one ink-ripple dependency in the Flutter Material skin, `camouflage_core` and the skins do not depend on Flutter's Material or Cupertino libraries.
+
+## Do I need a `MaterialApp`?
+
+No. In Flutter, a plain `WidgetsApp` is enough. See the [quick start](/docs/getting-started/quick-start).
+
+## Can I mix skins in one app?
+
+Yes. A provider with a different skin restyles only its subtree. See [Skins](/docs/skins).
+
+## Can I use my own fonts?
+
+Yes. Skins never bundle fonts. Add the font to your app and pass its family to the theme function. See [Your first theme](/docs/getting-started/your-first-theme).
+
+## Can I use it with my existing widgets or composables?
+
+Yes. Camouflage components are ordinary widgets and composables, and your own can sit beside them. Read colors and spacing from the theme (`Camouflage.colors`, `Camouflage.spacing`) so yours follow the skin and dark mode.
+
+## A component is missing a name and my debug build fails.
+
+That is on purpose. Every control needs a name a screen reader can say. Give it a visible label, or, for an icon-only control, a `contentDescription` (Kotlin) or `semanticLabel` (Dart). See [Accessibility](/docs/guides/accessibility).
+
+## Which platforms are supported?
+
+Kotlin: Android, iOS, desktop (JVM) and web (wasmJs). Flutter: Android, iOS, macOS, Windows, Linux and web.
+
+## Is it stable?
+
+It is 0.1. The API can change in a minor version until 1.0, and every change is in the [changelog](/docs/resources/changelog).
+
+## How do I report a bug or contribute?
+
+Open an issue in the [Kotlin](https://github.com/srctool/camouflage-kotlin/issues) or [Flutter](https://github.com/srctool/camouflage-dart/issues) repository. To work on Camouflage itself, start with the [contributor docs](https://camouflage-dev.srctool.com/contributing).

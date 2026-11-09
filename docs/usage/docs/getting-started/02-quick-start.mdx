@@ -1,0 +1,185 @@
+---
+title: Quick start
+sidebar_label: Quick start
+description: Put a skin and a theme at the top of your app and build a first screen.
+---
+
+# Quick start
+
+Two steps: provide a **skin and theme** once at the top of the app, then use components anywhere below it.
+
+## 1. Add the provider
+
+The provider goes **above your navigation**, so dialogs, menus and sheets inherit the skin and theme too.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.srctool.camouflage.core.provider.CamouflageProvider
+import com.srctool.camouflage.skin.material.MaterialSkin
+import com.srctool.camouflage.skin.material.materialTheme
+
+@Composable
+fun App() {
+    CamouflageProvider(skin = MaterialSkin, theme = materialTheme()) {
+        SignUpScreen()
+    }
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+Camouflage works with the plain `WidgetsApp`; there is no `MaterialApp` to configure.
+
+```dart
+import 'package:camouflage_core/camouflage_core.dart';
+import 'package:camouflage_skin_material/camouflage_skin_material.dart';
+import 'package:flutter/widgets.dart';
+
+void main() => runApp(
+  WidgetsApp(
+    color: const Color(0xFF6750A4),
+    pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
+      settings: settings,
+      pageBuilder: (context, _, _) => builder(context),
+    ),
+    builder: (context, child) => CamouflageProvider(
+      skin: materialSkin,
+      theme: materialTheme(),
+      child: child!,
+    ),
+    home: const SignUpScreen(),
+  ),
+);
+```
+
+</TabItem>
+</LangTabs>
+
+## 2. Build a screen
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import com.srctool.camouflage.core.button.CamoButton
+import com.srctool.camouflage.core.checkbox.CamoCheckbox
+import com.srctool.camouflage.core.provider.Camouflage
+import com.srctool.camouflage.core.surface.CamoSurface
+import com.srctool.camouflage.core.text.CamoText
+import com.srctool.camouflage.core.textfield.CamoTextField
+
+@Composable
+fun SignUpScreen() {
+    var email by remember { mutableStateOf("") }
+    var terms by remember { mutableStateOf(false) }
+    val spacing = Camouflage.spacing
+
+    CamoSurface(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier.padding(spacing.l),
+            verticalArrangement = Arrangement.spacedBy(spacing.m),
+        ) {
+            CamoText("Create your account")
+            CamoTextField(value = email, onValueChange = { email = it }, label = "Email")
+            CamoCheckbox(checked = terms, onCheckedChange = { terms = it }, label = "I agree to the terms")
+            CamoButton(
+                text = "Sign up",
+                onClick = { /* submit */ },
+                enabled = terms && email.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+import 'package:camouflage_core/camouflage_core.dart';
+import 'package:flutter/widgets.dart';
+
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  String _email = '';
+  bool _terms = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final spacing = Camouflage.themeOf(context).spacing;
+    return CamoSurface(
+      child: Padding(
+        padding: EdgeInsets.all(spacing.l),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: spacing.m,
+          children: [
+            const CamoText('Create your account'),
+            CamoTextField(
+              value: _email,
+              onChanged: (value) => setState(() => _email = value),
+              label: 'Email',
+            ),
+            CamoCheckbox(
+              checked: _terms,
+              onChanged: (value) => setState(() => _terms = value),
+              label: 'I agree to the terms',
+            ),
+            CamoButton(
+              text: 'Sign up',
+              onPressed: _terms && _email.isNotEmpty ? () {} : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+</TabItem>
+</LangTabs>
+
+Notice what is **not** here: no colors, no fonts, no shapes. The spacing comes from the theme (`spacing.l`), everything else from the skin.
+
+## 3. Change the look
+
+Swap the two arguments of the provider. Nothing else changes.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamouflageProvider(skin = CupertinoSkin, theme = cupertinoTheme()) { SignUpScreen() }
+CamouflageProvider(skin = CarbonSkin, theme = carbonTheme()) { SignUpScreen() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+CamouflageProvider(skin: cupertinoSkin, theme: cupertinoTheme(), child: child!)
+CamouflageProvider(skin: carbonSkin, theme: carbonTheme(), child: child!)
+```
+
+</TabItem>
+</LangTabs>
+
+Next: [make the theme your own](/docs/getting-started/your-first-theme).

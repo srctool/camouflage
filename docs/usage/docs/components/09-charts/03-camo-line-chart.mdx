@@ -1,0 +1,93 @@
+---
+title: CamoLineChart
+sidebar_label: LineChart
+sidebar_position: 3
+description: "A chart of values over an ordered axis, as lines, areas or stacked areas, with a legend that toggles series, a tooltip and crosshair at the nearest category, and a data table."
+---
+
+# CamoLineChart
+
+A chart of values over an ordered axis, as lines, areas or stacked areas, with a legend that toggles series, a
+tooltip and crosshair at the nearest category, and a data table. `categories` label the x axis (one per value);
+`times` (epoch milliseconds, ascending, `timeZoneOffsetMinutes` from UTC) places them on a time axis with
+calendar ticks instead. The plot is one image node whose text is `title` and each series' trend; focusing it
+walks the points (Left and Right between categories, Up and Down between series, Home and End) and announces
+"Jan, Sales, 42". A `null` value breaks the line; stacked areas treat negative values as zero. The time axis
+keeps its direction in a right-to-left layout, as time does.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoLineChart(
+    categories: List<String>,
+    series: List<ChartSeries>,
+    title: String,
+    modifier: Modifier = Modifier,
+    kind: LineKind = LineKind.Line,
+    curve: LineCurve = LineCurve.Linear,
+    markers: MarkerVisibility = MarkerVisibility.OnHover,
+    xAxis: ChartAxis = ChartAxis(),
+    yAxis: ChartAxis = ChartAxis(),
+    times: List<Long>? = null,
+    timeZoneOffsetMinutes: Int = 0,
+    loading: Boolean = false,
+    empty: (@Composable () -> Unit)? = null,
+    showTable: Boolean = false,
+    plotHeight: Dp = DefaultPlotHeight,
+    style: ChartStyle? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `categories` | `List<String>` | `required` |
+| `series` | `List<ChartSeries>` | `required` |
+| `title` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `kind` | `LineKind` | `LineKind.Line` |
+| `curve` | `LineCurve` | `LineCurve.Linear` |
+| `markers` | `MarkerVisibility` | `MarkerVisibility.OnHover` |
+| `xAxis` | `ChartAxis` | `ChartAxis()` |
+| `yAxis` | `ChartAxis` | `ChartAxis()` |
+| `times` | `List<Long>?` | `null` |
+| `timeZoneOffsetMinutes` | `Int` | `0` |
+| `loading` | `Boolean` | `false` |
+| `empty` | `(@Composable () -> Unit)?` | `null` |
+| `showTable` | `Boolean` | `false` |
+| `plotHeight` | `Dp` | `DefaultPlotHeight` |
+| `style` | `ChartStyle?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `categories` | `List<String>` | `required` | The x labels, one per value. |
+| `series` | `List<ChartSeries>` | `required` | The series. |
+| `title` | `String` | `required` | The chart's title. |
+| `kind` | `LineKind` | `LineKind.line` | Lines, areas or stacked areas. |
+| `curve` | `LineCurve` | `LineCurve.linear` | How points connect. |
+| `markers` | `MarkerVisibility` | `MarkerVisibility.onHover` | When points get a dot. |
+| `xAxis` | `ChartAxis` | `const ChartAxis()` | The category axis (its title). |
+| `yAxis` | `ChartAxis` | `const ChartAxis()` | The value axis. |
+| `times` | `List<int>?` |  | Epoch milliseconds per category, ascending, for a time axis. |
+| `timeZoneOffsetMinutes` | `int` | `0` | The zone of the time axis, minutes from UTC. |
+| `loading` | `bool` | `false` | Whether a skeleton stands in for the plot. |
+| `empty` | `Widget?` |  | What shows with no data; "No data" by default. |
+| `showTable` | `bool` | `false` | Whether the data shows as a table at first. |
+| `plotHeight` | `double` | `220` | The height of the plot. |
+| `style` | `ChartStyle?` |  | Style changes for this chart. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoLineChart works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/charts/camo-line-chart).
+:::

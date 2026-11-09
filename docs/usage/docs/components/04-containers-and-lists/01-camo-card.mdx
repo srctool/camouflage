@@ -1,0 +1,102 @@
+---
+title: CamoCard
+sidebar_label: Card
+sidebar_position: 1
+description: "A group of related content (a product, an article, a setting) on a surface."
+---
+
+# CamoCard
+
+A group of related content (a product, an article, a setting) on a surface. With `onClick` the whole card is
+one button, its content the name; without it the card is plain content. A non-null `selected` makes it a
+selectable card (plans, payment methods). It has no padding of its own by default, so images can reach its
+edges: pad the content.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+CamoCard(onClick = { openProject() }, modifier = Modifier.fillMaxWidth()) {
+    Column(Modifier.padding(Camouflage.spacing.l)) {
+        CamoText("Camouflage", style = Camouflage.typography.titleMedium)
+        CamoText("Updated 2 hours ago")
+    }
+}
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+CamoCard(
+  onPressed: openProject,
+  child: Padding(
+    padding: EdgeInsets.all(Camouflage.themeOf(context).spacing.l),
+    child: const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [CamoText('Camouflage'), CamoText('Updated 2 hours ago')],
+    ),
+  ),
+)
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    enabled: Boolean = true,
+    selected: Boolean? = null,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable () -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `onClick` | `(() -> Unit)?` | `null` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `enabled` | `Boolean` | `true` |
+| `selected` | `Boolean?` | `null` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+| `content` | `@Composable () -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `onPressed` | `VoidCallback?` |  | Makes the card one button; `null` keeps it plain content. |
+| `appearance` | `Appearance?` |  | `null` uses `CamoCardTheme.defaultAppearance`. |
+| `tone` | `Tone` | `Tone.defaultTone` | A status tone for status panels. |
+| `enabled` | `bool` | `true` | `false` disables a clickable card. |
+| `selected` | `bool?` |  | Non-null makes a selectable card. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+| `child` | `Widget` | `required` | The content. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoCard works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/containers-and-lists/camo-card).
+:::

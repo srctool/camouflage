@@ -1,0 +1,57 @@
+---
+title: CamoNavigationBar
+sidebar_label: NavigationBar
+sidebar_position: 3
+description: "The bottom bar for a phone top-level destinations (3 to 5)."
+---
+
+# CamoNavigationBar
+
+The bottom bar for a phone top-level destinations (3 to 5). `selected` in, `onSelect` out; routing stays
+with the app router (ADR-19). Items are announced "Home, tab, 1 of 4, selected" with their badge, the
+arrow keys move between them, and `visible = false` slides the bar out (pair it with `rememberHideOnScroll`).
+Reselecting the current item calls `onSelect` again, so apps can scroll to the top.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoNavigationBar(
+    items: List<CamoNavItem<T>>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `items` | `List<CamoNavItem<T>>` | `required` |
+| `selected` | `T` | `required` |
+| `onSelect` | `(T) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `visible` | `Boolean` | `true` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<CamoNavItem<T>>` | `required` | The destinations, 3 to 5. |
+| `selected` | `T` | `required` | The selected value. |
+| `onChanged` | `ValueChanged<T>?` | `required` | Called with the chosen value. |
+| `visible` | `bool` | `true` | `false` slides the bar out and removes it from focus and semantics. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoNavigationBar works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-navigation-bar).
+:::

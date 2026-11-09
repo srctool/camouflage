@@ -1,0 +1,104 @@
+---
+title: CamoSwitch
+sidebar_label: Switch
+sidebar_position: 3
+description: "An on/off switch that applies immediately (Wi-Fi on), announced as \"Wi-Fi, switch, on\"."
+---
+
+# CamoSwitch
+
+An on/off switch that applies immediately (Wi-Fi on), announced as "Wi-Fi, switch, on". With a `label` the
+whole row is one target. The thumb can be dragged: released past the middle it toggles, otherwise it springs
+back. A `null` `onCheckedChange` makes it display-only.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+var notifications by remember { mutableStateOf(true) }
+
+CamoSwitch(
+    checked = notifications,
+    onCheckedChange = { notifications = it },
+    label = "Notifications",
+    description = "Uses more battery",
+)
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+bool notifications = true;
+
+CamoSwitch(
+  checked: notifications,
+  onChanged: (value) => setState(() => notifications = value),
+  label: 'Notifications',
+  description: 'Uses more battery',
+)
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSwitch(
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    labelSpans: List<CamoSpan>? = null,
+    description: String? = null,
+    error: String? = null,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `checked` | `Boolean` | `required` |
+| `onCheckedChange` | `((Boolean) -> Unit)?` |  |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `labelSpans` | `List<CamoSpan>?` | `null` |
+| `description` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `checked` | `bool` | `required` | Whether it's on. |
+| `onChanged` | `ValueChanged<bool>?` | `required` | Called with the new value; `null` makes it display-only. |
+| `label` | `String?` |  | The label; the whole row becomes the target. |
+| `labelSpans` | `List<CamoSpan>?` |  | A rich label (links, bold), instead of `label`. |
+| `description` | `String?` |  | A second line under the label ("Uses more battery"). |
+| `error` | `String?` |  | Marks it invalid and shows below the row. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSwitch works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-switch).
+:::

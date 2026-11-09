@@ -1,0 +1,39 @@
+---
+title: Skins and themes
+description: The idea behind Camouflage, and how a skin and a theme differ.
+---
+
+# Skins and themes
+
+Camouflage splits a UI component in three:
+
+| Part | Question it answers | Who owns it |
+|---|---|---|
+| **The component** (`CamoButton`) | *What is it?* A button with a label, an appearance, a tone, a loading state. | You call it; it does not change. |
+| **The skin** (`MaterialSkin`) | *How is it drawn?* Shape, feedback on press, surface treatment, the proportions of a platform. | A skin package. |
+| **The theme** (`materialTheme(seed = …)`) | *With which values?* Colors, type, spacing, motion, light or dark. | You, for your brand. |
+
+```text
+        CamoButton("Save")
+              │
+   ┌──────────┴──────────┐
+   │ skin  (how to draw) │   ← swap for another platform feel
+   │ theme (the values)  │   ← swap for another brand or dark mode
+   └──────────┬──────────┘
+              ▼
+       pixels on screen
+```
+
+## Why it matters
+
+- **Change a brand without touching screens.** A new theme is data.
+- **Change a platform feel without touching screens.** A new skin is a new set of renderers.
+- **Nothing in a screen names a color.** Components take an `appearance` and a `tone`, so a screen is automatically correct in dark mode and in every skin.
+
+## The skin contract
+
+A skin is a set of **52 renderers**, one per component, with no defaults. That is deliberate: a skin cannot forget a component, and a new component forces every skin to answer for it. The five included skins use only the core's public API, so a skin of your own can too. See [Writing your own skin](/docs/guides/custom-skin).
+
+## The environment
+
+Besides the skin and theme, the provider also computes an **environment**: window size class, input kind (touch or pointer), platform and capabilities. Components and the theme's adaptive rules use it, for example a denser layout with a mouse. See [Adaptive layout](/docs/guides/adaptive-layout).

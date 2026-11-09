@@ -1,0 +1,64 @@
+---
+title: CamoTabs
+sidebar_label: Tabs
+sidebar_position: 2
+description: "A bar of tabs (\"Overview / Reviews / Specs\"): selected in, onSelect out, an animated indicator under the selected tab, one Tab stop with the arrow keys moving and selecting, announced \"Reviews, tab, 2"
+---
+
+# CamoTabs
+
+A bar of tabs ("Overview / Reviews / Specs"): `selected` in, `onSelect` out, an animated indicator under the
+selected tab, one Tab stop with the arrow keys moving and selecting, announced "Reviews, tab, 2 of 3". Fixed
+tabs share the width; with `scrollable` they keep their natural width, the row scrolls and the selection stays
+in view. The content below is the app's layout; `rememberCamoTabsPagerSync` keeps a pager in step. Pass the
+sync's position as `indicatorPosition` to make the indicator follow a swipe.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoTabs(
+    selected: T,
+    onSelect: (T) -> Unit,
+    tabs: List<CamoTab<T>>,
+    modifier: Modifier = Modifier,
+    scrollable: Boolean = false,
+    appearance: Appearance? = null,
+    indicatorPosition: (() -> Float)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `selected` | `T` | `required` |
+| `onSelect` | `(T) -> Unit` | `required` |
+| `tabs` | `List<CamoTab<T>>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `scrollable` | `Boolean` | `false` |
+| `appearance` | `Appearance?` | `null` |
+| `indicatorPosition` | `(() -> Float)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `selected` | `T` | `required` | The selected value. |
+| `onChanged` | `ValueChanged<T>?` | `required` | Called with the chosen value. |
+| `tabs` | `List<CamoTab<T>>` | `required` | The tabs. |
+| `scrollable` | `bool` | `false` | `true` keeps tabs at their natural width and scrolls the row. |
+| `appearance` | `Appearance?` |  | `null` uses `CamoTabsTheme.defaultAppearance`: solid (prominent) or ghost (quiet). |
+| `position` | `ValueListenable<double>?` |  | A fractional tab index (a page position) the indicator follows instead of animating. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoTabs works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-tabs).
+:::

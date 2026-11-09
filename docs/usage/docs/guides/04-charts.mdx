@@ -1,0 +1,61 @@
+---
+title: Charts
+description: Line, area, bar, pie, donut and sparkline charts that follow the skin, with no chart library.
+---
+
+# Charts
+
+`camouflage-charts` and `camouflage_charts` draw charts directly. They take their colors and type from the **theme** and a **preset per skin** (`Material`, `Carbon`, …), so a chart looks like the rest of your screen, in dark mode too.
+
+![Charts in the light theme](/img/skins/charts-light.png)
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+// implementation("com.srctool.camouflage:camouflage-charts")
+CamoLineChart(
+    title = "Revenue by quarter",
+    categories = listOf("Q1", "Q2", "Q3", "Q4"),
+    series = listOf(
+        ChartSeries("Subscriptions", listOf(12.0, 15.0, 19.0, 27.0)),
+        ChartSeries("Services", listOf(6.0, 7.0, null, 9.0)), // null is a gap
+    ),
+)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+// flutter pub add camouflage_charts
+CamoLineChart(
+  title: 'Revenue by quarter',
+  categories: ['Q1', 'Q2', 'Q3', 'Q4'],
+  series: [
+    ChartSeries(name: 'Subscriptions', values: [12, 15, 19, 27]),
+    ChartSeries(name: 'Services', values: [6, 7, null, 9]), // null is a gap
+  ],
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## The charts
+
+| Chart | For |
+|---|---|
+| `CamoLineChart` | Trends, in line or area form; times on the x axis. |
+| `CamoBarChart` | Comparing categories, grouped or stacked. |
+| `CamoPieChart` | Parts of a whole, as a pie or a donut. |
+| `CamoSparkline` | A tiny trend inside a row or a card. |
+
+See each chart's [parameters](/docs/components/charts).
+
+## Built for everyone
+
+- A chart's **title** is announced, and a data **table** can stand in for it (`showTable`).
+- **Loading** and **empty** states are built in.
+- Time axes keep their direction in right-to-left layouts.
+- Hover and keyboard focus show the value of a point.

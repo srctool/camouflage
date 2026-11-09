@@ -1,0 +1,72 @@
+---
+title: CamoSearchField
+sidebar_label: SearchField
+sidebar_position: 7
+description: "A search field: the search icon, the keyboard's Search action (Enter on desktop and web) calling onSearch, and a \"Clear search\" button while there's text, which clears and keeps focus."
+---
+
+# CamoSearchField
+
+A search field: the search icon, the keyboard's Search action (Enter on desktop and web) calling `onSearch`,
+and a "Clear search" button while there's text, which clears and keeps focus. Esc clears too. `leading`
+replaces the search icon (a back button when a search is open); `trailing` adds e.g. a mic. Debouncing is the
+app's: the field reports every change.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "Search",
+    leading: (@Composable () -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `query` | `String` | `required` |
+| `onQueryChange` | `(String) -> Unit` | `required` |
+| `onSearch` | `(String) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `placeholder` | `String` | `"Search"` |
+| `leading` | `(@Composable () -> Unit)?` | `null` |
+| `trailing` | `(@Composable () -> Unit)?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `onFocusChanged` | `((Boolean) -> Unit)?` | `null` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `query` | `String` | `required` | The current query. |
+| `onChanged` | `ValueChanged<String>` | `required` | Called with each change. |
+| `onSubmitted` | `ValueChanged<String>` | `required` | Called by the keyboard's Search action and Enter. |
+| `placeholder` | `String` | `'Search'` | Shown while empty; it also names the field. |
+| `leading` | `Widget?` |  | Replaces the search icon. |
+| `trailing` | `Widget?` |  | After the clear action, e.g. a mic. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `onFocusChanged` | `ValueChanged<bool>?` |  | Reports focus changes. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSearchField works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-search-field).
+:::

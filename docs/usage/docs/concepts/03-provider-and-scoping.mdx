@@ -1,0 +1,69 @@
+---
+title: The provider
+description: Where the skin and theme go, and how to scope them.
+---
+
+# The provider
+
+`CamouflageProvider` puts a skin and a theme into the tree for every component below it. Put it **once, above your navigation**, so everything that opens later (dialogs, menus, bottom sheets, snackbars) inherits it.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamouflageProvider(skin = MaterialSkin, theme = materialTheme(seed = brand)) {
+    AppNavigation()
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+WidgetsApp(
+  // …
+  builder: (context, child) => CamouflageProvider(
+    skin: materialSkin,
+    theme: materialTheme(seed: brand),
+    child: child!,
+  ),
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## What it does
+
+- Provides the **skin** and **theme** to every `Camo*` component below it.
+- Computes the **environment** (window size, input kind, platform, capabilities) and applies the theme's adaptive rules.
+- Applies **reduced motion** from the system settings.
+- Installs the app's **messenger** for snackbars.
+- Resets the default content color and icon style for its subtree.
+
+## Scoping
+
+A `null` skin or theme **inherits** from the provider above. So nested providers can override just one of them:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamouflageProvider(skin = CarbonSkin) { // the theme comes from above
+    ReportsTable()
+}
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+CamouflageProvider(skin: carbonSkin, child: const ReportsTable()) // the theme comes from above
+```
+
+</TabItem>
+</LangTabs>
+
+## If there is no provider
+
+Nothing is drawn with guessed values. The first component that needs a skin or theme fails with an error that names the component, so the fix is obvious: add the provider above it.

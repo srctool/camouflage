@@ -1,0 +1,56 @@
+---
+title: CamoNavigationRail
+sidebar_label: NavigationRail
+sidebar_position: 4
+description: "The side rail for medium windows: the bar destinations in a column on the start edge, with an optional header (a CamoFab or a menu button)."
+---
+
+# CamoNavigationRail
+
+The side rail for medium windows: the bar destinations in a column on the start edge, with an optional
+`header` (a `CamoFab` or a menu button). It scrolls when the items do not fit, and the header stays. The same
+`CamoNavItem`s, announcements and keys as the bar, with up and down moving between items.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoNavigationRail(
+    items: List<CamoNavItem<T>>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    header: (@Composable () -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `items` | `List<CamoNavItem<T>>` | `required` |
+| `selected` | `T` | `required` |
+| `onSelect` | `(T) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `header` | `(@Composable () -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<CamoNavItem<T>>` | `required` | The destinations. |
+| `selected` | `T` | `required` | The selected value. |
+| `onChanged` | `ValueChanged<T>?` | `required` | Called with the chosen value; `null` disables the rail. |
+| `header` | `Widget?` |  | A FAB, a menu button. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoNavigationRail works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-navigation-rail).
+:::

@@ -1,0 +1,59 @@
+---
+title: CamoDialog
+sidebar_label: Dialog
+sidebar_position: 2
+description: "A dialog's content: an optional title (its accessible name), the message, optional content (a radio list, a small form) and the actions."
+---
+
+# CamoDialog
+
+A dialog's content: an optional `title` (its accessible name), the `message`, optional `content` (a radio
+list, a small form) and the actions. `confirm` and `dismiss` are usually `CamoButton`s that close it, with a
+result or without one. Put it in a `CamoDialogFrame`, or register it as a dialog route.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoDialog(
+    message: String,
+    confirm: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    dismiss: (@Composable () -> Unit)? = null,
+    content: (@Composable ColumnScope.() -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `message` | `String` | `required` |
+| `confirm` | `@Composable () -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `title` | `String?` | `null` |
+| `dismiss` | `(@Composable () -> Unit)?` | `null` |
+| `content` | `(@Composable ColumnScope.() -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `message` | `String` | `required` | The main text. |
+| `confirm` | `Widget` | `required` | The main action. |
+| `title` | `String?` |  | The heading and accessible name. |
+| `dismiss` | `Widget?` |  | The action that closes without a result. |
+| `content` | `Widget?` |  | Content below the message. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoDialog works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/overlays/camo-dialog).
+:::

@@ -1,0 +1,6 @@
+CamoCard(onClick = { openProject() }, modifier = Modifier.fillMaxWidth()) {
+    Column(Modifier.padding(Camouflage.spacing.l)) {
+        CamoText("Camouflage", style = Camouflage.typography.titleMedium)
+        CamoText("Updated 2 hours ago")
+    }
+}

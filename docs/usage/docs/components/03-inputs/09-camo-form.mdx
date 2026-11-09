@@ -1,0 +1,59 @@
+---
+title: CamoForm
+sidebar_label: Form
+sidebar_position: 9
+description: "Flutter's Form in Compose: the scope CamoFormFields attach to by key."
+---
+
+# CamoForm
+
+Flutter's `Form` in Compose: the scope `CamoFormField`s attach to by key. `validateMode` is the default for
+fields that don't set their own; `onChanged` fires when any field changes. In a lazy list, `revealField`
+scrolls the row for a key into the tree so `validate()` can focus an off-screen field.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoForm(
+    state: CamoFormState,
+    modifier: Modifier = Modifier,
+    validateMode: ValidateMode = ValidateMode.Disabled,
+    onChanged: (() -> Unit)? = null,
+    revealField: (suspend (key: String) -> Unit)? = null,
+    content: @Composable () -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `state` | `CamoFormState` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `validateMode` | `ValidateMode` | `ValidateMode.Disabled` |
+| `onChanged` | `(() -> Unit)?` | `null` |
+| `revealField` | `(suspend (key: String) -> Unit)?` | `null` |
+| `content` | `@Composable () -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `controller` | `CamoFormController` | `required` | The handle the app calls. |
+| `validateMode` | `ValidateMode` | `ValidateMode.disabled` | The default for fields that don't set their own. |
+| `onChanged` | `VoidCallback?` |  | Called when any field changes. |
+| `revealField` | `Future<void> Function(String key)?` |  | Scrolls the row for a key into the tree. |
+| `child` | `Widget` | `required` | The fields, anywhere below. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoForm works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-form).
+:::

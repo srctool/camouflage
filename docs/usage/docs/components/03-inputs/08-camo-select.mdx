@@ -1,0 +1,129 @@
+---
+title: CamoSelect
+sidebar_label: Select
+sidebar_position: 8
+description: "Picks one of options: a read-only field (the text field's frame with the skin's dropdown chevron) that opens the options in a menu under it or in a bottom sheet (presentation)."
+---
+
+# CamoSelect
+
+Picks one of `options`: a read-only field (the text field's frame with the skin's dropdown chevron) that
+opens the options in a menu under it or in a bottom sheet (`presentation`). `Auto` uses the menu for up to
+`SelectTheme.autoMenuMaxOptions` options on a window at least `autoMenuMinWidth` wide, and the sheet
+otherwise, and always when `searchable` (the sheet then has a search field filtering by label, ignoring
+case and accents). Picking an option calls `onValueChange` and closes; Esc or an outside tap closes without
+a change. A `value` that isn't among the options shows as `value.toString()`.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+var country by remember { mutableStateOf<String?>(null) }
+
+CamoSelect(
+    value = country,
+    onValueChange = { country = it },
+    options = listOf(
+        SelectOption("id", "Indonesia"),
+        SelectOption("nl", "Netherlands"),
+        SelectOption("us", "United States"),
+    ),
+    label = "Country",
+    placeholder = "Choose one",
+    searchable = true,
+)
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+String? country;
+
+CamoSelect<String>(
+  value: country,
+  onChanged: (value) => setState(() => country = value),
+  options: const [
+    SelectOption('id', 'Indonesia'),
+    SelectOption('nl', 'Netherlands'),
+    SelectOption('us', 'United States'),
+  ],
+  label: 'Country',
+  placeholder: 'Choose one',
+  searchable: true,
+)
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoSelect(
+    value: T?,
+    onValueChange: (T) -> Unit,
+    options: List<SelectOption<T>>,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    supportingText: String? = null,
+    error: String? = null,
+    presentation: SelectPresentation = SelectPresentation.Auto,
+    searchable: Boolean = false,
+    prefixIcon: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `T?` |  |
+| `onValueChange` | `(T) -> Unit` | `required` |
+| `options` | `List<SelectOption<T>>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `placeholder` | `String?` | `null` |
+| `supportingText` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `presentation` | `SelectPresentation` | `SelectPresentation.Auto` |
+| `searchable` | `Boolean` | `false` |
+| `prefixIcon` | `(@Composable () -> Unit)?` | `null` |
+| `enabled` | `Boolean` | `true` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `value` | `T?` | `required` | The current value, or `null`. |
+| `onChanged` | `ValueChanged<T>` | `required` | Called with the picked value. |
+| `options` | `List<SelectOption<T>>` | `required` | The choices. |
+| `label` | `String?` |  | The label (the sheet's title too). |
+| `placeholder` | `String?` |  | Shown while empty. |
+| `supportingText` | `String?` |  | Helper text below. |
+| `error` | `String?` |  | The error. |
+| `presentation` | `SelectPresentation` | `SelectPresentation.auto` | Menu, sheet or auto. |
+| `searchable` | `bool` | `false` | A search field in the sheet. |
+| `prefixIcon` | `Widget?` |  | An icon at the start of the field. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSelect works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-select).
+:::

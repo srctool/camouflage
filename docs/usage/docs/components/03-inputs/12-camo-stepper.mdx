@@ -1,0 +1,72 @@
+---
+title: CamoStepper
+sidebar_label: Stepper
+sidebar_position: 12
+description: "A whole-number quantity with \u2212 and + buttons: cart lines, guests."
+---
+
+# CamoStepper
+
+A whole-number quantity with − and + buttons: cart lines, guests. The buttons disable at the ends of `range`,
+and holding one repeats, faster over time. With `allowTyping` the value is a number field, clamped to `range`
+and snapped to `step` when focus leaves. Screen readers get three stops: "Decrease `label`", the value, and
+"Increase `label`"; each change is announced. `valueText` formats the value ("3 nights").
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoStepper(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    range: IntRange = 0..Int.MAX_VALUE,
+    step: Int = 1,
+    label: String? = null,
+    allowTyping: Boolean = true,
+    valueText: ((Int) -> String)? = null,
+    error: String? = null,
+    enabled: Boolean = true,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `Int` | `required` |
+| `onValueChange` | `(Int) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `range` | `IntRange` | `0..Int.MAX_VALUE` |
+| `step` | `Int` | `1` |
+| `label` | `String?` | `null` |
+| `allowTyping` | `Boolean` | `true` |
+| `valueText` | `((Int) -> String)?` | `null` |
+| `error` | `String?` | `null` |
+| `enabled` | `Boolean` | `true` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `int value` |  | `required` |  |
+| `ValueChanged<int>? onChanged` |  | `required` |  |
+| `int min` |  | `0` |  |
+| `int? max` |  |  |  |
+| `int step` |  | `1` |  |
+| `semanticLabel` | `String?` |  | Names the value ("Quantity"). |
+| `allowTyping` | `bool` | `true` | The value is an editable number field. |
+| `String Function(int value)? valueText` |  |  |  |
+| `error` | `String?` |  | Marks it invalid. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoStepper works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-stepper).
+:::

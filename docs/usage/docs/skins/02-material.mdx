@@ -1,0 +1,86 @@
+---
+title: Material skin
+sidebar_label: Material
+sidebar_position: 2
+description: "Material 3: tonal surfaces, ripple feedback and M3 proportions, drawn on plain widgets."
+---
+
+# Material skin
+
+Material 3: tonal surfaces, ripple feedback and M3 proportions, drawn on plain widgets. In Flutter only this skin depends on `material_ui`, for the ink ripple.
+
+| Light | Dark |
+|---|---|
+| ![Material skin, light](/img/skins/material-light.png) | ![Material skin, dark](/img/skins/material-dark.png) |
+
+**Look and feel.** Paper surfaces, a ripple on press, the M3 type scale and shapes.
+
+## Install
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+implementation("com.srctool.camouflage:camouflage-skin-material")
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```sh
+flutter pub add camouflage_skin_material
+```
+
+</TabItem>
+</LangTabs>
+
+## Use
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import com.srctool.camouflage.skin.material.*
+
+CamouflageProvider(skin = MaterialSkin, theme = materialTheme(seed = brand)) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+import 'package:camouflage_skin_material/camouflage_skin_material.dart';
+
+CamouflageProvider(
+  skin: materialSkin,
+  theme: materialTheme(seed: brand),
+  child: child!,
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## Options
+
+`seed`: builds the whole M3 scheme from one color (the baseline purple when omitted). `expressiveProgress`: wavy progress bars (Kotlin `materialSkin(...)`, Dart `materialSkinWith(...)`).
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+materialSkin(expressiveProgress = true)
+materialTheme(seed = brand, dark = true)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+materialSkinWith(expressiveProgress: true)
+```
+
+</TabItem>
+</LangTabs>
+
+Every skin implements the same 52 renderers, so anything you build works in all of them. See [Skins and themes](/docs/concepts/skins-and-themes) for how that works, and [Writing your own skin](/docs/guides/custom-skin) to add another.

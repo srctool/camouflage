@@ -1,0 +1,64 @@
+---
+title: CamoToolbar
+sidebar_label: Toolbar
+sidebar_position: 6
+description: "A row of actions for the current context: formatting buttons in an editor, the bar under a message list."
+---
+
+# CamoToolbar
+
+A row of actions for the current context: formatting buttons in an editor, the bar under a message list.
+Actions that don't fit collapse, in order, into a trailing "more" menu (a toggle there becomes a checkable
+item). `leading` and `trailing` (a menu button, a title, a primary action) always show; custom content such as
+button groups goes there or in a `CamoToolbarContainer`. One Tab stop: the arrow keys move between the
+actions. `contentDescription` names the toolbar. A toolbar is neither navigation nor a title bar.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoToolbar(
+    actions: List<CamoToolbarAction>,
+    modifier: Modifier = Modifier,
+    placement: ToolbarPlacement? = null,
+    contentDescription: String? = null,
+    overflowLabel: String = "More",
+    leading: (@Composable () -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `actions` | `List<CamoToolbarAction>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `placement` | `ToolbarPlacement?` | `null` |
+| `contentDescription` | `String?` | `null` |
+| `overflowLabel` | `String` | `"More"` |
+| `leading` | `(@Composable () -> Unit)?` | `null` |
+| `trailing` | `(@Composable () -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `actions` | `List<CamoToolbarAction>` | `required` | The actions, in order. |
+| `placement` | `ToolbarPlacement?` |  | Docked or floating; `null` uses the theme's. |
+| `semanticLabel` | `String?` |  | Names the toolbar. |
+| `overflowLabel` | `String` | `'More'` | Names the overflow button. |
+| `leading` | `Widget?` |  | Content before the actions. |
+| `trailing` | `Widget?` |  | Content after the actions. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoToolbar works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-toolbar).
+:::

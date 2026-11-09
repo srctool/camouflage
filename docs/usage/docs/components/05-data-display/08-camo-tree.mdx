@@ -1,0 +1,75 @@
+---
+title: CamoTree
+sidebar_label: Tree
+sidebar_position: 8
+description: "Hierarchical data you can expand and collapse."
+---
+
+# CamoTree
+
+Hierarchical data you can expand and collapse. The app owns `expanded` and `selected` (sets of node keys).
+Click selects (with `multiSelect`, toggles); the chevron expands. A node whose children aren't loaded asks for
+them once through `onLoadChildren` when it expands. Up and Down move, Right expands or enters the first child,
+Left collapses or goes to the parent, Home and End jump, Enter or Space selects. `caption` names the tree.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoTree(
+    roots: List<CamoTreeNode<T>>,
+    expanded: Set<Any>,
+    onExpandedChange: (Set<Any>) -> Unit,
+    selected: Set<Any>,
+    onSelectedChange: (Set<Any>) -> Unit,
+    label: (T) -> String,
+    caption: String,
+    modifier: Modifier = Modifier,
+    multiSelect: Boolean = false,
+    onLoadChildren: ((CamoTreeNode<T>) -> Unit)? = null,
+    icon: ((T, Boolean) -> (@Composable () -> Unit))? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `roots` | `List<CamoTreeNode<T>>` | `required` |
+| `expanded` | `Set<Any>` | `required` |
+| `onExpandedChange` | `(Set<Any>) -> Unit` | `required` |
+| `selected` | `Set<Any>` | `required` |
+| `onSelectedChange` | `(Set<Any>) -> Unit` | `required` |
+| `label` | `(T) -> String` | `required` |
+| `caption` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `multiSelect` | `Boolean` | `false` |
+| `onLoadChildren` | `((CamoTreeNode<T>) -> Unit)?` | `null` |
+| `icon` | `((T, Boolean) -> (@Composable () -> Unit))?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `roots` | `List<CamoTreeNode<T>>` | `required` | The top-level nodes. |
+| `expanded` | `Set<Object>` | `required` | The ids of the expanded nodes. |
+| `onExpandedChanged` | `ValueChanged<Set<Object>>` | `required` | Called with the new expanded set. |
+| `selected` | `Set<Object>` | `required` | The ids of the selected nodes. |
+| `onSelectedChanged` | `ValueChanged<Set<Object>>` | `required` | Called with the new selection. |
+| `label` | `String Function(T value)` | `required` | A node's text. |
+| `semanticLabel` | `String` | `required` | Names the tree. |
+| `multiSelect` | `bool` | `false` | Whether several nodes can be selected. |
+| `onLoadChildren` | `ValueChanged<CamoTreeNode<T>>?` |  | Called once when a node with unloaded children expands. |
+| `icon` | `Widget? Function(T value, bool expanded)?` |  | A node's icon, given whether it is expanded. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoTree works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-tree).
+:::
