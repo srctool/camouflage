@@ -1,0 +1,10 @@
+val messenger = Camouflage.messenger
+val scope = rememberCoroutineScope()
+
+scope.launch {
+    val result = messenger.show("Message archived", action = "Undo")
+    if (result == SnackbarResult.ActionPerformed) undoArchive()
+}
+
+// A status tone
+scope.launch { messenger.show("Could not save", tone = Tone.Error) }

@@ -1,0 +1,72 @@
+---
+title: CamoFab
+sidebar_label: Fab
+sidebar_position: 3
+description: "The screen's one main action: an icon button, or an extended FAB with a text label."
+---
+
+# CamoFab
+
+The screen's one main action: an `icon` button, or an extended FAB with a `text` label. The accessible name is
+the `text` when there is one and `contentDescription` otherwise, in both states, so collapsing it while the
+list scrolls (`expanded = false`) doesn't rename it. `visible = false` scales it out and takes it out of the
+tree, so a hidden FAB can't be focused (pair it with `rememberHideOnScroll`). Placement is the app's layout.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoFab(
+    icon: @Composable () -> Unit,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    expanded: Boolean = true,
+    visible: Boolean = true,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `icon` | `@Composable () -> Unit` | `required` |
+| `contentDescription` | `String` | `required` |
+| `onClick` | `() -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `text` | `String?` | `null` |
+| `expanded` | `Boolean` | `true` |
+| `visible` | `Boolean` | `true` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `Widget` | `required` | The icon. |
+| `semanticLabel` | `String` | `required` | Names the FAB when it has no `text` (and when it is collapsed). |
+| `onPressed` | `VoidCallback?` | `required` | Called on a tap; `null` disables the FAB. |
+| `text` | `String?` |  | Non-null makes an extended FAB. |
+| `expanded` | `bool` | `true` | Extended only: `false` collapses it to the icon. |
+| `visible` | `bool` | `true` | `false` scales it out and removes it from focus and semantics. |
+| `appearance` | `Appearance?` |  | `null` uses `CamoFabTheme.defaultAppearance`. |
+| `tone` | `Tone` | `Tone.defaultTone` | The color family. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoFab works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/actions/camo-fab).
+:::

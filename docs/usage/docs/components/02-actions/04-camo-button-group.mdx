@@ -1,0 +1,63 @@
+---
+title: CamoButtonGroup
+sidebar_label: ButtonGroup
+sidebar_position: 4
+description: "Related buttons as one control: commands (Cut, Copy, Paste) or independent toggles (Bold, Italic)."
+---
+
+# CamoButtonGroup
+
+Related buttons as one control: commands (Cut, Copy, Paste) or independent toggles (Bold, Italic). It is not a
+segmented control, which chooses one value. `connected` buttons share borders and corners; otherwise they keep
+a gap. One Tab stop: the arrow keys move between the enabled buttons, wrapping, and Space or Enter presses.
+`contentDescription` names the group. A group never wraps: too many buttons belong in a toolbar.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoButtonGroup(
+    buttons: List<CamoGroupButton>,
+    modifier: Modifier = Modifier,
+    connected: Boolean = true,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    enabled: Boolean = true,
+    contentDescription: String? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `buttons` | `List<CamoGroupButton>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `connected` | `Boolean` | `true` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `enabled` | `Boolean` | `true` |
+| `contentDescription` | `String?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `buttons` | `List<CamoGroupButton>` | `required` | The buttons, in order. |
+| `connected` | `bool` | `true` | Shared borders and corners, or a gap between buttons. |
+| `appearance` | `Appearance?` |  | The visual weight; `null` uses the theme's default. |
+| `tone` | `Tone` | `Tone.defaultTone` | The color family. |
+| `enabled` | `bool` | `true` | `false` disables every button. |
+| `semanticLabel` | `String?` |  | Names the group. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoButtonGroup works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/actions/camo-button-group).
+:::

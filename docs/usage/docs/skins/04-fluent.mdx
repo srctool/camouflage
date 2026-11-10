@@ -1,0 +1,86 @@
+---
+title: Fluent skin
+sidebar_label: Fluent
+sidebar_position: 4
+description: "Fluent 2: solid surfaces and subtle feedback, with Acrylic and Mica as options on desktop."
+---
+
+# Fluent skin
+
+Fluent 2: solid surfaces and subtle feedback, with Acrylic and Mica as options on desktop. A brand ramp is generated from your brand color.
+
+| Light | Dark |
+|---|---|
+| ![Fluent skin, light](/img/skins/fluent-light.png) | ![Fluent skin, dark](/img/skins/fluent-dark.png) |
+
+**Look and feel.** Solid, Acrylic or Mica surfaces; subtle hover and press feedback; three control densities.
+
+## Install
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+implementation("com.srctool.camouflage:camouflage-skin-fluent")
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```sh
+flutter pub add camouflage_skin_fluent
+```
+
+</TabItem>
+</LangTabs>
+
+## Use
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import com.srctool.camouflage.skin.fluent.*
+
+CamouflageProvider(skin = FluentSkin, theme = fluentTheme(brand = brand)) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+import 'package:camouflage_skin_fluent/camouflage_skin_fluent.dart';
+
+CamouflageProvider(
+  skin: fluentSkin(),
+  theme: fluentTheme(brand: brand),
+  child: child!,
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## Options
+
+`brand`: the brand color; a full ramp is derived. `density`: `Small` (24 dp controls), `Medium` or `Touch`. `surface`: `Solid`, `Acrylic` or `Mica`.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+fluentSkin(surface = FluentSurface.Mica)
+fluentTheme(brand = brand, density = FluentDensity.Touch)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+fluentSkin(surface: FluentSurface.mica)
+```
+
+</TabItem>
+</LangTabs>
+
+Every skin implements the same 52 renderers, so anything you build works in all of them. See [Skins and themes](/docs/concepts/skins-and-themes) for how that works, and [Writing your own skin](/docs/guides/custom-skin) to add another.

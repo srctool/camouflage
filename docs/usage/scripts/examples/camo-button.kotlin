@@ -1,0 +1,11 @@
+CamoButton(text = "Save", onClick = { save() })
+
+// Weight and meaning
+CamoButton("Cancel", onClick = cancel, appearance = Appearance.Ghost)
+CamoButton("Delete", onClick = delete, appearance = Appearance.Outline, tone = Tone.Error)
+
+// Loading: keeps its width and focus, ignores clicks
+CamoButton("Saving", onClick = save, loading = true)
+
+// Full width
+CamoButton("Continue", onClick = next, modifier = Modifier.fillMaxWidth())

@@ -1,0 +1,38 @@
+---
+title: Accessibility
+description: What every component already does for screen readers, keyboards and large text, and what you still add.
+---
+
+# Accessibility
+
+Camouflage is built so the accessible version is the default one.
+
+## What the components do for you
+
+| Area | Built in |
+|---|---|
+| **Semantics** | Every control exposes a role, a name and its state (checked, selected, disabled, busy, error). |
+| **Touch targets** | At least 48 dp, even when the control looks smaller. The visible part keeps its size; the hit area grows. |
+| **Keyboard and focus** | Tab and arrow-key traversal, Enter and Space to activate, a visible focus indicator drawn by the skin. |
+| **Text scaling** | Text follows the system font size and components grow instead of clipping; tested at 200%. |
+| **Right to left** | Layouts mirror. Charts keep time left to right. |
+| **Reduced motion** | The provider switches animations off when the system asks for it. |
+| **Contrast** | `theme.validate()` reports pairs that fail. |
+
+## What you add
+
+Most of the time nothing. The exceptions are controls with **no visible text**:
+
+- An **icon-only button** needs a name. `CamoIconButton` requires a `contentDescription` (Kotlin) or `semanticLabel` (Dart): name the *action* ("Close", "Add to favorites"), not the icon.
+- An **image** that carries meaning needs a description; a decorative one should say so.
+- A **chart** needs a `title`; it is announced, and `showTable` offers a data table as an alternative.
+
+A control with no accessible name **fails in debug builds** with a message naming the component, so you find it while building instead of in an audit.
+
+## Test it
+
+The `camouflage-skin-testing` and `camouflage_skin_testing` packages check a screen for names, roles or states and touch targets, at normal and 200% text, left to right and right to left. See [Testing](/docs/guides/testing).
+
+## Known gaps
+
+0.1 meets the checks on every gallery in all five skins, with a short list of known exceptions tracked on GitHub: a few Flutter list rows and navigation items a pixel short of the 48 dp target, and the right-to-left select-all box. Follow the [Flutter](https://github.com/srctool/camouflage-dart/issues) and [Kotlin](https://github.com/srctool/camouflage-kotlin/issues) issues. A pass with TalkBack and VoiceOver by hand is also still to do.

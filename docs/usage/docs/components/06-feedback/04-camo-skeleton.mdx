@@ -1,0 +1,52 @@
+---
+title: CamoSkeleton
+sidebar_label: Skeleton
+sidebar_position: 4
+description: "A placeholder block for content that hasn't loaded (an image, a button)."
+---
+
+# CamoSkeleton
+
+A placeholder block for content that hasn't loaded (an image, a button). A `null` `width` fills the available
+width. Hidden from screen readers: the screen that shows skeletons announces "Loading" once.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSkeleton(
+    height: Dp,
+    modifier: Modifier = Modifier,
+    width: Dp? = null,
+    shape: ShapeRole = ShapeRole.Small,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `height` | `Dp` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `width` | `Dp?` | `null` |
+| `shape` | `ShapeRole` | `ShapeRole.Small` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `double this.height` |  | `required` |  |
+| `width` | `double?` |  | The block's width; `null` fills. |
+| `shape` | `ShapeRole` | `ShapeRole.small` | The block's corners. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSkeleton works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/feedback/camo-skeleton).
+:::

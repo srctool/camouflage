@@ -1,0 +1,86 @@
+---
+title: CamoPagedList
+sidebar_label: PagedList
+sidebar_position: 3
+description: "A list screen that loads from an API: skeleton rows while a page loads, the next page when the user nears the end, pull to refresh on touch devices, an empty state, and a retry when a page fails."
+---
+
+# CamoPagedList
+
+A list screen that loads from an API: skeleton rows while a page loads, the next page when the user nears the
+end, pull to refresh on touch devices, an empty state, and a retry when a page fails. It's controlled: it
+renders `state` and never fetches. `onLoadMore` fires once per state when the last visible row is within
+`prefetchDistance` of the end, and never while loading, after `endReached` or with a next-page error.
+`onRefresh` enables the pull gesture (there's no gesture with a mouse: offer a refresh action too).
+`itemKey` must be unique and stable.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoPagedList(
+    state: CamoPagedListState<T>,
+    itemKey: (T) -> Any,
+    onLoadMore: () -> Unit,
+    onRetry: () -> Unit,
+    item: @Composable LazyItemScope.(item: T, index: Int) -> Unit,
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+    onRefresh: (() -> Unit)? = null,
+    skeleton: (@Composable () -> Unit)? = null,
+    empty: (@Composable () -> Unit)? = null,
+    firstPageError: (@Composable (message: String) -> Unit)? = null,
+    header: (@Composable () -> Unit)? = null,
+    separator: (@Composable (index: Int) -> Unit)? = null,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `state` | `CamoPagedListState<T>` | `required` |
+| `itemKey` | `(T) -> Any` | `required` |
+| `onLoadMore` | `() -> Unit` | `required` |
+| `onRetry` | `() -> Unit` | `required` |
+| `item` | `@Composable LazyItemScope.(item: T, index: Int) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `listState` | `LazyListState` | `rememberLazyListState()` |
+| `onRefresh` | `(() -> Unit)?` | `null` |
+| `skeleton` | `(@Composable () -> Unit)?` | `null` |
+| `empty` | `(@Composable () -> Unit)?` | `null` |
+| `firstPageError` | `(@Composable (message: String) -> Unit)?` | `null` |
+| `header` | `(@Composable () -> Unit)?` | `null` |
+| `separator` | `(@Composable (index: Int) -> Unit)?` | `null` |
+| `contentPadding` | `PaddingValues` | `PaddingValues(0.dp)` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `state` | `CamoPagedListState<T>` | `required` | What to show. |
+| `itemKey` | `Object Function(T item)` | `required` | A stable, unique key per item. |
+| `onLoadMore` | `VoidCallback` | `required` | Load the next page. |
+| `onRetry` | `VoidCallback` | `required` | Retry the failed page. |
+| `itemBuilder` | `Widget Function(BuildContext context, T item, int index)` | `required` | One item's row. |
+| `controller` | `ScrollController?` |  | The list's scroll controller. |
+| `onRefresh` | `Future<void> Function()?` |  | Enables pull to refresh. |
+| `skeleton` | `Widget?` |  | One skeleton row; `null` is `CamoSkeleton.listItem()`. |
+| `empty` | `Widget?` |  | The empty state; `null` is the skin's. |
+| `firstPageError` | `Widget Function(BuildContext context, String message)?` |  | The first-page error; `null` is the skin's, with a retry button. |
+| `header` | `Widget?` |  | Scrolls with the list (a search field, a summary). |
+| `separatorBuilder` | `Widget Function(BuildContext context, int index)?` |  | A one-off separator; `null` uses `CamoListItemTheme.dividers`. |
+| `padding` | `EdgeInsetsGeometry?` |  | Around the rows. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoPagedList works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/containers-and-lists/camo-paged-list).
+:::

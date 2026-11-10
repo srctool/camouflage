@@ -1,0 +1,65 @@
+---
+title: CamoPagination
+sidebar_label: Pagination
+sidebar_position: 7
+description: "Moves through pages."
+---
+
+# CamoPagination
+
+Moves through pages. `page` is zero-based. One Tab stop: the arrow keys move between the parts and Space or
+Enter picks one. `label` names the navigation; a page announces "Page 3" and the current one "current page".
+With one page or fewer it draws nothing.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoPagination(
+    pageCount: Int,
+    page: Int,
+    onPageChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    variant: PaginationVariant = PaginationVariant.Numbered,
+    siblings: Int = 1,
+    enabled: Boolean = true,
+    label: String = "Pagination",
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `pageCount` | `Int` | `required` |
+| `page` | `Int` | `required` |
+| `onPageChange` | `(Int) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `variant` | `PaginationVariant` | `PaginationVariant.Numbered` |
+| `siblings` | `Int` | `1` |
+| `enabled` | `Boolean` | `true` |
+| `label` | `String` | `"Pagination"` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `pageCount` | `int` | `required` | How many pages. |
+| `page` | `int` | `required` | The current page, zero-based. |
+| `onPageChanged` | `ValueChanged<int>` | `required` | Called with the chosen page. |
+| `variant` | `PaginationVariant` | `PaginationVariant.numbered` | The form. |
+| `siblings` | `int` | `1` | Pages shown beside the current one. |
+| `enabled` | `bool` | `true` | `false` disables every part. |
+| `semanticLabel` | `String` | `'Pagination'` | Names the navigation. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoPagination works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-pagination).
+:::

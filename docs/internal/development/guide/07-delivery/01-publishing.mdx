@@ -216,7 +216,13 @@ Every package and constraint moved from `0.1.0-dev.1` to `0.1.0` (the publish wo
 
 :::tip[Released: v0.1.0 (2026-11-06)]
 
-All eight packages are at 0.1.0 on pub.dev under the publisher `srctool.com` (the repo tag `v0.1.0` is on `4325ade`). The first publish of each package was by hand, in dependency order (core first), then moved to the publisher and set to publish from GitHub Actions with the tag pattern `<package>-v{{version}}` and the `pub.dev` environment (required reviewer). **Lessons:** read the files the dry run lists, not only its warning count (every LICENSE was a `TODO` stub and six READMEs the template, and `--dry-run` said "0 warnings"); a repo-level tag like `v0.1.0` does not match the publish pattern, which is why it is safe to tag a release; the next versions publish from `camouflage_core-v0.1.1` style tags.
+All eight packages are at 0.1.0 on pub.dev under the publisher `srctool.com` (the repo tag `v0.1.0` is on `4325ade`). The first publish of each package was by hand, in dependency order (core first), then moved to the publisher and set to publish from GitHub Actions with the tag pattern `<package>-v{{version}}` and the `pub.dev` environment (required reviewer). **Lessons:** read the files the dry run lists, not only its warning count (every LICENSE was a placeholder stub and six READMEs the template, and `--dry-run` said "0 warnings"); a repo-level tag like `v0.1.0` does not match the publish pattern, which is why it is safe to tag a release; the next versions publish from `camouflage_core-v0.1.1` style tags.
+
+:::
+
+:::tip[Released: 0.1.1 and 0.1.2 (2026-11-09)]
+
+**0.1.1** (all eight packages): full READMEs, an example, screenshots, topics and the documentation link, so pub.dev scores 160 of 160 instead of 0 of 10 on documentation; accessibility fixes (the navigation bar grows with large text, groups and the segmented control no longer clip touch targets, `CamoTouchSemantics`, `CamoClipRRect`, labelled table rows). The first release published from CI: one tag per package (`camouflage_core-v0.1.1`, then the skins and charts), each approved on the `pub.dev` environment. **0.1.2** (`camouflage_skin_fluent`, `camouflage_skin_material`): the two skins used `CamoClipRRect`, which only exists from core 0.1.1, but declared `camouflage_core: ^0.1.0`, so pub.dev's downgrade analysis failed (0 of 20 points) and anyone on core 0.1.0 got a build error. **Lesson:** when a package starts using an API added in the same release train, raise the dependency floor in the same change, and check the downgrade analysis (`flutter pub downgrade && flutter analyze`) before tagging. The tag rule that allowed the pushes was temporary and removed afterwards.
 
 :::
 

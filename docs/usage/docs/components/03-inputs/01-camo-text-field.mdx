@@ -1,0 +1,145 @@
+---
+title: CamoTextField
+sidebar_label: TextField
+sidebar_position: 1
+description: "A controlled text field."
+---
+
+# CamoTextField
+
+A controlled text field. `value` is raw text: `inputFilter` blocks or trims input before it reaches
+`onValueChange`, and `displayFormat` shows formatting (dashes, thousand separators) without storing it, with
+the cursor kept in place. If the app doesn't take a change, the field keeps showing `value`. `error` replaces
+`supportingText` and marks it invalid. `prefixText` / `suffixText` ("+62", "kg") are never part of the value.
+The editable node lives here, not in the skin, so switching skins while typing keeps focus and selection.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+var email by remember { mutableStateOf("") }
+
+CamoTextField(
+    value = email,
+    onValueChange = { email = it },
+    label = "Email",
+    supportingText = "We never share it",
+    error = if (email.isNotEmpty() && '@' !in email) "Enter a valid email" else null,
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+)
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+String email = '';
+
+CamoTextField(
+  value: email,
+  onChanged: (value) => setState(() => email = value),
+  label: 'Email',
+  supportingText: 'We never share it',
+  error: email.isNotEmpty && !email.contains('@') ? 'Enter a valid email' : null,
+  keyboardType: TextInputType.emailAddress,
+)
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    supportingText: String? = null,
+    error: String? = null,
+    prefixIcon: (@Composable () -> Unit)? = null,
+    suffixIcon: (@Composable () -> Unit)? = null,
+    prefixText: String? = null,
+    suffixText: String? = null,
+    enabled: Boolean = true,
+    singleLine: Boolean = true,
+    secure: Boolean = false,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+    inputFilter: CamoInputFilter? = null,
+    displayFormat: CamoDisplayFormat? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onKeyboardAction: KeyboardActionHandler? = null,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `String` | `required` |
+| `onValueChange` | `(String) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `placeholder` | `String?` | `null` |
+| `supportingText` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `prefixIcon` | `(@Composable () -> Unit)?` | `null` |
+| `suffixIcon` | `(@Composable () -> Unit)?` | `null` |
+| `prefixText` | `String?` | `null` |
+| `suffixText` | `String?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `singleLine` | `Boolean` | `true` |
+| `secure` | `Boolean` | `false` |
+| `onFocusChanged` | `((Boolean) -> Unit)?` | `null` |
+| `inputFilter` | `CamoInputFilter?` | `null` |
+| `displayFormat` | `CamoDisplayFormat?` | `null` |
+| `keyboardOptions` | `KeyboardOptions` | `KeyboardOptions.Default` |
+| `onKeyboardAction` | `KeyboardActionHandler?` | `null` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `value` | `String` | `required` | The raw value. |
+| `onChanged` | `ValueChanged<String>?` | `required` | Called with each accepted raw value. |
+| `label` | `String?` |  | The label, which also names the field. |
+| `placeholder` | `String?` |  | Shown while empty (not a label). |
+| `supportingText` | `String?` |  | Helper text below. |
+| `error` | `String?` |  | Marks it invalid and replaces `supportingText`. |
+| `prefixIcon` | `Widget?` |  | A decorative icon at the start. |
+| `suffixIcon` | `Widget?` |  | An icon or a `CamoFieldAction` at the end. |
+| `prefixText` | `String?` |  | Fixed text before the input. |
+| `suffixText` | `String?` |  | Fixed text after the input. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `singleLine` | `bool` | `true` | One line. |
+| `secure` | `bool` | `false` | A password: obscured, no autocorrect, no copy. |
+| `onFocusChanged` | `ValueChanged<bool>?` |  | Reports focus changes (for `onUnfocus` validation). |
+| `inputFilter` | `CamoInputFilter?` |  | Which input is accepted. |
+| `displayFormat` | `CamoDisplayFormat?` |  | How the raw value is shown. |
+| `keyboardType` | `TextInputType?` |  | The keyboard. |
+| `textInputAction` | `TextInputAction?` |  | The keyboard's action button. |
+| `onSubmitted` | `ValueChanged<String>?` |  | Called by the keyboard's action. |
+| `autofillHints` | `Iterable<String>?` |  | Autofill hints for password managers. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoTextField works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-text-field).
+:::

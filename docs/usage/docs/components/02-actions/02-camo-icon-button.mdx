@@ -1,0 +1,72 @@
+---
+title: CamoIconButton
+sidebar_label: IconButton
+sidebar_position: 2
+description: "An icon-only button."
+---
+
+# CamoIconButton
+
+An icon-only button. `contentDescription` names the action ("Close", "Add to favorites"), not the icon.
+A non-null `checked` makes it a toggle; `tooltip` shows on hover, keyboard focus and long press.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoIconButton(
+    icon: @Composable () -> Unit,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    enabled: Boolean = true,
+    checked: Boolean? = null,
+    loading: Boolean = false,
+    tooltip: String? = null,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `icon` | `@Composable () -> Unit` | `required` |
+| `contentDescription` | `String` | `required` |
+| `onClick` | `() -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `enabled` | `Boolean` | `true` |
+| `checked` | `Boolean?` | `null` |
+| `loading` | `Boolean` | `false` |
+| `tooltip` | `String?` | `null` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `Widget` | `required` | The icon, usually an app icon widget. |
+| `semanticLabel` | `String` | `required` | Describes the action. |
+| `onPressed` | `VoidCallback?` | `required` | Called on a tap or Enter / Space; `null` disables the button. |
+| `appearance` | `Appearance?` |  | The visual weight; `null` uses `CamoIconButtonTheme.defaultAppearance`. |
+| `tone` | `Tone` | `Tone.defaultTone` | The color family. |
+| `checked` | `bool?` |  | The toggle state, or `null` for a plain button. |
+| `loading` | `bool` | `false` | Shows a progress circle and ignores taps. |
+| `tooltip` | `String?` |  | A tooltip, often the same as `semanticLabel`. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoIconButton works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/actions/camo-icon-button).
+:::

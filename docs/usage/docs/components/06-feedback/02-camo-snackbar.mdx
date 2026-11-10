@@ -1,0 +1,52 @@
+---
+title: CamoSnackbar
+sidebar_label: Snackbar
+sidebar_position: 2
+description: "Snackbars are shown through the app's **messenger**, which the root provider installs."
+---
+
+# CamoSnackbar
+
+Snackbars are shown through the app's **messenger**, which the root provider installs. There is no widget to place: call `show` from anywhere below the provider. One snackbar shows at a time and the rest queue in order. `show` returns how the snackbar ended, so you can tell whether the user pressed the action.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+val messenger = Camouflage.messenger
+val scope = rememberCoroutineScope()
+
+scope.launch {
+    val result = messenger.show("Message archived", action = "Undo")
+    if (result == SnackbarResult.ActionPerformed) undoArchive()
+}
+
+// A status tone
+scope.launch { messenger.show("Could not save", tone = Tone.Error) }
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+final messenger = CamoMessenger.of(context);
+
+final result = await messenger.show('Message archived', action: 'Undo');
+if (result == SnackbarResult.actionPerformed) undoArchive();
+
+// A status tone
+messenger.show('Could not save', tone: Tone.error);
+```
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSnackbar works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/feedback/camo-snackbar).
+:::

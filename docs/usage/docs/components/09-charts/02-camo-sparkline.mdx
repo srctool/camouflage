@@ -1,0 +1,66 @@
+---
+title: CamoSparkline
+sidebar_label: Sparkline
+sidebar_position: 2
+description: "A small trend with no axes, grid or legend, for a row or a card."
+---
+
+# CamoSparkline
+
+A small trend with no axes, grid or legend, for a row or a card. It sizes to `modifier` (100 x 28 dp when that
+doesn't say), scales to the data or to `range`, and breaks the line at `null` values. A sparkline is one image
+node whose text is `sparklineSummary`: `description` names it ("Signups, last 30 days") and the text adds the
+first and last values and the change, so the direction is never only a color. It is not focusable.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSparkline(
+    values: List<Double?>,
+    modifier: Modifier = Modifier,
+    kind: SparklineKind = SparklineKind.Line,
+    range: ClosedFloatingPointRange<Double>? = null,
+    highlight: SparklineHighlight = SparklineHighlight.Last,
+    tone: Tone = Tone.Default,
+    description: String? = null,
+    style: ChartStyle? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `values` | `List<Double?>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `kind` | `SparklineKind` | `SparklineKind.Line` |
+| `range` | `ClosedFloatingPointRange<Double>?` | `null` |
+| `highlight` | `SparklineHighlight` | `SparklineHighlight.Last` |
+| `tone` | `Tone` | `Tone.Default` |
+| `description` | `String?` | `null` |
+| `style` | `ChartStyle?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `values` | `List<double?>` | `required` | The values, `null` for gaps. |
+| `kind` | `SparklineKind` | `SparklineKind.line` | The form. |
+| `range` | `(double, double)?` |  | The `(min, max)` the values scale to; `null` reads the data. |
+| `highlight` | `SparklineHighlight` | `SparklineHighlight.last` | Which points get a dot. |
+| `tone` | `Tone` | `Tone.defaultTone` | The color family of the marks. |
+| `description` | `String?` |  | Names the sparkline for a screen reader. |
+| `style` | `ChartStyle?` |  | Style changes for this sparkline, on top of the theme, the skin's preset and the tokens. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSparkline works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/charts/camo-sparkline).
+:::

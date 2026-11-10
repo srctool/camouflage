@@ -1,0 +1,66 @@
+---
+title: CamoTopBar
+sidebar_label: TopBar
+sidebar_position: 1
+description: "A screen's top bar: a title, a navigation button, and actions (icon buttons; extras go in a \"More\" menu)."
+---
+
+# CamoTopBar
+
+A screen's top bar: a `title`, a `navigation` button, and `actions` (icon buttons; extras go in a "More" menu).
+The skin decides where they sit. Pass `scrollOffset` from `rememberTopBarScrollOffset` so the bar separates
+from content scrolled under it. `titleContent` replaces the drawn title; `title` stays the bar's heading for
+screen readers. `visible = false` slides the bar up out of view (with `rememberHideOnScroll`).
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoTopBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    navigation: (@Composable () -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+    scrollOffset: Dp = 0.dp,
+    titleContent: (@Composable () -> Unit)? = null,
+    visible: Boolean = true,
+    windowInsets: WindowInsets = TopBarDefaultInsets,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `title` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `navigation` | `(@Composable () -> Unit)?` | `null` |
+| `actions` | `@Composable RowScope.() -> Unit` | `{}` |
+| `scrollOffset` | `Dp` | `0.dp` |
+| `titleContent` | `(@Composable () -> Unit)?` | `null` |
+| `visible` | `Boolean` | `true` |
+| `windowInsets` | `WindowInsets` | `TopBarDefaultInsets` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String` | `required` | The screen's name. |
+| `navigation` | `Widget?` |  | Usually a back `CamoIconButton`. |
+| `actions` | `List<Widget>` | `const []` | Usually `CamoIconButton`s. |
+| `scrollOffset` | `double` | `0` | How far content has scrolled under the bar. |
+| `titleContent` | `custom =` |  |  |
+| `visible` | `bool` | `true` | `false` slides the bar out of view. |
+| `insets` | `EdgeInsets?` |  | The padding for the status bar and cutouts; `null` reads `MediaQuery`. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoTopBar works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-top-bar).
+:::

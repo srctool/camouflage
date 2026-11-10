@@ -1,0 +1,82 @@
+---
+title: CamoDataTable
+sidebar_label: DataTable
+sidebar_position: 7
+description: "Rows of records in columns, with sorting, selection and an optional footer."
+---
+
+# CamoDataTable
+
+Rows of records in columns, with sorting, selection and an optional footer. The app owns the data, the `sort`
+(and does the sorting) and the `selection` (a set of `rowKey`s; `null` means rows can't be selected). A click
+on a header of a sortable column calls `onSortChange`; a click or Space on a row toggles its selection (a
+click calls `onRowClick` instead when it is set); Up and Down move between rows. `caption` names the table.
+Rows are lazy; the header stays above them.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoDataTable(
+    columns: List<CamoColumn<T>>,
+    rows: List<T>,
+    rowKey: (T) -> Any,
+    caption: String,
+    modifier: Modifier = Modifier,
+    sort: TableSort? = null,
+    onSortChange: ((TableSort) -> Unit)? = null,
+    selection: Set<Any>? = null,
+    onSelectionChange: ((Set<Any>) -> Unit)? = null,
+    onRowClick: ((T) -> Unit)? = null,
+    empty: (@Composable () -> Unit)? = null,
+    loading: Boolean = false,
+    footer: (@Composable () -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `columns` | `List<CamoColumn<T>>` | `required` |
+| `rows` | `List<T>` | `required` |
+| `rowKey` | `(T) -> Any` | `required` |
+| `caption` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `sort` | `TableSort?` | `null` |
+| `onSortChange` | `((TableSort) -> Unit)?` | `null` |
+| `selection` | `Set<Any>?` | `null` |
+| `onSelectionChange` | `((Set<Any>) -> Unit)?` | `null` |
+| `onRowClick` | `((T) -> Unit)?` | `null` |
+| `empty` | `(@Composable () -> Unit)?` | `null` |
+| `loading` | `Boolean` | `false` |
+| `footer` | `(@Composable () -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `columns` | `List<CamoColumn<T>>` | `required` | The columns. |
+| `rows` | `List<T>` | `required` | The rows, already sorted. |
+| `rowKey` | `Object Function(T row)` | `required` | A row's stable key. |
+| `semanticLabel` | `String` | `required` | Names the table. |
+| `sort` | `TableSort?` |  | The sort to show. |
+| `onSortChanged` | `ValueChanged<TableSort>?` |  | Called when a sortable header is pressed. |
+| `selection` | `Set<Object>?` |  | The selected row keys; `null` makes rows not selectable. |
+| `onSelectionChanged` | `ValueChanged<Set<Object>>?` |  | Called with the new selection. |
+| `onRowPressed` | `ValueChanged<T>?` |  | Called when a row is pressed (instead of toggling its selection). |
+| `empty` | `Widget?` |  | Shown when there are no rows. |
+| `loading` | `bool` | `false` | Whether the rows are loading. |
+| `footer` | `Widget?` |  | Below the rows. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoDataTable works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-data-table).
+:::

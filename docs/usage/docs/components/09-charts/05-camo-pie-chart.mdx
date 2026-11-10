@@ -1,0 +1,87 @@
+---
+title: CamoPieChart
+sidebar_label: PieChart
+sidebar_position: 5
+description: "Parts of a whole, as a pie or (with donut) a ring with center content in the hole."
+---
+
+# CamoPieChart
+
+Parts of a whole, as a pie or (with `donut`) a ring with `center` content in the hole. Each slice shows its share
+when it is wide enough (`ResolvedChartStyle.labelThreshold`); the legend lists every slice with its value and
+share and hides or shows slices. The app owns the selection (`selected`, `onSelect`): clicking a slice, or Enter
+or Space on the focused one, calls `onSelect` with its index (`null` when it was already selected), and the selected
+slice moves out. The plot is one image node; focusing it walks the slices clockwise (Left, Right, Up and Down) and
+announces "Search, 45%, 4,500". Negative values count as zero; with every value zero the empty state shows. Angles
+keep their clockwise direction in right-to-left layouts.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoPieChart(
+    slices: List<PieSlice>,
+    title: String,
+    modifier: Modifier = Modifier,
+    donut: Boolean = false,
+    center: (@Composable () -> Unit)? = null,
+    selected: Int? = null,
+    onSelect: ((Int?) -> Unit)? = null,
+    startAngle: Float = TOP,
+    valueFormat: (Double) -> String = ::formatChartNumber,
+    loading: Boolean = false,
+    empty: (@Composable () -> Unit)? = null,
+    showTable: Boolean = false,
+    plotHeight: Dp = DefaultPieHeight,
+    style: ChartStyle? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `slices` | `List<PieSlice>` | `required` |
+| `title` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `donut` | `Boolean` | `false` |
+| `center` | `(@Composable () -> Unit)?` | `null` |
+| `selected` | `Int?` | `null` |
+| `onSelect` | `((Int?) -> Unit)?` | `null` |
+| `startAngle` | `Float` | `TOP` |
+| `valueFormat` | `(Double) -> String` | `::formatChartNumber` |
+| `loading` | `Boolean` | `false` |
+| `empty` | `(@Composable () -> Unit)?` | `null` |
+| `showTable` | `Boolean` | `false` |
+| `plotHeight` | `Dp` | `DefaultPieHeight` |
+| `style` | `ChartStyle?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `slices` | `List<PieSlice>` | `required` | The slices. |
+| `title` | `String` | `required` | The chart's title. |
+| `donut` | `bool` | `false` | Whether the pie has a hole. |
+| `center` | `Widget?` |  | What shows in the donut's hole. |
+| `selected` | `int?` |  | The selected slice's index, which moves out. |
+| `onSelected` | `ValueChanged<int?>?` |  | Called with the tapped slice's index, or `null` to clear it. |
+| `startAngle` | `double` | `pieTop` | Where the first slice starts, in degrees clockwise from 3 o'clock; 12 o'clock by default. |
+| `valueFormat` | `String Function(double value)` | `formatChartNumber` | How a value reads. |
+| `loading` | `bool` | `false` | Whether a skeleton stands in for the plot. |
+| `empty` | `Widget?` |  | What shows with no data; "No data" by default. |
+| `showTable` | `bool` | `false` | Whether the data shows as a table at first. |
+| `plotHeight` | `double` | `220` | The height of the plot. |
+| `style` | `ChartStyle?` |  | Style changes for this chart. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoPieChart works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/charts/camo-pie-chart).
+:::

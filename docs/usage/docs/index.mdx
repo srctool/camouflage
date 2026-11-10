@@ -1,0 +1,55 @@
+---
+title: Introduction
+sidebar_label: Introduction
+slug: /
+---
+
+# Camouflage
+
+Camouflage is a component library for **Compose Multiplatform (Kotlin)** and **Flutter (Dart)**. You build a screen once from components such as `CamoButton`, `CamoTextField` and `CamoDataTable`. The look comes from two swappable things:
+
+- a **skin** decides *how* a component is drawn: Material 3, Cupertino, Fluent, Carbon, Minimal, or your own;
+- a **theme** decides the *values*: colors, type, shapes, spacing, motion, light or dark.
+
+So a new brand is a new theme, and a new platform feel is a new skin. Your screens do not change.
+
+![The same screen in the five skins](/img/skins/all.png)
+
+:::info Version 0.1
+Camouflage 0.1 is out: Flutter on [pub.dev](https://pub.dev/publishers/srctool.com/packages) and Kotlin on Maven Central. The API can still change before 1.0; every change is in the [changelog](/docs/resources/changelog).
+:::
+
+## Start here
+
+| | |
+|---|---|
+| **[Installation](/docs/getting-started/installation)** | Add the packages to a Kotlin or Flutter project. |
+| **[Quick start](/docs/getting-started/quick-start)** | A first screen with a provider, a skin and a theme, in a few lines. |
+| **[Your first theme](/docs/getting-started/your-first-theme)** | Make it yours: a brand color, dark mode, a font. |
+| **[Components](/docs/components)** | All 52 components, with their parameters in Kotlin and Dart. |
+| **[Skins](/docs/skins)** | What each skin looks like and the options it has. |
+| **[Accessibility](/docs/guides/accessibility)** | What is built in and how to test it. |
+
+## Pick your language
+
+Every page shows Kotlin or Dart. Use the language switch at the top of the page once and every code sample follows it.
+
+## Why a skin and a theme?
+
+Most component libraries are one design system. Camouflage keeps **what a component is** (a button with a label, a tone and an appearance) apart from **how it looks**. That gives you things that are otherwise hard:
+
+- **One codebase, a native feel per platform.** Cupertino on iOS and Material on Android from the same screens.
+- **White-labelling.** A new customer is a new theme, not a fork.
+- **No lock-in.** Write your own skin and keep every screen.
+- **Accessibility by construction.** Roles, names, states, 48 dp touch targets, text scaling and right-to-left are in the components, and the testing packages check them for you.
+
+## Packages
+
+| | Kotlin | Flutter |
+|---|---|---|
+| Components, theme, skin contract | `camouflage-core` | `camouflage_core` |
+| Skins | `camouflage-skin-minimal`, `-material`, `-cupertino`, `-fluent`, `-carbon` | `camouflage_skin_minimal`, `_material`, `_cupertino`, `_fluent`, `_carbon` |
+| Charts | `camouflage-charts` | `camouflage_charts` |
+| Navigation 3 | `camouflage-navigation3` | not needed |
+| Test checks | `camouflage-skin-testing` | `camouflage_skin_testing` |
+| Pinning versions | `camouflage-bom` | not needed |

@@ -1,0 +1,61 @@
+---
+title: CamoRadio
+sidebar_label: Radio
+sidebar_position: 4
+description: "A single radio, for custom layouts (a radio inside a card)."
+---
+
+# CamoRadio
+
+A single radio, for custom layouts (a radio inside a card). Prefer `CamoRadioGroup`, which adds the keyboard
+and the "2 of 3" announcement. A `null` `onClick` makes it display-only, for a parent row that handles it.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoRadio(
+    selected: Boolean,
+    onClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    labelSpans: List<CamoSpan>? = null,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `selected` | `Boolean` | `required` |
+| `onClick` | `(() -> Unit)?` |  |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `labelSpans` | `List<CamoSpan>?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `selected` | `bool` | `required` | Whether it's the chosen one. |
+| `onChanged` | `VoidCallback?` | `required` | Called when chosen; `null` makes it display-only. |
+| `label` | `String?` |  | The label; the whole row becomes the target. |
+| `labelSpans` | `List<CamoSpan>?` |  | A rich label, instead of `label`. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoRadio works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-radio).
+:::

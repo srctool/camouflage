@@ -1,0 +1,68 @@
+---
+title: CamoAccordion
+sidebar_label: Accordion
+sidebar_position: 4
+description: "An expandable section (an FAQ answer, a \"Shipping\" panel)."
+---
+
+# CamoAccordion
+
+An expandable section (an FAQ answer, a "Shipping" panel). It's controlled: the app owns `expanded`. The
+header is a button and a heading, announced "Shipping, collapsed". Collapsed content stays composed, keeping
+its state (a half-filled form), but takes no space and is neither focusable nor announced.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoAccordion(
+    title: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    leading: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `title` | `String` | `required` |
+| `expanded` | `Boolean` | `required` |
+| `onExpandedChange` | `(Boolean) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `subtitle` | `String?` | `null` |
+| `leading` | `(@Composable () -> Unit)?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+| `content` | `@Composable ColumnScope.() -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String` | `required` | The header's title. |
+| `expanded` | `bool` | `required` | Whether it's open. |
+| `onExpansionChanged` | `ValueChanged<bool>` | `required` | Called with the new state. |
+| `subtitle` | `String?` |  | A line under the title. |
+| `leading` | `Widget?` |  | An icon before the title. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `focusNode` | `FocusNode?` |  | An optional focus node for the header. |
+| `child` | `Widget` | `required` | The content. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoAccordion works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/containers-and-lists/camo-accordion).
+:::

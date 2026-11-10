@@ -1,0 +1,85 @@
+---
+title: CamoTimePicker
+sidebar_label: TimePicker
+sidebar_position: 11
+description: "A time field: the text-field frame showing value in the locale's short time (24 or 12 hours per use24Hour, null following the device), opening a CamoTimeInput in a popup on wide windows and a bottom s"
+---
+
+# CamoTimePicker
+
+A time field: the text-field frame showing `value` in the locale's short time (24 or 12 hours per
+`use24Hour`, `null` following the device), opening a `CamoTimeInput` in a popup on wide windows and a bottom
+sheet otherwise. Cancel/OK confirm by default (`TimePickerTheme.confirmButton`); OK is disabled outside
+`minTime`…`maxTime`, a window that may run past midnight.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoTimeField(
+    value: LocalTime?,
+    onValueChange: (LocalTime) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    supportingText: String? = null,
+    error: String? = null,
+    minuteStep: Int = 1,
+    use24Hour: Boolean? = null,
+    minTime: LocalTime? = null,
+    maxTime: LocalTime? = null,
+    presentation: PickerPresentation = PickerPresentation.Auto,
+    enabled: Boolean = true,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `LocalTime?` |  |
+| `onValueChange` | `(LocalTime) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `placeholder` | `String?` | `null` |
+| `supportingText` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `minuteStep` | `Int` | `1` |
+| `use24Hour` | `Boolean?` | `null` |
+| `minTime` | `LocalTime?` | `null` |
+| `maxTime` | `LocalTime?` | `null` |
+| `presentation` | `PickerPresentation` | `PickerPresentation.Auto` |
+| `enabled` | `Boolean` | `true` |
+| `onFocusChanged` | `((Boolean) -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `value` | `CamoTime?` | `required` | The time, or `null`. |
+| `onChanged` | `ValueChanged<CamoTime>` | `required` | Called with each confirmed time. |
+| `label` | `String?` |  | The label. |
+| `placeholder` | `String?` |  | Shown while empty. |
+| `supportingText` | `String?` |  | Helper text below. |
+| `error` | `String?` |  | The error. |
+| `minuteStep` | `int` | `1` | The minute step. |
+| `use24Hour` | `bool?` |  | 24-hour digits; `null` follows the device. |
+| `minTime` | `CamoTime?` |  | The earliest time. |
+| `maxTime` | `CamoTime?` |  | The latest time; before `minTime` runs past midnight. |
+| `presentation` | `PickerPresentation` | `PickerPresentation.auto` | Popup, sheet, or by window width. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `onFocusChanged` | `ValueChanged<bool>?` |  | Reports focus changes. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoTimePicker works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-time-picker).
+:::

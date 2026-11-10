@@ -1,0 +1,56 @@
+---
+title: CamoSegmentedControl
+sidebar_label: SegmentedControl
+sidebar_position: 5
+description: "A compact choice between 2 to 5 related options (\"Day / Week / Month\"), each segment the same width."
+---
+
+# CamoSegmentedControl
+
+A compact choice between 2 to 5 related options ("Day / Week / Month"), each segment the same width. It's a
+radio group: one Tab stop, the arrow keys move and select, and segments are announced "Week, 2 of 3". For
+several selections, use filter chips.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoSegmentedControl(
+    options: List<Segment<T>>,
+    selected: T,
+    onSelectionChange: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `options` | `List<Segment<T>>` | `required` |
+| `selected` | `T` | `required` |
+| `onSelectionChange` | `(T) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `enabled` | `Boolean` | `true` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `options` | `List<Segment<T>>` | `required` | The segments. |
+| `selected` | `T` | `required` | The chosen value. |
+| `onChanged` | `ValueChanged<T>?` | `required` | Called with the chosen value. |
+| `enabled` | `bool` | `true` | `false` disables every segment. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSegmentedControl works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-segmented-control).
+:::

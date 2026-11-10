@@ -1,0 +1,86 @@
+---
+title: Carbon skin
+sidebar_label: Carbon
+sidebar_position: 5
+description: "IBM Carbon: square corners, layered flat surfaces, a gray-100 header and 2 px focus borders."
+---
+
+# Carbon skin
+
+IBM Carbon: square corners, layered flat surfaces, a gray-100 header and 2 px focus borders. Made for dense, data-heavy screens.
+
+| Light | Dark |
+|---|---|
+| ![Carbon skin, light](/img/skins/carbon-light.png) | ![Carbon skin, dark](/img/skins/carbon-dark.png) |
+
+**Look and feel.** Layered opaque surfaces (no blur), square shapes, hover and press overlays, and focus drawn as a border.
+
+## Install
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+implementation("com.srctool.camouflage:camouflage-skin-carbon")
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```sh
+flutter pub add camouflage_skin_carbon
+```
+
+</TabItem>
+</LangTabs>
+
+## Use
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import com.srctool.camouflage.skin.carbon.*
+
+CamouflageProvider(skin = CarbonSkin, theme = carbonTheme()) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+import 'package:camouflage_skin_carbon/camouflage_skin_carbon.dart';
+
+CamouflageProvider(
+  skin: carbonSkin,
+  theme: carbonTheme(),
+  child: child!,
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## Options
+
+`family`: the four Carbon themes `White`, `G10` (light) and `G90`, `G100` (dark). `accent`: your brand color in place of Carbon blue.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+carbonSkin()
+carbonTheme(family = CarbonThemeFamily.G100)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+carbonTheme(family: CarbonThemeFamily.g100)
+```
+
+</TabItem>
+</LangTabs>
+
+Every skin implements the same 52 renderers, so anything you build works in all of them. See [Skins and themes](/docs/concepts/skins-and-themes) for how that works, and [Writing your own skin](/docs/guides/custom-skin) to add another.

@@ -1,0 +1,58 @@
+---
+title: CamoMenu
+sidebar_label: Menu
+sidebar_position: 4
+description: "A menu attached to anchor (an overflow button, a split button's arrow): anchor gets open for its click."
+---
+
+# CamoMenu
+
+A menu attached to `anchor` (an overflow button, a split button's arrow): `anchor` gets `open` for its click.
+The menu shows `items`, or `panel`'s custom content in a `CamoMenuPanel` (ADR-30), below the anchor (above
+it near the bottom edge). Opened from the keyboard, the first item takes focus; Up and Down move, Home and
+End jump, typing jumps to the next item starting with the typed letters, Enter selects, and Esc or an outside
+tap closes it, returning focus to the anchor.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoMenuAnchor(
+    modifier: Modifier = Modifier,
+    items: List<CamoMenuEntry> = emptyList(),
+    panel: (@Composable () -> Unit)? = null,
+    controller: CamoMenuController? = null,
+    anchor: @Composable (open: () -> Unit) -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `items` | `List<CamoMenuEntry>` | `emptyList()` |
+| `panel` | `(@Composable () -> Unit)?` | `null` |
+| `controller` | `CamoMenuController?` | `null` |
+| `anchor` | `@Composable (open: () -> Unit) -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<CamoMenuEntry>` | `const []` | The menu's entries. |
+| `panel` | `Widget?` |  | Custom content instead of `items`. |
+| `controller` | `CamoMenuController?` |  | Opens and closes it from outside. |
+| `builder` | `Widget Function(BuildContext context, VoidCallback open)` | `required` | The anchor, given the function that opens the menu. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoMenu works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/overlays/camo-menu).
+:::

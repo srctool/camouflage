@@ -1,0 +1,51 @@
+---
+title: Skins
+sidebar_label: Overview
+slug: /skins
+---
+
+# Skins
+
+A skin draws every component. Five are included, and you can write your own. All five implement the same components, so you can switch with one line.
+
+![The same screen in the five skins](/img/skins/all.png)
+
+| Skin | Feels like | Surface | Feedback |
+|---|---|---|---|
+| [Minimal](/docs/skins/minimal) | Neutral and flat | Flat | Fade |
+| [Material](/docs/skins/material) | Material 3 | Paper | Ripple |
+| [Cupertino](/docs/skins/cupertino) | iOS | Classic or Liquid Glass | Opacity |
+| [Fluent](/docs/skins/fluent) | Fluent 2 | Solid, Acrylic or Mica | Subtle |
+| [Carbon](/docs/skins/carbon) | IBM Carbon | Layered | Overlay and focus border |
+
+## Using more than one
+
+You are not limited to one skin per app. A provider with a different skin restyles only its subtree, for example Cupertino on iOS and Material on Android:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+val skin = if (isIos) CupertinoSkin else MaterialSkin
+val theme = if (isIos) cupertinoTheme() else materialTheme()
+CamouflageProvider(skin = skin, theme = theme) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final ios = defaultTargetPlatform == TargetPlatform.iOS;
+CamouflageProvider(
+  skin: ios ? cupertinoSkin : materialSkin,
+  theme: ios ? cupertinoTheme() : materialTheme(),
+  child: child!,
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## What skins do not do
+
+Skins never bundle fonts (you pass a font family to the theme) and never change what a component does. They only decide how it looks, so behavior, semantics and accessibility are the same in every skin.

@@ -1,0 +1,69 @@
+---
+title: CamoSplitButton
+sidebar_label: SplitButton
+sidebar_position: 5
+description: "A main action with a menu of related ones (\"Save\", with \"Save as\u2026\" behind the arrow)."
+---
+
+# CamoSplitButton
+
+A main action with a menu of related ones ("Save", with "Save as…" behind the arrow). Tab reaches the main part,
+then the arrow; Enter or Space presses the focused part; Down or Alt+Down on either opens the `menu` and
+focuses its first item; Esc closes it and returns focus. An `onClick` of `null` makes a menu button: one part
+that opens the menu. `menuContentDescription` names the arrow.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSplitButton(
+    text: String,
+    onClick: (() -> Unit)?,
+    menu: List<CamoMenuEntry>,
+    modifier: Modifier = Modifier,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    enabled: Boolean = true,
+    prefixIcon: (@Composable () -> Unit)? = null,
+    menuContentDescription: String = "More options",
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `text` | `String` | `required` |
+| `onClick` | `(() -> Unit)?` |  |
+| `menu` | `List<CamoMenuEntry>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `enabled` | `Boolean` | `true` |
+| `prefixIcon` | `(@Composable () -> Unit)?` | `null` |
+| `menuContentDescription` | `String` | `"More options"` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `text` | `String` | `required` | The label. |
+| `onPressed` | `VoidCallback?` | `required` | The main action; `null` makes a menu button. |
+| `menu` | `List<CamoMenuEntry>` | `required` | The menu's entries. |
+| `appearance` | `Appearance?` |  | The visual weight; `null` uses the theme's default. |
+| `tone` | `Tone` | `Tone.defaultTone` | The color family. |
+| `enabled` | `bool` | `true` | `false` disables both parts. |
+| `prefixIcon` | `Widget?` |  | An icon before the text. |
+| `menuSemanticLabel` | `String` | `'More options'` | Names the arrow part. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSplitButton works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/actions/camo-split-button).
+:::

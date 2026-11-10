@@ -1,0 +1,35 @@
+---
+title: Validating a theme
+sidebar_label: Validation
+slug: /theming/validation
+description: Find low-contrast pairs and invalid values before your users do.
+---
+
+# Validating a theme
+
+`theme.validate()` checks a theme and returns a list of issues: color pairs that fail the contrast guidelines, and values that make no sense. It **never throws and never changes your colors**. A brand color is a decision, so the library reports and you decide.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+val issues = materialTheme(seed = brand).validate()
+check(issues.isEmpty()) { issues.joinToString("\n") }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final issues = materialTheme(seed: brand).validate();
+assert(issues.isEmpty, issues.join('\n'));
+```
+
+</TabItem>
+</LangTabs>
+
+A good place for it is a unit test, so a new brand color cannot ship with unreadable text.
+
+:::note
+The starter themes follow their design systems, which have known exceptions. Carbon's G90 family, for example, fails AA on its two highest layers, as Carbon itself does. Validation reports those honestly.
+:::

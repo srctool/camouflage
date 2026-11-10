@@ -1,0 +1,67 @@
+---
+title: CamoBanner
+sidebar_label: Banner
+sidebar_position: 3
+description: "An inline message that stays in the page until it's resolved (\"Couldn't sync \u00b7 Retry\", a form's error summary), in a tone with its status icon (the theme's by default; icon = {} shows none)."
+---
+
+# CamoBanner
+
+An inline message that stays in the page until it's resolved ("Couldn't sync · Retry", a form's error summary),
+in a `tone` with its status icon (the theme's by default; `icon = {}` shows none). `actions` are usually Ghost
+`CamoButton`s, at most two, and take the banner's accent color; `onDismiss` adds a ✕. Tone isn't carried by
+color alone: the icon and the texts carry it too. A warning or error banner that appears after the page
+loaded is announced.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoBanner(
+    message: String,
+    modifier: Modifier = Modifier,
+    tone: Tone = Tone.Info,
+    title: String? = null,
+    icon: (@Composable () -> Unit)? = null,
+    actions: (@Composable RowScope.() -> Unit)? = null,
+    onDismiss: (() -> Unit)? = null,
+    appearance: Appearance? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `message` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `tone` | `Tone` | `Tone.Info` |
+| `title` | `String?` | `null` |
+| `icon` | `(@Composable () -> Unit)?` | `null` |
+| `actions` | `(@Composable RowScope.() -> Unit)?` | `null` |
+| `onDismiss` | `(() -> Unit)?` | `null` |
+| `appearance` | `Appearance?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `message` | `String` | `required` | The message. |
+| `tone` | `Tone` | `Tone.info` | The status tone. |
+| `title` | `String?` |  | An optional title. |
+| `icon` | `Widget?` |  | `null` uses the theme's icon for the tone. |
+| `actions` | `List<Widget>` | `const []` | Usually ghost `CamoButton`s. |
+| `onDismiss` | `VoidCallback?` |  | Non-null adds a ✕. |
+| `appearance` | `Appearance?` |  | `null` uses `CamoBannerTheme.defaultAppearance`. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoBanner works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/feedback/camo-banner).
+:::

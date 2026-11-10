@@ -1,0 +1,49 @@
+---
+title: CamoDivider
+sidebar_label: Divider
+sidebar_position: 4
+description: "A line between groups of content."
+---
+
+# CamoDivider
+
+A line between groups of content. Decorative: hidden from screen readers. A vertical divider needs a bounded
+height (an `IntrinsicHeight` around a `Row`).
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoDivider(
+    modifier: Modifier = Modifier,
+    orientation: Orientation = Orientation.Horizontal,
+    inset: DividerInset = DividerInset.None,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `orientation` | `Orientation` | `Orientation.Horizontal` |
+| `inset` | `DividerInset` | `DividerInset.None` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `orientation` | `Axis` | `Axis.horizontal` | Horizontal or vertical. |
+| `inset` | `DividerInset` | `DividerInset.none` | The inset. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoDivider works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/primitives/camo-divider).
+:::

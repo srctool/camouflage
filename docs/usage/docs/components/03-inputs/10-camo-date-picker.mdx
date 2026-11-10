@@ -1,0 +1,153 @@
+---
+title: CamoDatePicker
+sidebar_label: DatePicker
+sidebar_position: 10
+description: "A date field: the text-field frame showing value in DatePickerTheme.displayFormat (or the locale's medium date), opening a calendar (or wheels, per DatePickerTheme.form) in a popup on wide windows and"
+---
+
+# CamoDatePicker
+
+A date field: the text-field frame showing `value` in `DatePickerTheme.displayFormat` (or the locale's
+medium date), opening a calendar (or wheels, per `DatePickerTheme.form`) in a popup on wide windows and a
+bottom sheet otherwise (`presentation`). Single dates confirm with Cancel/OK unless
+`DatePickerTheme.confirmButton` is off, when a tap picks and closes.
+
+On desktop and web (`DatePickerTheme.allowTyping = Auto`) the field also takes typing in the locale's short
+date pattern; a complete, valid date in range calls `onValueChange`, anything else shows "Enter a valid date"
+(`DatePickerStrings`) and leaves `value` alone.
+
+## API: CamoDateField
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoDateField(
+    value: LocalDate?,
+    onValueChange: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    supportingText: String? = null,
+    error: String? = null,
+    minDate: LocalDate? = null,
+    maxDate: LocalDate? = null,
+    isSelectable: ((LocalDate) -> Boolean)? = null,
+    presentation: PickerPresentation = PickerPresentation.Auto,
+    enabled: Boolean = true,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `LocalDate?` |  |
+| `onValueChange` | `(LocalDate) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `placeholder` | `String?` | `null` |
+| `supportingText` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `minDate` | `LocalDate?` | `null` |
+| `maxDate` | `LocalDate?` | `null` |
+| `isSelectable` | `((LocalDate) -> Boolean)?` | `null` |
+| `presentation` | `PickerPresentation` | `PickerPresentation.Auto` |
+| `enabled` | `Boolean` | `true` |
+| `onFocusChanged` | `((Boolean) -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `value` | `DateTime?` | `required` | The date, or `null`. |
+| `onChanged` | `ValueChanged<DateTime>` | `required` | Called with each picked or typed date. |
+| `label` | `String?` |  | The label. |
+| `placeholder` | `String?` |  | Shown while empty. |
+| `supportingText` | `String?` |  | Helper text below. |
+| `error` | `String?` |  | The error. |
+| `firstDate` | `DateTime?` |  | The earliest date. |
+| `lastDate` | `DateTime?` |  | The latest date. |
+| `selectableDayPredicate` | `bool Function(DateTime day)?` |  | `false` disables a day. |
+| `presentation` | `PickerPresentation` | `PickerPresentation.auto` | Popup, sheet, or by window width. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `onFocusChanged` | `ValueChanged<bool>?` |  | Reports focus changes. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+## API: CamoDateRangeField
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoDateRangeField(
+    value: CamoDateRange?,
+    onValueChange: (CamoDateRange) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    supportingText: String? = null,
+    error: String? = null,
+    minDate: LocalDate? = null,
+    maxDate: LocalDate? = null,
+    isSelectable: ((LocalDate) -> Boolean)? = null,
+    maxLength: Int? = null,
+    presentation: PickerPresentation = PickerPresentation.Auto,
+    enabled: Boolean = true,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `CamoDateRange?` |  |
+| `onValueChange` | `(CamoDateRange) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `placeholder` | `String?` | `null` |
+| `supportingText` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `minDate` | `LocalDate?` | `null` |
+| `maxDate` | `LocalDate?` | `null` |
+| `isSelectable` | `((LocalDate) -> Boolean)?` | `null` |
+| `maxLength` | `Int?` | `null` |
+| `presentation` | `PickerPresentation` | `PickerPresentation.Auto` |
+| `enabled` | `Boolean` | `true` |
+| `onFocusChanged` | `((Boolean) -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `value` | `CamoDateRange?` | `required` | The range, or `null`. |
+| `onChanged` | `ValueChanged<CamoDateRange>` | `required` | Called with each confirmed range. |
+| `label` | `String?` |  | The label. |
+| `placeholder` | `String?` |  | Shown while empty. |
+| `supportingText` | `String?` |  | Helper text below. |
+| `error` | `String?` |  | The error. |
+| `firstDate` | `DateTime?` |  | The earliest date. |
+| `lastDate` | `DateTime?` |  | The latest date. |
+| `selectableDayPredicate` | `bool Function(DateTime day)?` |  | `false` disables a day. |
+| `maxLength` | `int?` |  | The longest range in days. |
+| `presentation` | `PickerPresentation` | `PickerPresentation.auto` | Popup, sheet, or by window width. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `onFocusChanged` | `ValueChanged<bool>?` |  | Reports focus changes. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoDatePicker works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-date-picker).
+:::

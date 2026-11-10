@@ -1,0 +1,58 @@
+---
+title: CamoSurface
+sidebar_label: Surface
+sidebar_position: 3
+description: "A neutral container: one of the six surface levels, clipped to a shape, at a semantic depth."
+---
+
+# CamoSurface
+
+A neutral container: one of the six surface levels, clipped to a shape, at a semantic depth. It sets
+`onSurface` as the content color for what's inside. Not interactive, and touches pass through it.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSurface(
+    modifier: Modifier = Modifier,
+    level: SurfaceLevel = SurfaceLevel.Surface,
+    shape: ShapeRole = ShapeRole.None,
+    elevation: ElevationLevel = ElevationLevel.Level0,
+    border: Boolean = false,
+    content: @Composable () -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `level` | `SurfaceLevel` | `SurfaceLevel.Surface` |
+| `shape` | `ShapeRole` | `ShapeRole.None` |
+| `elevation` | `ElevationLevel` | `ElevationLevel.Level0` |
+| `border` | `Boolean` | `false` |
+| `content` | `@Composable () -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `level` | `SurfaceLevel` | `SurfaceLevel.surface` | Which surface role to paint. |
+| `shape` | `ShapeRole` | `ShapeRole.none` | The corner radius role. |
+| `elevation` | `ElevationLevel` | `ElevationLevel.level0` | The semantic depth. |
+| `border` | `bool` | `false` | Whether to draw a hairline outline (panels). |
+| `child` | `Widget` | `required` | The content. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSurface works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/primitives/camo-surface).
+:::

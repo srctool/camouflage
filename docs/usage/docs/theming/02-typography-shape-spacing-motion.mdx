@@ -1,0 +1,89 @@
+---
+title: Typography, shape, spacing and motion
+sidebar_label: Type, shape, spacing, motion
+description: The other tokens of a theme.
+---
+
+# Typography, shape, spacing and motion
+
+A theme is more than colors. Each of these is a token set on the theme, read through the same accessor.
+
+## Typography
+
+A scale of 15 styles, the same names in Kotlin and Dart:
+
+`displayLarge`, `displayMedium`, `displaySmall`, `headlineLarge`, `headlineMedium`, `headlineSmall`, `titleLarge`, `titleMedium`, `titleSmall`, `bodyLarge`, `bodyMedium`, `bodySmall`, `labelLarge`, `labelMedium`, `labelSmall`.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamoText("Overview", style = Camouflage.typography.headlineSmall)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+CamoText('Overview', style: Camouflage.themeOf(context).typography.headlineSmall)
+```
+
+</TabItem>
+</LangTabs>
+
+Text scales with the system font size. Components grow instead of clipping, so test your screens at 200%.
+
+## Shape
+
+Corner shapes by size: `none`, `extraSmall` (4), `small` (6), `medium` (8), `large` (12), `extraLarge` (16) and `full` (pill). A skin picks the shape for each component; Carbon is square, Cupertino is rounder, Material is in between. You rarely choose a shape yourself, but `CamoSurface` takes a role:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamoSurface(shape = ShapeRole.Medium, elevation = ElevationLevel.Level1) { /* … */ }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+CamoSurface(shape: ShapeRole.medium, elevation: ElevationLevel.level1, child: content)
+```
+
+</TabItem>
+</LangTabs>
+
+## Spacing
+
+One scale for the whole app, so padding is consistent: `none` (0), `xxs` (2), `xs` (4), `s` (8), `m` (12), `l` (16), `xl` (24), `xxl` (32), in dp.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+Column(Modifier.padding(Camouflage.spacing.l), verticalArrangement = Arrangement.spacedBy(Camouflage.spacing.m)) { /* … */ }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final spacing = Camouflage.themeOf(context).spacing;
+Padding(padding: EdgeInsets.all(spacing.l), child: content)
+```
+
+</TabItem>
+</LangTabs>
+
+## Elevation
+
+Levels from `Level0` (flat) up. A skin decides how a level looks: a shadow in Material, a border in Carbon, a blur in Fluent and Cupertino.
+
+## Motion
+
+Durations (`short` 120 ms, `medium` 200 ms, `long` 300 ms) and two easings, `standard` and `emphasized`. When the user turns on **reduced motion** in the system settings, the provider switches animations off for the whole subtree. You do not have to check it.
+
+## Breakpoints and adaptation
+
+The provider reads the window size, input kind and platform, and applies the theme's *adaptive rules*, for example denser spacing with a mouse. See [Adaptive layout](/docs/guides/adaptive-layout).

@@ -1,0 +1,105 @@
+---
+title: CamoCheckbox
+sidebar_label: Checkbox
+sidebar_position: 2
+description: "A checkbox: selects something for later (a form that is submitted)."
+---
+
+# CamoCheckbox
+
+A checkbox: selects something for later (a form that is submitted). With a `label` (or `labelSpans`, for
+links and bold), the whole row is one target, announced as "Remember me, checkbox, not checked". A link in
+the spans stays its own target. A `null` `onCheckedChange` makes it display-only, for a parent that handles
+clicks and semantics. `error` marks it invalid and shows below the row.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+var terms by remember { mutableStateOf(false) }
+
+CamoCheckbox(
+    checked = terms,
+    onCheckedChange = { terms = it },
+    label = "I agree to the terms",
+    description = "You can change this later in Settings",
+)
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+bool terms = false;
+
+CamoCheckbox(
+  checked: terms,
+  onChanged: (value) => setState(() => terms = value),
+  label: 'I agree to the terms',
+  description: 'You can change this later in Settings',
+)
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoCheckbox(
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    labelSpans: List<CamoSpan>? = null,
+    description: String? = null,
+    error: String? = null,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `checked` | `Boolean` | `required` |
+| `onCheckedChange` | `((Boolean) -> Unit)?` |  |
+| `modifier` | `Modifier` | `Modifier` |
+| `label` | `String?` | `null` |
+| `labelSpans` | `List<CamoSpan>?` | `null` |
+| `description` | `String?` | `null` |
+| `error` | `String?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `checked` | `bool` | `required` | Whether it's checked. |
+| `onChanged` | `ValueChanged<bool>?` | `required` | Called with the new value; `null` makes it display-only. |
+| `label` | `String?` |  | The label; the whole row becomes the target. |
+| `labelSpans` | `List<CamoSpan>?` |  | A rich label (links, bold), instead of `label`. |
+| `description` | `String?` |  | A second line under the label. |
+| `error` | `String?` |  | Marks it invalid and shows below the row. |
+| `enabled` | `bool` | `true` | `false` disables it. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoCheckbox works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-checkbox).
+:::

@@ -1,0 +1,60 @@
+---
+title: CamoAvatar
+sidebar_label: Avatar
+sidebar_position: 3
+description: "A person or entity: the app's image (Coil's AsyncImage, say; core loads no images), on top of initials from name in a color picked from the name, or a person icon with no name."
+---
+
+# CamoAvatar
+
+A person or entity: the app's `image` (Coil's `AsyncImage`, say; core loads no images), on top of initials from
+`name` in a color picked from the name, or a person icon with no name. It's announced as `name` plus the
+`presence` ("Dwiki Riyadi, online"); with no name it's decorative, and so it is in a `CamoListItem`'s leading
+slot, where the row already says the name.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoAvatar(
+    modifier: Modifier = Modifier,
+    name: String? = null,
+    image: (@Composable () -> Unit)? = null,
+    size: AvatarSize = AvatarSize.Medium,
+    shape: AvatarShape? = null,
+    presence: Presence? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `name` | `String?` | `null` |
+| `image` | `(@Composable () -> Unit)?` | `null` |
+| `size` | `AvatarSize` | `AvatarSize.Medium` |
+| `shape` | `AvatarShape?` | `null` |
+| `presence` | `Presence?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `name` | `String?` |  | Gives the initials, their color and the accessible name. |
+| `image` | `Widget?` |  | The app's image widget, drawn over the initials. |
+| `size` | `AvatarSize` | `AvatarSize.medium` | Small, medium or large. |
+| `shape` | `AvatarShape?` |  | `null` uses `CamoAvatarTheme.shape`. |
+| `presence` | `Presence?` |  | A status dot. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoAvatar works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-avatar).
+:::

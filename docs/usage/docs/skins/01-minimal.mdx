@@ -1,0 +1,86 @@
+---
+title: Minimal skin
+sidebar_label: Minimal
+sidebar_position: 1
+description: "A quiet, flat, neutral skin: true grays, thin lines, no ornament."
+---
+
+# Minimal skin
+
+A quiet, flat, neutral skin: true grays, thin lines, no ornament. The best base when you want to brand heavily.
+
+| Light | Dark |
+|---|---|
+| ![Minimal skin, light](/img/skins/minimal-light.png) | ![Minimal skin, dark](/img/skins/minimal-dark.png) |
+
+**Look and feel.** Flat surfaces, a fade for feedback, gray neutrals; the accent is the only color.
+
+## Install
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+implementation("com.srctool.camouflage:camouflage-skin-minimal")
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```sh
+flutter pub add camouflage_skin_minimal
+```
+
+</TabItem>
+</LangTabs>
+
+## Use
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+import com.srctool.camouflage.skin.minimal.*
+
+CamouflageProvider(skin = MinimalSkin, theme = minimalTheme(accent = brand)) { App() }
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+import 'package:camouflage_skin_minimal/camouflage_skin_minimal.dart';
+
+CamouflageProvider(
+  skin: minimalSkin,
+  theme: minimalTheme(accent: brand),
+  child: child!,
+)
+```
+
+</TabItem>
+</LangTabs>
+
+## Options
+
+`accent`: the one brand color (neutral gray when omitted). `labelPlacement`: `Above` (default) or `Floating` labels on fields.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+minimalSkin(labelPlacement = LabelPlacement.Floating)
+minimalTheme(accent = brand, dark = true)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+minimalTheme(accent: brand, brightness: Brightness.dark)
+```
+
+</TabItem>
+</LangTabs>
+
+Every skin implements the same 52 renderers, so anything you build works in all of them. See [Skins and themes](/docs/concepts/skins-and-themes) for how that works, and [Writing your own skin](/docs/guides/custom-skin) to add another.

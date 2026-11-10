@@ -1,0 +1,56 @@
+---
+title: Appearance and tone
+description: The two words that replace colors on every component.
+---
+
+# Appearance and tone
+
+Components do not take colors. Two small vocabularies say what you mean; the skin decides what it looks like.
+
+## Appearance: visual weight
+
+| Appearance | Use it for |
+|---|---|
+| `solid` | The primary action on a screen. |
+| `soft` | A secondary action with a tinted background. |
+| `raised` | An action that should lift off a busy surface. |
+| `outline` | A secondary action with a border. |
+| `ghost` | A low-emphasis action with no container. |
+| `link` | An action inside text. |
+
+`null` uses the theme's default for that component.
+
+## Tone: color family
+
+| Tone | Meaning |
+|---|---|
+| `default` | Neutral or brand. |
+| `error` | Destructive or failed. |
+| `success` | Completed. |
+| `warning` | Needs attention. |
+| `info` | Informational. |
+
+## Together
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+CamoButton("Save", onClick = save)                                            // brand, default weight
+CamoButton("Delete", onClick = delete, appearance = Appearance.Outline, tone = Tone.Error)
+CamoButton("Cancel", onClick = cancel, appearance = Appearance.Ghost)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+CamoButton(text: 'Save', onPressed: save)                                      // brand, default weight
+CamoButton(text: 'Delete', onPressed: delete, appearance: Appearance.outline, tone: Tone.error)
+CamoButton(text: 'Cancel', onPressed: cancel, appearance: Appearance.ghost)
+```
+
+</TabItem>
+</LangTabs>
+
+The destructive button is red in every skin and every theme, in dark mode too, and always has enough contrast, because you named the *meaning*, not a hex value.

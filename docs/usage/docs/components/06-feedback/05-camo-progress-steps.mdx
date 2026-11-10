@@ -1,0 +1,56 @@
+---
+title: CamoProgressSteps
+sidebar_label: ProgressSteps
+sidebar_position: 5
+description: "Shows where you are in a multi-step process; the app swaps the content and sets current (zero-based)."
+---
+
+# CamoProgressSteps
+
+Shows where you are in a multi-step process; the app swaps the content and sets `current` (zero-based).
+A step announces "Step 2 of 4, current"; steps with an `CamoStep.onClick` are buttons and the arrow keys move
+between them. `label` names the list.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoProgressSteps(
+    steps: List<CamoStep>,
+    current: Int,
+    modifier: Modifier = Modifier,
+    orientation: StepsOrientation = StepsOrientation.Horizontal,
+    label: String = "Progress",
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `steps` | `List<CamoStep>` | `required` |
+| `current` | `Int` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `orientation` | `StepsOrientation` | `StepsOrientation.Horizontal` |
+| `label` | `String` | `"Progress"` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `steps` | `List<CamoStep>` | `required` | The steps, in order. |
+| `current` | `int` | `required` | The current step, zero-based. |
+| `orientation` | `StepsOrientation` | `StepsOrientation.horizontal` | Horizontal or vertical. |
+| `semanticLabel` | `String` | `'Progress'` | Names the list. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoProgressSteps works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/feedback/camo-progress-steps).
+:::

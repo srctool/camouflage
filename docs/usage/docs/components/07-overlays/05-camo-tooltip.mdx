@@ -1,0 +1,53 @@
+---
+title: CamoTooltip
+sidebar_label: Tooltip
+sidebar_position: 5
+description: "Shows text next to content on hover (after a delay), on keyboard focus, and on a long press on touch."
+---
+
+# CamoTooltip
+
+Shows `text` next to `content` on hover (after a delay), on keyboard focus, and on a long press on touch.
+It never takes focus, and Esc hides it. On a disabled anchor it still shows on hover.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoTooltip(
+    text: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    content: @Composable () -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `text` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `enabled` | `Boolean` | `true` |
+| `content` | `@Composable () -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `message` | `String` | `required` | The text shown. |
+| `child` | `Widget` | `required` | The anchor. |
+| `enabled` | `bool` | `true` | `false` never shows it. |
+| `anchorLabel` | `String?` |  | The anchor's own label; when it equals `message`, screen readers aren't told twice. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoTooltip works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/overlays/camo-tooltip).
+:::

@@ -1,0 +1,72 @@
+---
+title: CamoChip
+sidebar_label: Chip
+sidebar_position: 1
+description: "A compact element whose callbacks decide its kind: a filter when selected is set (it toggles through onClick), an input chip with a remove button when onRemove is set, an action chip with onClick only"
+---
+
+# CamoChip
+
+A compact element whose callbacks decide its kind: a filter when `selected` is set (it toggles through
+`onClick`), an input chip with a remove button when `onRemove` is set, an action chip with `onClick` only,
+and a static tag with none (a status word in a `tone`: `Soft` + `Success` "Paid"). A focused input chip is
+also removed with Backspace or Delete. Counts and dots are `CamoBadge`s, not chips.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoChip(
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    selected: Boolean? = null,
+    onRemove: (() -> Unit)? = null,
+    leading: (@Composable () -> Unit)? = null,
+    appearance: Appearance? = null,
+    tone: Tone = Tone.Default,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `label` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `onClick` | `(() -> Unit)?` | `null` |
+| `selected` | `Boolean?` | `null` |
+| `onRemove` | `(() -> Unit)?` | `null` |
+| `leading` | `(@Composable () -> Unit)?` | `null` |
+| `appearance` | `Appearance?` | `null` |
+| `tone` | `Tone` | `Tone.Default` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `label` | `String` | `required` | The label, one line with an ellipsis (the full label in semantics). |
+| `onPressed` | `VoidCallback?` |  | Activates an action chip, or toggles a filter chip. |
+| `selected` | `bool?` |  | Non-null makes a filter chip. |
+| `onDeleted` | `VoidCallback?` |  | Non-null adds a remove button (an input chip). |
+| `leading` | `Widget?` |  | An icon or a small `CamoAvatar`. |
+| `appearance` | `Appearance?` |  | `null` uses `CamoChipTheme.defaultAppearance`. |
+| `tone` | `Tone` | `Tone.defaultTone` | A status tone, for tags. |
+| `enabled` | `bool` | `true` | `false` disables the chip. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoChip works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-chip).
+:::

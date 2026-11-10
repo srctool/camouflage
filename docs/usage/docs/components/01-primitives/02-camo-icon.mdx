@@ -1,0 +1,51 @@
+---
+title: CamoIcon
+sidebar_label: Icon
+sidebar_position: 2
+description: "An icon that takes its size and color from the surrounding component unless size or tint is set."
+---
+
+# CamoIcon
+
+An icon that takes its size and color from the surrounding component unless `size` or `tint` is set.
+A `null` `contentDescription` makes it decorative: the right choice for icons passed into components,
+which carry the label themselves.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoIcon(
+    source: IconSource,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    size: Dp = Dp.Unspecified,
+    tint: Color = Color.Unspecified,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `source` | `IconSource` | `required` |
+| `contentDescription` | `String?` |  |
+| `modifier` | `Modifier` | `Modifier` |
+| `size` | `Dp` | `Dp.Unspecified` |
+| `tint` | `Color` | `Color.Unspecified` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+_No parameters._
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoIcon works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/primitives/camo-icon).
+:::

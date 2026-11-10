@@ -1,0 +1,57 @@
+---
+title: CamoSideSheet
+sidebar_label: SideSheet
+sidebar_position: 7
+description: "A panel on the end edge for secondary content next to the main screen: properties, filters, details."
+---
+
+# CamoSideSheet
+
+A panel on the end edge for secondary content next to the main screen: properties, filters, details. Placed in
+a layout it is the **standard** (docked) mode, and the main content stays usable; inside a `CamoModalSideSheet`
+it is the **modal** one. `title` names it for screen readers; `onClose` adds a close button (and is what
+dismissing the modal one asks for). The `content` scrolls; the `actions` stay at the bottom.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSideSheet(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    onClose: (() -> Unit)? = null,
+    actions: (@Composable RowScope.() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `modifier` | `Modifier` | `Modifier` |
+| `title` | `String?` | `null` |
+| `onClose` | `(() -> Unit)?` | `null` |
+| `actions` | `(@Composable RowScope.() -> Unit)?` | `null` |
+| `content` | `@Composable ColumnScope.() -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | `required` | The content. |
+| `title` | `String?` |  | The title; it also names the panel for screen readers. |
+| `onClose` | `VoidCallback?` |  | Adds a close button that calls it. |
+| `actions` | `Widget?` |  | Buttons pinned at the bottom end. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSideSheet works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/overlays/camo-side-sheet).
+:::

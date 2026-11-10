@@ -1,0 +1,70 @@
+---
+title: CamoCarousel
+sidebar_label: Carousel
+sidebar_position: 6
+description: "A strip of items you swipe or step through."
+---
+
+# CamoCarousel
+
+A strip of items you swipe or step through. `state` is Compose's `PagerState` (its `currentPage`, and
+`animateScrollToPage` to jump). `layout` `Peek` lets the next item show at the edge. Previous and next buttons
+show on pointer devices by default (`showButtons`); Left and Right (reading direction), Home and End step
+and jump; the page dots are `CamoPagination`'s. Each item announces "item 2 of 5"; `caption` names the
+carousel. There is no auto-play.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoCarousel(
+    items: List<T>,
+    itemKey: (T) -> Any,
+    caption: String,
+    modifier: Modifier = Modifier,
+    state: PagerState = rememberPagerState { items.size },
+    layout: CarouselLayout = CarouselLayout.Paged,
+    showButtons: Boolean = Camouflage.environment.input == InputMode.Pointer,
+    showIndicator: Boolean = true,
+    content: @Composable (T) -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `items` | `List<T>` | `required` |
+| `itemKey` | `(T) -> Any` | `required` |
+| `caption` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `state` | `PagerState` | `rememberPagerState { items.size }` |
+| `layout` | `CarouselLayout` | `CarouselLayout.Paged` |
+| `showButtons` | `Boolean` | `Camouflage.environment.input == InputMode.Pointer` |
+| `showIndicator` | `Boolean` | `true` |
+| `content` | `@Composable (T) -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<T>` | `required` | The items. |
+| `itemKey` | `Object Function(T item)` | `required` | An item's stable key. |
+| `semanticLabel` | `String` | `required` | Names the carousel. |
+| `itemBuilder` | `Widget Function(BuildContext context, T item)` | `required` | Draws an item. |
+| `controller` | `PageController?` |  | Moves the carousel from outside; created when `null`. |
+| `layout` | `CarouselLayout` | `CarouselLayout.paged` | One at a time, or peeking. |
+| `showButtons` | `bool?` |  | Whether the buttons show; `null` shows them on pointer devices. |
+| `showIndicator` | `bool` | `true` | Whether the page dots show. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoCarousel works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/data-display/camo-carousel).
+:::

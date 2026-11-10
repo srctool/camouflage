@@ -1,0 +1,53 @@
+---
+title: CamoBreadcrumb
+sidebar_label: Breadcrumb
+sidebar_position: 8
+description: "A trail of where you are: the last item is the current location, earlier ones link up the hierarchy."
+---
+
+# CamoBreadcrumb
+
+A trail of where you are: the last item is the current location, earlier ones link up the hierarchy. When it
+doesn't fit (or has more than `maxVisible` items) the middle items collapse into a "…" menu. One Tab stop: the
+arrow keys move along the trail. `label` names the navigation; the current item announces "current page".
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoBreadcrumb(
+    items: List<CamoBreadcrumbItem>,
+    modifier: Modifier = Modifier,
+    maxVisible: Int? = null,
+    label: String = "Breadcrumb",
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `items` | `List<CamoBreadcrumbItem>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `maxVisible` | `Int?` | `null` |
+| `label` | `String` | `"Breadcrumb"` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<CamoBreadcrumbItem>` | `required` | The trail, root first. |
+| `maxVisible` | `int?` |  | At most this many items show (the rest collapse); `null` collapses only when it doesn't fit. |
+| `semanticLabel` | `String` | `'Breadcrumb'` | Names the navigation. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoBreadcrumb works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-breadcrumb).
+:::

@@ -1,0 +1,10 @@
+var email by remember { mutableStateOf("") }
+
+CamoTextField(
+    value = email,
+    onValueChange = { email = it },
+    label = "Email",
+    supportingText = "We never share it",
+    error = if (email.isNotEmpty() && '@' !in email) "Enter a valid email" else null,
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+)

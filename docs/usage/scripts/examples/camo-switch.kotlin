@@ -1,0 +1,8 @@
+var notifications by remember { mutableStateOf(true) }
+
+CamoSwitch(
+    checked = notifications,
+    onCheckedChange = { notifications = it },
+    label = "Notifications",
+    description = "Uses more battery",
+)

@@ -1,0 +1,81 @@
+---
+title: Installation
+sidebar_label: Installation
+description: Add Camouflage and a skin to a Kotlin Multiplatform or Flutter project.
+---
+
+# Installation
+
+You need two things: the **core** (components, theme, provider) and **one skin** (the look). Charts, navigation and test checks are optional.
+
+<LangTabs>
+<TabItem value="kotlin">
+
+Camouflage is on **Maven Central**. It targets Compose Multiplatform on **Android, iOS, desktop (JVM) and web (wasmJs)**.
+
+Requirements: Kotlin 2.x with the Compose Multiplatform plugin, JDK 17+.
+
+Use the BOM so all Camouflage modules share a version, then add the core and a skin to `commonMain`:
+
+```kotlin title="shared/build.gradle.kts"
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project.dependencies.platform("com.srctool.camouflage:camouflage-bom:0.1.0"))
+            implementation("com.srctool.camouflage:camouflage-core")
+            implementation("com.srctool.camouflage:camouflage-skin-material") // or -minimal, -cupertino, -fluent, -carbon
+        }
+    }
+}
+```
+
+Optional modules, all versioned by the BOM:
+
+```kotlin
+implementation("com.srctool.camouflage:camouflage-charts")        // line, bar, pie and sparkline charts
+implementation("com.srctool.camouflage:camouflage-navigation3")   // dialog and bottom-sheet scenes for Navigation 3
+testImplementation("com.srctool.camouflage:camouflage-skin-testing") // accessibility and layout checks
+```
+
+</TabItem>
+<TabItem value="dart">
+
+Camouflage is on **pub.dev**, published by [srctool.com](https://pub.dev/publishers/srctool.com/packages). It runs on **Android, iOS, macOS, Windows, Linux and the web**, and needs no `MaterialApp`.
+
+Add the core and one skin:
+
+```sh
+flutter pub add camouflage_core camouflage_skin_material
+```
+
+Or in `pubspec.yaml`:
+
+```yaml title="pubspec.yaml"
+dependencies:
+  camouflage_core: ^0.1.1
+  camouflage_skin_material: ^0.1.2   # or _minimal, _cupertino, _fluent, _carbon
+```
+
+Optional packages:
+
+```sh
+flutter pub add camouflage_charts                # line, bar, pie and sparkline charts
+flutter pub add --dev camouflage_skin_testing    # accessibility and layout checks for tests
+```
+
+</TabItem>
+</LangTabs>
+
+## Which skin?
+
+| Skin | Feels like | Pick it when |
+|---|---|---|
+| [Minimal](/docs/skins/minimal) | Neutral, flat, understated | You want a quiet base to brand heavily. |
+| [Material](/docs/skins/material) | Material 3 | An Android-first or Google-style product. |
+| [Cupertino](/docs/skins/cupertino) | iOS, with Liquid Glass as an option | An iOS-first product. |
+| [Fluent](/docs/skins/fluent) | Fluent 2, with Acrylic and Mica | A Windows or Microsoft-style product. |
+| [Carbon](/docs/skins/carbon) | IBM Carbon | Dense, enterprise, data-heavy screens. |
+
+You can change the skin later with a one-line edit, so this choice is not permanent.
+
+Next: the [quick start](/docs/getting-started/quick-start).

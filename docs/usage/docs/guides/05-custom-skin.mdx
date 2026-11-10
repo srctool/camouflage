@@ -1,0 +1,50 @@
+---
+title: Writing your own skin
+slug: /guides/custom-skin
+description: How to add a skin, and why you would.
+---
+
+# Writing your own skin
+
+Most apps never need to. A [theme](/docs/theming/colors) and [component overrides](/docs/theming/component-overrides) cover brand colors, sizes and shapes. Write a skin when the *drawing* has to differ: a different press feedback, a different focus ring, a different surface treatment.
+
+## How a skin is built
+
+A skin is a value that holds one **renderer** for each of the 52 components, plus a surface treatment and a feedback style. There are no defaults, so the compiler tells you what is missing.
+
+The included skins are the best reference, because they use only the core's public API (nothing is hidden from you). Start from the one closest to what you want and change its renderers:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+// camouflage-skin-minimal is the smallest example; copy it and rename.
+public fun mySkin(): CamoSkin = CamoSkin(
+    name = "my-skin",
+    // surfaceTreatment, feedback, and one renderer per component …
+)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+// camouflage_skin_minimal is the smallest example; copy it and rename.
+const CamoSkin mySkin = CamoSkin(
+  name: 'my-skin',
+  // surfaceTreatment, feedback, and one renderer per component …
+);
+```
+
+</TabItem>
+</LangTabs>
+
+You can also take an existing skin and replace only some renderers (`copy` in Kotlin, `copyWith` in Dart), as the Material skin does for its wavy progress bar.
+
+## Test it
+
+`camouflage-skin-testing` and `camouflage_skin_testing` provide galleries of every component and the accessibility checks, so a new skin is held to the same bar as the five included ones. See [Testing](/docs/guides/testing).
+
+## The full contract
+
+The contract, the surface treatments and the rules a skin must follow are documented for contributors, with the reasoning, in the [contributor docs](https://camouflage-dev.srctool.com/guide/architecture/skin-contract).

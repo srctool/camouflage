@@ -1,0 +1,67 @@
+---
+title: CamoPopover
+sidebar_label: Popover
+sidebar_position: 6
+description: "A non-modal panel anchored to anchor for content richer than a menu and lighter than a dialog: a few lines, a small form, one or two actions."
+---
+
+# CamoPopover
+
+A non-modal panel anchored to `anchor` for content richer than a menu and lighter than a dialog: a few lines,
+a small form, one or two `actions`. Its visibility is state (`open`), like every controlled component: the
+app's button toggles it. It opens on the `placement` side (below by default, above when there is no room), and
+an outside tap, back and Esc all call `onDismissRequest`. Focus moves into it when it opens and back to the
+anchor when it closes. The anchor should be one control (a button): it announces that it has a popup.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoPopover(
+    open: Boolean,
+    onDismissRequest: () -> Unit,
+    anchor: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    actions: (@Composable RowScope.() -> Unit)? = null,
+    placement: PopoverPlacement = PopoverPlacement.Auto,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `open` | `Boolean` | `required` |
+| `onDismissRequest` | `() -> Unit` | `required` |
+| `anchor` | `@Composable () -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `title` | `String?` | `null` |
+| `actions` | `(@Composable RowScope.() -> Unit)?` | `null` |
+| `placement` | `PopoverPlacement` | `PopoverPlacement.Auto` |
+| `content` | `@Composable ColumnScope.() -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `open` | `bool` | `required` | Whether the popover is shown. |
+| `onDismissRequest` | `VoidCallback` | `required` | Called by an outside tap, back or Esc. |
+| `anchor` | `Widget` | `required` | The element the popover points at; it stays in the layout. |
+| `child` | `Widget` | `required` | The content. |
+| `title` | `String?` |  | The title; it also names the panel for screen readers. |
+| `actions` | `Widget?` |  | Buttons at the bottom end. |
+| `placement` | `PopoverPlacement` | `PopoverPlacement.auto` | The preferred side. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoPopover works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/overlays/camo-popover).
+:::

@@ -1,0 +1,27 @@
+---
+title: Components
+sidebar_label: Overview
+slug: /components
+---
+
+# Components
+
+Every component takes its look from the active **skin** and **theme**: you choose what it *is* (an `appearance`, a `tone`, a size) and never a color. Switch the language above to see Kotlin or Dart.
+
+- **[Primitives](/docs/components/primitives)**: Text, icons, surfaces and dividers: the pieces everything else is built from.
+- **[Actions](/docs/components/actions)**: Buttons and the controls that start something.
+- **[Inputs and forms](/docs/components/inputs)**: Fields, choices, pickers and forms.
+- **[Containers and lists](/docs/components/containers-and-lists)**: Cards, list rows, paged lists and accordions.
+- **[Data display](/docs/components/data-display)**: Chips, badges, avatars, images, ratings, carousels, tables and trees.
+- **[Feedback](/docs/components/feedback)**: Progress, snackbars, banners, skeletons and step indicators.
+- **[Overlays](/docs/components/overlays)**: Dialogs, sheets, menus, tooltips and popovers.
+- **[Navigation](/docs/components/navigation)**: Top bars, tabs, navigation bars, rails and drawers, pagination and breadcrumbs.
+- **[Charts](/docs/components/charts)**: Line, bar, pie and sparkline charts, without a chart library.
+
+## Conventions
+
+- **`appearance`** is the visual weight: `solid`, `soft`, `raised`, `outline`, `ghost`, `link`. `null` uses the theme's default.
+- **`tone`** is the color family: `default`, `error`, `success`, `warning`, `info`.
+- **Disabled** is `enabled = false` (Kotlin) or a `null` callback (Dart).
+- Every control needs a **name** for screen readers: a visible label, or an `onClickLabel`/`semanticLabel` for icon-only controls. A missing name fails in debug builds.
+- Touch targets are at least 48 dp; text scales with the system font size; layouts mirror in right-to-left.

@@ -1,0 +1,81 @@
+---
+title: Colors
+description: Build a color scheme from a seed, and the roles components use.
+---
+
+# Colors
+
+Components never take a color. They ask the theme for a **role** (`primary`, `surfaceContainerLow`, `onSurface`, …), and a skin decides which role goes where. That is what lets one theme work in every skin.
+
+## From a seed
+
+`CamoColors.fromSeed` builds a full light or dark scheme from one color:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+val colors = CamoColors.fromSeed(
+    primary = Color(0xFF0B57D0),
+    // optional: secondary, tertiary, error, success, warning, info, neutral
+    dark = false,
+)
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final colors = CamoColors.fromSeed(
+  primary: const Color(0xFF0B57D0),
+  // optional: secondary, tertiary, error, success, warning, info, neutral
+  brightness: Brightness.light,
+);
+```
+
+</TabItem>
+</LangTabs>
+
+- `secondary` and `tertiary` are derived from the primary's hue unless you pass them.
+- `error`, `success`, `warning` and `info` have sensible defaults.
+- `neutral` gives true grays by default. Pass your primary for brand-tinted surfaces, the Material style.
+
+## The roles
+
+| Group | Roles |
+|---|---|
+| Brand | `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer`, and the same four for `secondary` and `tertiary` |
+| Status | `error`, `success`, `warning`, `info`, each with `on…`, `…Container` and `on…Container` |
+| Surfaces | `surface`, `surfaceContainerLowest`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh`, `surfaceContainerHighest` |
+| Content | `onSurface`, `onSurfaceVariant` |
+| Lines | `outline`, `outlineVariant` |
+| Inverse and overlay | `inverseSurface`, `inverseOnSurface`, `inversePrimary`, `scrim` |
+
+The **status** colors are the *tones* of the components: `tone = Tone.Error` on a button uses the `error` family.
+
+## Using a color in your own code
+
+Read it from the theme so your widgets follow the skin and dark mode:
+
+<LangTabs>
+<TabItem value="kotlin">
+
+```kotlin
+val colors = Camouflage.colors
+Box(Modifier.background(colors.surfaceContainerLow))
+```
+
+</TabItem>
+<TabItem value="dart">
+
+```dart
+final colors = Camouflage.themeOf(context).colors;
+ColoredBox(color: colors.surfaceContainerLow, child: child)
+```
+
+</TabItem>
+</LangTabs>
+
+## Contrast
+
+A seed can produce pairs that are hard to read. Run [`validate()`](/docs/theming/validation) after you pick a brand color.

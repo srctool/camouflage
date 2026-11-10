@@ -1,0 +1,8 @@
+var terms by remember { mutableStateOf(false) }
+
+CamoCheckbox(
+    checked = terms,
+    onCheckedChange = { terms = it },
+    label = "I agree to the terms",
+    description = "You can change this later in Settings",
+)

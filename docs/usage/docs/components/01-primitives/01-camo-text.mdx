@@ -1,0 +1,53 @@
+---
+title: CamoText
+sidebar_label: Text
+sidebar_position: 1
+description: "Text in one of the theme's styles, in the surrounding container's content color unless color is set."
+---
+
+# CamoText
+
+Text in one of the theme's styles, in the surrounding container's content color unless `color` is set.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoText(
+    text: String,
+    modifier: Modifier = Modifier,
+    style: TextStyle = Camouflage.typography.bodyMedium,
+    color: Color = Color.Unspecified,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
+    textAlign: TextAlign = TextAlign.Start,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `text` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `style` | `TextStyle` | `Camouflage.typography.bodyMedium` |
+| `color` | `Color` | `Color.Unspecified` |
+| `maxLines` | `Int` | `Int.MAX_VALUE` |
+| `overflow` | `TextOverflow` | `TextOverflow.Clip` |
+| `textAlign` | `TextAlign` | `TextAlign.Start` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+_No parameters._
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoText works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/primitives/camo-text).
+:::

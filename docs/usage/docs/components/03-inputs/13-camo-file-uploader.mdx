@@ -1,0 +1,73 @@
+---
+title: CamoFileUploader
+sidebar_label: FileUploader
+sidebar_position: 13
+description: "A drop zone and button for choosing files, with a list of each file's progress."
+---
+
+# CamoFileUploader
+
+A drop zone and button for choosing files, with a list of each file's progress. Core opens no picker and reads
+no file (ADR-27): a click, Enter or Space on the zone calls `onPick`, where the app opens its picker; `dropTarget`
+lets the app wrap the zone with its platform's drop API. The app runs the uploads and reports them in `files`.
+The zone announces as one button with its `hint`; a row announces its name and state, and a failure is announced
+once. `label` names the zone.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoFileUploader(
+    files: List<UploadFile>,
+    onPick: () -> Unit,
+    onRemove: (UploadFile) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    dropTarget: ((DropTargetCallbacks) -> Modifier)? = null,
+    onFilesDropped: ((List<DroppedFile>) -> Unit)? = null,
+    onRetry: ((UploadFile) -> Unit)? = null,
+    hint: String? = null,
+    enabled: Boolean = true,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `files` | `List<UploadFile>` | `required` |
+| `onPick` | `() -> Unit` | `required` |
+| `onRemove` | `(UploadFile) -> Unit` | `required` |
+| `label` | `String` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `dropTarget` | `((DropTargetCallbacks) -> Modifier)?` | `null` |
+| `onFilesDropped` | `((List<DroppedFile>) -> Unit)?` | `null` |
+| `onRetry` | `((UploadFile) -> Unit)?` | `null` |
+| `hint` | `String?` | `null` |
+| `enabled` | `Boolean` | `true` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `files` | `List<UploadFile>` | `required` | The files and their progress. |
+| `onPick` | `VoidCallback` | `required` | Opens the app's picker. |
+| `onRemove` | `ValueChanged<UploadFile>` | `required` | Removes a file. |
+| `semanticLabel` | `String` | `required` | Names the zone. |
+| `dropTargetBuilder` |  |  |  |
+| `onFilesDropped` | `ValueChanged<List<DroppedFile>>?` |  | Called with the files dropped on the zone. |
+| `onRetry` | `ValueChanged<UploadFile>?` |  | Retries a failed file; without it a failed row has no retry button. |
+| `hint` | `String?` |  | A line under the zone's title ("PNG or JPG, up to 5 MB"). |
+| `enabled` | `bool` | `true` | `false` disables the zone. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoFileUploader works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-file-uploader).
+:::

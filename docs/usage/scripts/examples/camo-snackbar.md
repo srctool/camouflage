@@ -1,0 +1,1 @@
+Snackbars are shown through the app's **messenger**, which the root provider installs. There is no widget to place: call `show` from anywhere below the provider. One snackbar shows at a time and the rest queue in order. `show` returns how the snackbar ended, so you can tell whether the user pressed the action.

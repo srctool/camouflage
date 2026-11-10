@@ -1,0 +1,72 @@
+---
+title: CamoSlider
+sidebar_label: Slider
+sidebar_position: 6
+description: "A value from a continuous or stepped range: volume, a price filter."
+---
+
+# CamoSlider
+
+A value from a continuous or stepped `range`: volume, a price filter. A tap jumps to the touched value and a
+drag follows the finger; `steps` stops lie between the ends (0 = continuous). `onValueChangeFinished` fires
+once per gesture or key press, so an app can save once. `label` names it for screen readers ("Volume"), and
+`valueLabel` gives the value's text, shown on the thumb while dragging. The parent sets the width.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    range: ClosedFloatingPointRange<Float> = 0f..1f,
+    steps: Int = 0,
+    onValueChangeFinished: (() -> Unit)? = null,
+    valueLabel: ((Float) -> String)? = null,
+    label: String? = null,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `value` | `Float` | `required` |
+| `onValueChange` | `(Float) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `range` | `ClosedFloatingPointRange<Float>` | `0f..1f` |
+| `steps` | `Int` | `0` |
+| `onValueChangeFinished` | `(() -> Unit)?` | `null` |
+| `valueLabel` | `((Float) -> String)?` | `null` |
+| `label` | `String?` | `null` |
+| `enabled` | `Boolean` | `true` |
+| `interactionSource` | `MutableInteractionSource?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `value` | `double` | `required` | The current value. |
+| `onChanged` | `ValueChanged<double>?` | `required` | Called with each new value; `null` disables the slider. |
+| `min` | `double` | `0` | The smallest value. |
+| `max` | `double` | `1` | The largest value. |
+| `divisions` | `int?` |  | The number of steps between `min` and `max`, or `null` for continuous. |
+| `onChangeEnd` | `ValueChanged<double>?` |  | Called once when a drag, tap or key press ends. |
+| `valueLabel` | `String Function(double value)?` |  | The value's text, for the thumb label and screen readers. |
+| `semanticLabel` | `String?` |  | Names the slider for screen readers. |
+| `focusNode` | `FocusNode?` |  | An optional focus node the app controls. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSlider works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/inputs/camo-slider).
+:::

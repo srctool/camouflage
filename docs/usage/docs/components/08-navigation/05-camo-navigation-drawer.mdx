@@ -1,0 +1,56 @@
+---
+title: CamoNavigationDrawer
+sidebar_label: NavigationDrawer
+sidebar_position: 5
+description: "A drawer with full labels and section headers: permanent beside the content on wide windows, or inside a CamoModalDrawer."
+---
+
+# CamoNavigationDrawer
+
+A drawer with full labels and section headers: permanent beside the content on wide windows, or inside a
+`CamoModalDrawer`. Selecting an item inside a modal drawer closes it. Section titles are headings; the
+column scrolls and the `header` (a logo, an account switcher) stays.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun <T> CamoNavigationDrawer(
+    sections: List<CamoNavSection<T>>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    header: (@Composable () -> Unit)? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `sections` | `List<CamoNavSection<T>>` | `required` |
+| `selected` | `T` | `required` |
+| `onSelect` | `(T) -> Unit` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `header` | `(@Composable () -> Unit)?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `sections` | `List<CamoNavSection<T>>` | `required` | The sections; one untitled section for a plain list. |
+| `selected` | `T` | `required` | The selected value. |
+| `onChanged` | `ValueChanged<T>?` | `required` | Called with the chosen value; `null` disables the drawer. |
+| `header` | `Widget?` |  | A logo, an account switcher. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoNavigationDrawer works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-navigation-drawer).
+:::
