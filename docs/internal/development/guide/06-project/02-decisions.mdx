@@ -364,3 +364,14 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
 - **Consequences:**
   - The Fluent and Cupertino skins test each step of their chains (goldens with capabilities forced off).
   - Platform interop (Windows backdrop, macOS vibrancy) stays inside the skin modules, behind the capability check.
+
+### ADR-45 (Proposed, M16) The skin contract grows by two renderers for desktop: split pane and scrollbar
+- **Status:** proposed (2026-11-11); it changes the skin contract, so it waits for review.
+- **Context:** Graft, a desktop Git client that builds its `ui-kit` on the Carbon skin, needs a resizable split pane and themed scrollbars (srctool/camouflage#71, #78). Both need a skin to draw something (a divider line, a thumb), and the contract has no defaults (a skin cannot forget a component).
+- **Decision:**
+  - `CamoSkin` gains `splitPane` and `scrollbar` renderers (52 → 54). All five included skins implement them, and the debug and plain test skins too.
+  - Density (srctool/camouflage#70) and submenus (#77) add **no** renderer: density is a token set read by existing renderers; a submenu row is the menu's Item part with two more state fields.
+  - Because adding a renderer breaks third-party skins, the release that carries it is **0.2.0**, and the changelog says so. Skins written against 0.1 add the two renderers (the contract's compile error names them).
+- **Consequences:**
+  - The skin contract note counts 54 renderers; the skin notes' "52 renderers" done-when lines become 54 for M16 work only.
+  - Later desktop pieces (document tabs, the dock layout, the command palette) should prefer composing existing renderers, and add a renderer only when nothing existing can draw them.
