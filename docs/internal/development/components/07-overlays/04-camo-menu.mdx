@@ -57,7 +57,7 @@ data class CamoMenuGroup(val items: List<CamoMenuItem>, val exclusive: Boolean =
 fun CamoContextMenuArea(items: List<CamoMenuEntry>, content: Slot)   // right-click / long-press menu
 ```
 
-Selecting an item runs `onClick` and closes the menu, checkable items included (the app flips `checked`). Submenus are Later.
+Selecting an item runs `onClick` and closes the menu, checkable items included (the app flips `checked`). Submenus are M16 (below).
 
 **Building block (ADR-30): `CamoMenuPanel(content: Slot)`** is the menu's skin surface with menu semantics, arrow-key focus movement between its focusable children, and Esc to close. It's for menus with custom rows (a color picker, an account switcher), opened from a `CamoMenuAnchor(panel = …)` instead of `items`. Standard rows can mix in with `CamoMenuItemRow(item)`.
 
@@ -117,7 +117,7 @@ Selecting an item runs `onClick` and closes the menu, checkable items included (
 | Long lists of items | The menu scrolls after its max height (the space to the window edge). More than ~8 items suggests a sheet or `CamoSelect` instead. |
 | Opening a dialog from a menu item | The menu closes first, then the action runs, so the dialog isn't stacked over a closing menu. |
 | **Checkable items** (settled 2026-09-27) | `checked: Boolean?` on `CamoMenuItem`; `CamoMenuGroup(exclusive = true)` for single choice (sort order). Items with and without checks in the same menu keep their text aligned (a reserved check column when `checkPosition = Leading`). |
-| Submenus | Not in v1. |
+| Submenus | M16 (below). |
 | **Custom menu content** | `CamoMenuPanel` (ADR-30). Custom rows must be focusable and have a label; the panel moves focus with the arrow keys and closes on Esc or an outside tap. |
 
 :::info[Built early, in M5 (ruling 2026-10-27)]
@@ -134,6 +134,31 @@ The anchored popup (`CamoAnchoredPopup` on Kotlin, an internal route on Flutter)
 - Opening from the keyboard focuses the first item; a pointer or touch opening doesn't, so no focus ring shows after a click.
 - "Close then act": the action runs after the frame in which the menu closed, from a scope that outlives the popup (the anchor's).
 - Menu text takes the row's free space and the shortcut follows it; a menu wider than `maxWidth` ellipsizes the text.
+
+:::
+
+:::info[Submenus (M16, 2026-11-11, srctool/camouflage#77)]
+
+Context menus in desktop apps nest (Reset ▸ Soft / Mixed / Hard; Copy ▸ Hash / Message).
+
+```kotlin
+data class CamoMenuSubmenu(
+    val text: String,
+    val items: List<CamoMenuEntry>,          // a submenu may hold submenus
+    val leadingIcon: Widget? = null,
+    val enabled: Boolean = true,
+) : CamoMenuEntry
+```
+
+- **Row:** a submenu row looks like an item with a trailing chevron (mirrored in right-to-left) drawn by the skin: `MenuItemState` gains `hasSubmenu` and `submenuOpen`, so the Item part of the renderer draws the chevron and an "open" state. No new renderer.
+- **Opening:** hover opens it after 250 ms; a click, Enter and Right (Left in RTL) open it at once and focus its first item. Moving to another row of the parent closes it after a short grace (120 ms), so the pointer can cross a neighbour on its way to the child.
+- **Closing:** Left (Right in RTL) and Esc close only the submenu and return focus to its row; Esc on the root closes the whole chain. Selecting a leaf runs the action and closes every level (the existing "close then act" rule).
+- **Placement:** the child opens beside its row (end side, its first item aligned with the row), flips to the start side when there is no room, and shifts up near the bottom edge. This needs the anchored-popup primitive to learn a **side placement** (today it is below or above only) and a **non-modal child** mode: the child must not turn a tap on its parent into an outside tap.
+- **Touch:** a tap opens the submenu as a second panel next to (or over) the first; Back closes only the child.
+- **Semantics:** the row is a menu item with "has popup" and expanded or collapsed; the child is a menu, announced "Soft, menu item, 1 of 3".
+- **Type-ahead and arrows** work inside each level; Up and Down never cross levels.
+
+**Open for review:** (1) depth: proposed **any depth** (a level is the same code as the first), with a note that more than two levels is a design smell; (2) the hover delay of 250 ms and the 120 ms grace (the common values; a theme field `submenuDelay` is a later option); (3) a safe-triangle for the pointer path is **not** in the first cut (the grace covers most cases).
 
 :::
 
@@ -214,6 +239,15 @@ public class CamoMenuController { public fun open(); public fun close(); public 
 
 :::
 
+:::info[Submenus: M16 start (2026-11-11, Kotlin)]
+
+`CamoMenuSubmenu` is a new `CamoMenuEntry`. `CamoAnchoredPopup` gains `placement: PopupPlacement` (`Below`, `Beside`) and `modal: Boolean`; a child is a second `Popup` (a separate layer on every target) with `focusable = true` and `dismissOnClickOutside = false`, dismissed by the parent's state. `CamoFlipPositionProvider` gets the side placement: end of the row, flip to start, clamp to the window.
+- `MenuItemState` gains `hasSubmenu` and `submenuOpen`; the skin's Item part draws the trailing chevron (mirrored in RTL). No new renderer.
+- **Tests:** opens by hover (250 ms), click, Enter and Right; closes by Left and Esc without closing the root; a leaf closes every level; flips at the end edge and in RTL; shifts up near the bottom; a tap on the parent while a child is open closes the child, not the menu; semantics ("has popup", expanded, 1 of n).
+- **Done when:** a two-level context menu works by mouse, keyboard and screen reader on Kotlin, with Material, Cupertino, Fluent, Carbon and Minimal.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -281,6 +315,15 @@ class CamoContextMenuArea extends StatelessWidget { const CamoContextMenuArea({s
 - The content carries `SemanticsRole.menu`; rows are `menuItem`, `menuItemCheckbox` (with `checked`), or `menuItemRadio` (with `checked` and `inMutuallyExclusiveGroup`), merged so the tap action joins the row node. Flutter's debug checks require a `menu` ancestor for every menu item, so `CamoMenuPanel` itself stays role-free.
 - The first item takes focus only when the anchor had keyboard focus at opening. On the web a mouse leaves the highlight mode `traditional`, so the highlight mode alone can't tell keyboard from mouse.
 - `CamoMenuController` is a `ChangeNotifier`: `open()`, `close()`, `isOpen`.
+
+:::
+
+:::info[Submenus: M16 start (2026-11-11, Flutter)]
+
+`CamoMenuSubmenu` is a new `CamoMenuEntry`. the anchored popup is an internal route with an invisible barrier, so a nested route would make a tap on the parent an outside tap. The submenu is instead an overlay entry inside the same route (a `Positioned` child of the menu route's stack), placed beside its row with the same flip and clamp as the root; its focus scope is a child of the parent's, so Left, Right and Esc move between them.
+- `MenuItemState` gains `hasSubmenu` and `submenuOpen`; the skin's Item part draws the trailing chevron (mirrored in RTL). No new renderer.
+- **Tests:** opens by hover (250 ms), click, Enter and Right; closes by Left and Esc without closing the root; a leaf closes every level; flips at the end edge and in RTL; shifts up near the bottom; a tap on the parent while a child is open closes the child, not the menu; semantics ("has popup", expanded, 1 of n).
+- **Done when:** a two-level context menu works by mouse, keyboard and screen reader on Flutter, with Material, Cupertino, Fluent, Carbon and Minimal.
 
 :::
 
