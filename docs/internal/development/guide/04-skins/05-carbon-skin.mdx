@@ -135,6 +135,22 @@ Charts reach skins through the preset registered for `skin.name == "carbon"` ([C
 
 The palette stays the theme's (Carbon's categorical palette is a brand choice, not a preset); the tooltip is a square `layer-02` box with a 1 px border.
 
+#### 3.5 Density (M16, srctool/camouflage#70)
+
+Carbon draws every control at 48 today (the "large" size). Carbon's own size tokens are `xs` 24, `sm` 32, `md` 40 and `lg` 48, and desktop apps live at 32 and 40. Without a density option an app overrides every component theme, which is what Fluent's `density` already avoids.
+
+| Control | `xs` 24 | `sm` 32 | `md` 40 | `lg` 48 (today) |
+|---|---|---|---|---|
+| Button, icon button | 24 (`bodyCompact01`, 12) | 32 | 40 | 48 |
+| Text field, search, select, number input | 24 | 32 | 40 | 48 (the field stays 40 today; see the callout) |
+| Menu item, list row, tree row | 24 | 32 | 40 | 48 |
+| Data table row | 24 | 32 | 40 | 48 |
+| Tab, toolbar action | 24 | 32 | 40 | 48 |
+
+Paddings, icon sizes (16 at `xs` and `sm`, 20 at `md`, 24 at `lg`) and the type size follow the size: Carbon's `body-compact-01` (14) at `sm` and above, 12 at `xs`. Heights are minimums, so 200% text still grows a control (the rule every component follows).
+
+**How the skin follows the input.** `carbonTheme(density = null)` follows `CamoEnvironment.input` (ADR-41), the same rule as `fluentTheme(density)`: a pointer gets `md`, fingers get `lg`. An explicit value wins. The 48 touch target is never reduced: a 24 control with touch input still has a 48 hit area (`minimumTouchTarget` on Kotlin, `CamoTouchTarget` on Flutter), so `xs` costs nothing in accessibility.
+
 ### 4. Build steps
 
 1. The `Layered` surface, `CarbonStates` feedback, and the inset focus border.
@@ -164,6 +180,12 @@ The palette stays the theme's (Carbon's categorical palette is a brand choice, n
 - **Anatomy as built:** buttons 48 tall, square, label at the start and the icon 32 away at the end; secondary is gray 80, tertiary a blue outline; icon buttons 48; text fields 40 on the `field` fill with a **bottom border only** (2 px inset border when focused or in error); 40 search; a 16 square checkbox; the 48 × 24 toggle (green when on); content-switcher segments (selected = inverse fill); the number input is the Split stepper; tags are pills (the one rounded element), avatars square; toasts and inline notifications carry a colored left border and an icon; the dialog is square with a full-width action row and a close button; line tabs by default (Solid is the contained tabs); a 48 gray 100 header in every family; a 48 icon rail and a 256 side panel with a start line; tiles with no border; 48 table rows; rows with bottom borders.
 - **Not built:** an "On/Off" text beside the toggle (the app's), the batch-actions bar of the data table, a 3 px left bar on the selected tree row, the contained tab's dividers, the productive 40 button height, and Carbon's own loading spinner (the circle is the shared one, with butt caps).
 - **Defaults:** `carbonLight` is White and `carbonDark` is G100; the sample and the example switch between them with the mode.
+
+:::
+
+:::info[M16 start (2026-11-11)]
+
+Density (§3.5) is the first M16 item, raised by Graft (#70). It adds no renderer and changes no contract: it is a token set on the theme, read by the existing renderers.
 
 :::
 
@@ -246,6 +268,16 @@ M14 is built in one pass (the M12 ruling), then reviewed as a whole; the task ca
 
 :::
 
+:::info[M16 start (2026-11-11): density (Kotlin)]
+
+- **Theme:** `carbonTheme(family, accent, fontFamily, density: CarbonDensity? = null)`. The enum is `CarbonDensity { Xs, Sm, Md, Lg }`. The value is stored in a `CarbonTokens(density)` token set (`theme.tokens<CarbonTokens>()`), and `null` adapts through `theme.adapt { env -> ... }` (as Fluent does): `Pointer` → `Md`, `Touch` → `Lg`.
+- **Renderers:** each renderer's `defaults(theme)` reads `theme.tokens<CarbonTokens>()?.density ?: Lg` through one internal `CarbonSizes` table (height, padding, icon size, text style), replacing the `48.dp` and `40.dp` literals in `CarbonActions`, `CarbonInputs`, `CarbonLists`, `CarbonGroups`, `CarbonNavigation` and `CarbonNavigationChrome`.
+- **Touch target:** unchanged; `minimumTouchTarget()` keeps 48 × 48 around a 24 control.
+- **Tests:** a size table test per density (button, field, row heights), the `null` adaptation for `Pointer` and `Touch`, an explicit value winning, the 48 target holding at `Xs` with touch, and goldens per density in White and G100.
+- **Done when:** a Carbon screen at `Xs` has 24 buttons, fields and rows with no component-theme override, on Kotlin.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -310,6 +342,16 @@ Built in one pass with the Kotlin skin (the M12 ruling), starting from a copy of
 
 - Package `camouflage_skin_carbon` (widgets layer only): `Layered`, `CarbonStates`, `carbonTheme(family:, accent:, fontFamily:)`, the 52 renderers; `carbonSkin` is a const skin. The example switcher has Carbon. The package needs no Material or Cupertino import.
 - See the base note's callout for the shared deviations (contrast, the G90 exception, what is not built). Both platforms ship the chart preset in §3.4 as `"carbon"`.
+
+:::
+
+:::info[M16 start (2026-11-11): density (Flutter)]
+
+- **Theme:** `carbonTheme(family:, accent:, fontFamily:, density:)` with `CarbonDensity { xs, sm, md, lg }`, stored in a `CarbonTokens` token set (`theme.tokens<CarbonTokens>()`); `null` adapts through the theme's adaptation (`pointer` → `md`, `touch` → `lg`).
+- **Renderers:** each renderer's `defaults(theme)` reads the density through one `carbonSizes(density)` table (height, padding, icon size, text style), replacing the `48` and `40` literals in `carbon_actions`, `carbon_inputs`, `carbon_lists`, `carbon_structure`, `carbon_groups`, `carbon_navigation` and `carbon_navigation_chrome`.
+- **Touch target:** unchanged; `CamoTouchTarget` and `CamoTouchSemantics` keep 48 × 48 around a 24 control.
+- **Tests:** a size table test per density (button, field, row heights), the `null` adaptation for `Pointer` and `Touch`, an explicit value winning, the 48 target holding at `Xs` with touch, and goldens per density in White and G100.
+- **Done when:** a Carbon screen at `Xs` has 24 buttons, fields and rows with no component-theme override, on Flutter.
 
 :::
 
