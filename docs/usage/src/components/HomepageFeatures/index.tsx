@@ -20,7 +20,7 @@ const FEATURES = [
     text: 'A theme from one brand color, dark mode as a flag, your own font, and per-component overrides when a design asks for them.',
   },
   {
-    title: '52 components',
+    title: '57 components',
     to: '/docs/components',
     text: 'Buttons, forms, pickers, tables, trees, dialogs, navigation and charts, with the same parameters in Kotlin and Dart.',
   },
@@ -58,7 +58,7 @@ function Install(): ReactNode {
         <div className={styles.codeWrap}>
           <KotlinOnly>
             <CodeBlock language="kotlin" title="build.gradle.kts">
-{`implementation(platform("com.srctool.camouflage:camouflage-bom:0.1.0"))
+{`implementation(platform("com.srctool.camouflage:camouflage-bom:0.2.0"))
 implementation("com.srctool.camouflage:camouflage-core")
 implementation("com.srctool.camouflage:camouflage-skin-material")`}
             </CodeBlock>

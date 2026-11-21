@@ -1,0 +1,61 @@
+---
+title: CamoSpeedSearch
+sidebar_label: SpeedSearch
+sidebar_position: 6
+description: "Type in a focused tree, data table or menu to filter it, with the matches highlighted and no search field."
+---
+
+# CamoSpeedSearch
+
+Type in a focused tree, data table or menu to filter it, with the matches highlighted and no search field. Matching is by prefix, substring or camel-hump (`fLog` finds `featureLogin`), ignoring case and accents. Up and Down move between matches in a tree, Backspace edits, and Esc clears the text before it closes anything; a live region tells screen readers "3 matches" or "No matches". There is no component of its own: you turn it on where you use a tree, a table or a menu.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+// A tree keeps the ancestors of matches and opens them
+CamoTree(
+    roots = roots, /* expanded, selected, label, caption … */
+    speedSearch = CamoSpeedSearchState(),
+)
+
+// A menu filters its items as you type, instead of the type-ahead
+CamoMenuAnchor(items = items, speedSearch = true) { open -> OverflowButton(open) }
+
+// Your own list: match and highlight yourself
+val match = CamoMatcher.match("fLog", "featureLogin") // the ranges to highlight, or null
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+// A tree keeps the ancestors of matches and opens them
+CamoTree(
+  roots: roots, // expanded, selected, label, semanticLabel …
+  speedSearch: CamoSpeedSearchState(),
+);
+
+// A menu filters its items as you type, instead of the type-ahead
+CamoMenuAnchor(
+  items: items,
+  speedSearch: true,
+  builder: (context, open) => OverflowButton(onPressed: open),
+);
+
+// Your own list: match and highlight yourself
+final match = CamoMatcher.match('fLog', 'featureLogin'); // the ranges to highlight, or null
+```
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoSpeedSearch works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/primitives/camo-speed-search).
+:::

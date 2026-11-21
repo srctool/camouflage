@@ -10,6 +10,18 @@ Camouflage follows [Semantic Versioning](https://semver.org). Before 1.0, a mino
 - Kotlin: [CHANGELOG](https://github.com/srctool/camouflage-kotlin/blob/main/CHANGELOG.md) and [releases](https://github.com/srctool/camouflage-kotlin/releases)
 - Flutter: [CHANGELOG](https://github.com/srctool/camouflage-dart/blob/main/CHANGELOG.md) and the [packages on pub.dev](https://pub.dev/publishers/srctool.com/packages)
 
+## 0.2.0
+
+Kotlin and Flutter. The desktop foundations.
+
+- **New components:** `CamoSplitPane` (a draggable, keyboard and screen reader accessible divider, with a layout you can save), `CamoDockLayout` (IDE-style tool windows on side and bottom docks, opened from edge stripes), `CamoDocumentTabs` (closable, reorderable, pinnable tabs that scroll), `CamoCommandPalette` ("Find action" and "Search everywhere" with fuzzy matching and async sources) and skin-drawn scrollbars (`CamoScrollArea`). That makes 57 components.
+- **Speed search:** type in a focused tree, data table or menu to filter it, with the matches highlighted.
+- **Tables and menus:** resizable, hideable and reorderable table columns, and menu submenus.
+- **Carbon density:** `carbonTheme(density:)` sets every control's size (`xs` 24 to `lg` 48) in one place. **Carbon's default sizes change:** a pointer now draws 40 where most controls drew 48.
+- **Fixes:** line and bar charts narrower than their axis labels no longer throw; text fields announce their name on TalkBack and VoiceOver; the paged list's "loading more" no longer uses a deprecated announcement.
+
+**If you wrote your own skin:** the skin contract grows from 52 to 54 renderers. Add `splitPane` and `scrollbar` to your skin before it compiles against 0.2.0. The five included skins already have them, and nothing else in the contract changed. An app that uses an included skin needs no change.
+
 ## Flutter 0.1.2
 
 `camouflage_skin_fluent` and `camouflage_skin_material`: require `camouflage_core` ^0.1.1. 0.1.1 of these two skins used a widget that exists only from core 0.1.1, so resolving core 0.1.0 failed to build.

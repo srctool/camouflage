@@ -111,6 +111,15 @@ Kover on core logic (theme, rules, filters and formats, form state, provider): *
 
 :::
 
+:::tip[The TalkBack and VoiceOver pass, Kotlin (2026-11-16)]
+
+Done by hand on the sample app (release build) on an Android phone (Samsung SM A156E, Android 16, TalkBack) and an iPhone (iPhone 17 Pro, iOS 27.2, VoiceOver). Everything passed except one finding: **text fields had no accessible name.** VoiceOver said "text field" only, and TalkBack could name only the date field and a disabled field (an `uiautomator` dump showed each editable node with empty text, no description and `NAF=true`). The cause: `namedBy()` put the label in a 0 × 0 node inside the field, and the label never reached the editable node.
+**Fix:** `CamoTextField` and `CamoSearchField` now set the name as the editable node's `contentDescription` (the typed text stays separate). Re-checked by hand on both devices: the name and the typed text are both announced. A JVM test (`theEditableNodeCarriesTheLabelAsItsNameAndKeepsWhatIsTyped`) keeps it from regressing. The same pass on Flutter found nothing.
+**Also checked by hand (#148):** Reduce Transparency toggled while the app was open takes effect live on an iPhone 17 Pro, and a 30 s scroll that opens a popup and a dialog felt smooth (not measured with Instruments). Not checked: the Android 12 blur (no such device) and the web refraction edge by eye.
+**Not covered:** the by-skin, by-step breakdown of the screen reader pass was not itemised.
+
+:::
+
 </KotlinOnly>
 
 <DartOnly>
@@ -219,6 +228,19 @@ It's the same axes as Kotlin: skin, theme, text scale, direction, and component 
 
 Fixed with one core piece, `CamoTouchSemantics` (next to `CamoTouchTarget`): a render object that makes the *semantics* of one control cover at least 48 × 48, centered, without changing layout or painting (what Kotlin's `minimumTouchTarget` does for its touch bounds; the hit area is unchanged). `CamoBehavior` takes `touchSemantics: true`, used by buttons, icon buttons, the field actions (clear, show password, a chip's remove), segments, tabs, navigation items, button-group buttons and the split button's parts. An icon-only navigation item (labels hidden) now carries its label, the data table's rows are named "Row n", and the gallery's bare checkboxes are labelled.
 **Remaining gaps** (skipped by name in each skin's test, a follow-up each): `actions` in every skin (the toolbar and group buttons sit inside a clip, so their semantics cannot grow past the 40 high row), `buttons` and `navigation chrome` (layout overflow at 200% text), and in some skins `lists` (the table's select-all box is 40 high), `inputs`, `data display` and `structure`. Minimal and Fluent 4 to 5 galleries, Material 5, Cupertino 6, Carbon 3 (down from 7 to 9).
+
+:::
+
+:::tip[The Flutter touch-target gaps closed (2026-11-15)]
+
+Every gallery now passes the tap-target and label guidelines in all five skins (light, dark, 200% text and right to left), and each skin's `gaps` set is empty. The cause of the remaining gaps was that a clipping render object reports both a semantics clip and a paint clip, which cut back the 48 dp targets inside it. The fixes: `CamoClipRRect` in the Minimal, Fluent and Cupertino list renderers and in Cupertino's blur material, sections and cards; a new `CamoPhysicalShape` that clips only what is painted (Material's paper); touch semantics on sortable data table headers; Cupertino one-line rows at 48 and navigation items at least 48 tall. Shipping in 0.2.0 (it was the 0.1.3 patch).
+
+:::
+
+:::tip[The TalkBack and VoiceOver pass, Flutter (2026-11-16)]
+
+Done by hand on the example app (release build) on an Android phone (Samsung SM A156E, Android 16, TalkBack) and an iPhone (iPhone 17 Pro, iOS 27.2, VoiceOver). Result: no problems found on either device. The reported result was "looks good" on both; the by-skin, by-step breakdown was not itemised.
+**Found during the pass, not an accessibility issue:** on the Android device the line chart threw `Unsupported operation: Infinity or NaN toInt` from the x-axis label code (`camo_line_chart.dart`). Not yet reproduced in a test; tracked as its own bug.
 
 :::
 

@@ -21,7 +21,7 @@ Use the BOM so all Camouflage modules share a version, then add the core and a s
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project.dependencies.platform("com.srctool.camouflage:camouflage-bom:0.1.0"))
+            implementation(project.dependencies.platform("com.srctool.camouflage:camouflage-bom:0.2.0"))
             implementation("com.srctool.camouflage:camouflage-core")
             implementation("com.srctool.camouflage:camouflage-skin-material") // or -minimal, -cupertino, -fluent, -carbon
         }
@@ -52,8 +52,8 @@ Or in `pubspec.yaml`:
 
 ```yaml title="pubspec.yaml"
 dependencies:
-  camouflage_core: ^0.1.1
-  camouflage_skin_material: ^0.1.2   # or _minimal, _cupertino, _fluent, _carbon
+  camouflage_core: ^0.2.0
+  camouflage_skin_material: ^0.2.0   # or _minimal, _cupertino, _fluent, _carbon
 ```
 
 Optional packages:

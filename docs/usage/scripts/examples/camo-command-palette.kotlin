@@ -1,0 +1,11 @@
+val palette = remember { CamoCommandPaletteState() }
+val actions = CamoCommandSource.of(
+    "Actions",
+    listOf(CamoCommandItem("open", "Open File", onSelect = { openFile() }, shortcut = "Ctrl+O")),
+)
+val files = CamoCommandSource("Files") { query -> searchProject(query) } // a slow source shows a loading row
+
+CamoCommandPalette(palette, listOf(actions, files))
+
+// From your own shortcut (Ctrl+K, double Shift)
+palette.show()

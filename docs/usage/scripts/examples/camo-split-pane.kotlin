@@ -1,0 +1,14 @@
+val state = remember { CamoSplitState(listOf(1f, 3f)) } // fractions, so a saved layout fits any window
+
+CamoSplitPane(
+    axis = Orientation.Horizontal,
+    panes = listOf(
+        CamoPane(minSize = 160.dp, collapsible = true) { Sidebar() },
+        CamoPane(minSize = 240.dp) { Detail() },
+    ),
+    state = state,
+)
+
+// Save and restore the layout yourself
+val saved = state.snapshot()
+state.apply(saved)

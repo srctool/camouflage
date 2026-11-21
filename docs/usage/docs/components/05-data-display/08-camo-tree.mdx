@@ -31,6 +31,7 @@ public fun <T> CamoTree(
     multiSelect: Boolean = false,
     onLoadChildren: ((CamoTreeNode<T>) -> Unit)? = null,
     icon: ((T, Boolean) -> (@Composable () -> Unit))? = null,
+    speedSearch: CamoSpeedSearchState? = null,
 )
 ```
 
@@ -47,6 +48,7 @@ public fun <T> CamoTree(
 | `multiSelect` | `Boolean` | `false` |
 | `onLoadChildren` | `((CamoTreeNode<T>) -> Unit)?` | `null` |
 | `icon` | `((T, Boolean) -> (@Composable () -> Unit))?` | `null` |
+| `speedSearch` | `CamoSpeedSearchState?` | `null` |
 
 </TabItem>
 
@@ -64,6 +66,7 @@ public fun <T> CamoTree(
 | `multiSelect` | `bool` | `false` | Whether several nodes can be selected. |
 | `onLoadChildren` | `ValueChanged<CamoTreeNode<T>>?` |  | Called once when a node with unloaded children expands. |
 | `icon` | `Widget? Function(T value, bool expanded)?` |  | A node's icon, given whether it is expanded. |
+| `speedSearch` | `CamoSpeedSearchState?` |  | Typing in the tree filters it (or jumps) by the typed text, highlights the matches and keeps the ancestors of matches open; `null` for no speed search. |
 
 </TabItem>
 

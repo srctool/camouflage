@@ -268,6 +268,7 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
 - **Context:** Studio's web canvas and a web export need Camouflage on the web. Covering React, Vue, Svelte and Angular separately would be several ports.
 - **Decision:** a Later third platform, **Camouflage for web**, built as framework-neutral **Web Components** (custom elements), with its own `web/` docs mirroring `base/`. Themes map to CSS custom properties (which cross the Shadow DOM), a nested provider becomes a wrapper element, and form fields use `ElementInternals`.
 - **Consequences:** one web implementation for every framework. The `camo` generator gains a web target (CSS variables and a typed theme object), and Studio a web canvas.
+- **Amended by ADR-43** (how web themes are written and extended).
 
 ### ADR-35 Camouflage builds what apps would borrow from Material
 - **Context:** without a component, apps mix in Material widgets (a date picker first), which brings Material's look and theme into a Camouflage app. A `ThemeData`/`MaterialTheme` bridge was considered and rejected: the goal is to never need Material.
@@ -365,8 +366,39 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - The Fluent and Cupertino skins test each step of their chains (goldens with capabilities forced off).
   - Platform interop (Windows backdrop, macOS vibrancy) stays inside the skin modules, behind the capability check.
 
-### ADR-45 (Proposed, M16) The skin contract grows by two renderers for desktop: split pane and scrollbar
-- **Status:** proposed (2026-11-11); it changes the skin contract, so it waits for review.
+### ADR-43 Web theming follows Tailwind and Mantine conventions, adjusted to Camouflage
+- **Context:** the web port (ADR-34) needs a theming model. Tailwind (CSS-first theme variables) and Mantine (a provider, a theme object merged onto defaults, a color scheme attribute) already work for web teams, and Kotlin and Dart have no deep-merge `extend` (a nested provider's theme replaces the whole theme). On the web, CSS gives partial overrides for free. Tauri apps (a webview with a Rust backend) are a first target for the port.
+- **Decision:**
+  - **Theme is CSS custom properties** with a `--camo-` prefix, named from the Figma naming contract (Theme §3.12): `color/on-primary-container` becomes `--camo-color-on-primary-container`, `shape/medium` becomes `--camo-shape-medium`. Figma, CSS, Kotlin and Dart names stay one to one.
+  - **Brand token sets keep the brand's own names** (ADR-32), unprefixed: `--brand-600`, `--radius-card`. Roles alias them (`--camo-color-primary: var(--brand-600)`), the same way Tailwind scales and Mantine shades are used.
+  - **A provider element** (`<camo-provider>`) writes a theme's variables on itself. Nested providers override only the variables they set, so a partial theme needs no merge code. A skin is chosen by attribute (`skin="cupertino"`).
+  - **Color scheme is an attribute** (`data-camo-scheme="light|dark"`) on any element, defaulting to `prefers-color-scheme`, so a subtree can be dark inside a light page.
+  - **A JS theme object** is deep-merged onto a starter theme (`createCamoTheme({...})`, Mantine style) and applied to an element. A TypeScript type mirrors `CamoTheme`, and `validateTheme()` runs the same checks as `validate()`.
+  - **Component themes are variables** (`--camo-button-height`) with the same fields as the Kotlin and Dart component themes. Outside styling uses `::part()` hooks, not class names or style props.
+  - **Tailwind v4 interop:** a preset (an `@theme` file) maps Tailwind's variables to Camouflage's, so utilities such as `bg-primary` follow the Camouflage theme. Importers turn a Tailwind or Mantine theme into the tokens JSON.
+  - **Not copied:** utility classes as the way to restyle components, and Mantine-style style props. Components read roles, and a skin decides the look.
+- **Consequences:**
+  - The web gets partial overrides and a per-subtree color scheme that Kotlin and Dart lack. Whether Kotlin and Dart should gain the same deep merge is a separate question, recorded in the Theme note.
+  - The `camo` generator's web target emits the variables file, the Tailwind preset and the typed theme object from the same tokens JSON.
+  - Extensions still only change the UI through roles and component themes that reference them (the same limit as ADR-32).
+  - Tauri apps use the same Web Components in the webview. No Rust port is needed; Rust passes data through commands and events.
+
+### ADR-44 (Proposed, after v0.1) Providers can adjust the inherited theme
+- **Status:** proposed. It changes the provider contract, so it waits for review and does not block v0.1.
+- **Context:** in Kotlin and Dart a provider's `theme` replaces the inherited theme completely. To change one thing for a subtree (a different accent on a promo banner, one more token set), the app must hold the base theme and call `copy` / `copyWith` itself. Tailwind's `extend` and Mantine's `createTheme` merge a partial theme onto the defaults, and on the web (ADR-43) a nested provider gets this from the CSS cascade. The three platforms should behave the same.
+- **Decision (proposed):**
+  - `CamouflageProvider` gains an optional **`adjustTheme`** function applied to the effective theme (its own `theme`, else the inherited one): Kotlin `adjustTheme: ((CamoTheme) -> CamoTheme)?`, Flutter `adjustTheme: CamoTheme Function(CamoTheme)?`. Typical use: `adjustTheme = { it.copy(colors = it.colors.copy(primary = promo)) }`.
+  - A token set added by `adjustTheme` **replaces** an existing set of the same type (a theme never holds two of a type; `validate()` still reports `DuplicateTokenSet` for a hand-built theme that does).
+  - No new partial-theme types: a function over the existing immutable classes avoids a second parallel set of "optional" classes and keeps `copy` as the one mechanism.
+  - The web provider keeps its attribute and cascade model (ADR-43); `createCamoTheme` is the equivalent of `adjustTheme` for a JS theme object.
+- **Consequences:**
+  - No breaking change: `adjustTheme` defaults to null.
+  - Animated theme switches (`lerp`) work as before, since the result is an ordinary `CamoTheme`.
+  - The provider note, the Kotlin and Flutter provider notes and the Theme note get the new parameter and an edge case (`adjustTheme` runs before the provider's system adjustments, so reduced motion still wins).
+  - Not decided here: whether `adjustTheme` should also be allowed on `CamouflageApp` (Flutter), and whether Studio exports an adjust function.
+
+### ADR-45 (Accepted, M16) The skin contract grows by two renderers for desktop: split pane and scrollbar
+- **Status:** accepted and built (proposed 2026-11-11, built 2026-11-21); ships in 0.2.0. The five skins and the test skins implement both renderers; document tabs, the dock layout and the command palette added none.
 - **Context:** Graft, a desktop Git client that builds its `ui-kit` on the Carbon skin, needs a resizable split pane and themed scrollbars (srctool/camouflage#71, #78). Both need a skin to draw something (a divider line, a thumb), and the contract has no defaults (a skin cannot forget a component).
 - **Decision:**
   - `CamoSkin` gains `splitPane` and `scrollbar` renderers (52 → 54). All five included skins implement them, and the debug and plain test skins too.
