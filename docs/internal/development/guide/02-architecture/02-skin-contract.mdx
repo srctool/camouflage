@@ -699,7 +699,7 @@ export interface CamoSkin {
   readonly text: Renderer<TextState, never, TextTheme>;
   readonly icon: Renderer<IconState, never, IconTheme>;
   readonly button: Renderer<ButtonState, "prefix-icon" | "suffix-icon", ButtonTheme>;
-  readonly dialog: Renderer<DialogState, "title" | "content" | "actions", DialogTheme>;
+  readonly dialog: Renderer<DialogState, "confirm" | "dismiss" | "content", DialogTheme>;
   // ...one required field per component, as in Kotlin and Dart
 }
 ```
