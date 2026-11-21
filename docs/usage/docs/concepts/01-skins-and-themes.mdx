@@ -32,7 +32,7 @@ Camouflage splits a UI component in three:
 
 ## The skin contract
 
-A skin is a set of **52 renderers**, one per component, with no defaults. That is deliberate: a skin cannot forget a component, and a new component forces every skin to answer for it. The five included skins use only the core's public API, so a skin of your own can too. See [Writing your own skin](/docs/guides/custom-skin).
+A skin is a set of **54 renderers**, one for each kind of drawn control, with no defaults. That is deliberate: a skin cannot forget a renderer, and a new renderer forces every skin to answer for it. Components built from other components (document tabs, the command palette, the dock layout) need none. The five included skins use only the core's public API, so a skin of your own can too. See [Writing your own skin](/docs/guides/custom-skin).
 
 ## The environment
 

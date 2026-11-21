@@ -1,0 +1,10 @@
+val state = remember { CamoDocumentTabsState() } // order and pins; snapshot() and apply() to save them
+var selected by remember { mutableStateOf<Any>(documents.first().id) }
+
+CamoDocumentTabs(
+    documents = documents.map { CamoDocument(it.id, it.name, modified = it.unsaved) },
+    selected = selected,
+    onSelect = { selected = it },
+    onClose = { id -> closeDocument(id) }, // the app removes it and picks the next tab
+    state = state,
+)

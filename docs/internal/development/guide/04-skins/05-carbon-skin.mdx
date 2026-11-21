@@ -151,6 +151,17 @@ Paddings, icon sizes (16 at `xs` and `sm`, 20 at `md`, 24 at `lg`) and the type 
 
 **How the skin follows the input.** `carbonTheme(density = null)` follows `CamoEnvironment.input` (ADR-41), the same rule as `fluentTheme(density)`: a pointer gets `md`, fingers get `lg`. An explicit value wins. The 48 touch target is never reduced: a 24 control with touch input still has a 48 hit area (`minimumTouchTarget` on Kotlin, `CamoTouchTarget` on Flutter), so `xs` costs nothing in accessibility.
 
+:::tip[Built (M16, 2026-11-17, Kotlin #165 and Flutter #165)]
+
+`carbonTheme(density: CarbonDensity?)` takes `Xs` 24, `Sm` 32, `Md` 40 or `Lg` 48 and carries it as a `CarbonDensityTokens` token set (one theme-level value, the first proposal). `null` follows the input: a pointer gets `Md`, fingers get `Lg`; a theme without the tokens keeps 48. Settled in the build:
+- **Icons stay 16 at every size**, not 16 / 16 / 20 / 24: Carbon's spec keeps 16 px icons, and a 24 icon cannot fit an `Xs` control. `Xs` draws 12 text.
+- **Text fields are 48 at `Lg`** (they were 40): the field now matches the 48 touch target, and 40 is `Md`.
+- **Controls that follow it:** button, icon button, text and search field (so the select), stepper, segmented control, menu item, list row, tree row, data table row and header, tab, button group, split button and toolbar action. Not density: the top bar (the 48 UI shell header), the snackbar, the FAB, tags, pagination and the progress circle.
+- **The data table has no `density` parameter of its own** on either platform, so the second open question did not arise: its rows read the theme.
+- **The default changed** (a pointer now draws 40, touch fields and menus 48), as proposed; the CHANGELOGs say so.
+
+:::
+
 ### 4. Build steps
 
 1. The `Layered` surface, `CarbonStates` feedback, and the inset focus border.

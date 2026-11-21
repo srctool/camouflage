@@ -11,7 +11,8 @@ A strip of items you swipe or step through. `state` is Compose's `PagerState` (i
 `animateScrollToPage` to jump). `layout` `Peek` lets the next item show at the edge. Previous and next buttons
 show on pointer devices by default (`showButtons`); Left and Right (reading direction), Home and End step
 and jump; the page dots are `CamoPagination`'s. Each item announces "item 2 of 5"; `caption` names the
-carousel. There is no auto-play.
+carousel. There is no auto-play. `itemKey` must be a type Android can save in a Bundle (a String or a number): a
+`Color.value` (a `ULong`) throws "Type of the key is not supported" on Android.
 
 ## API
 

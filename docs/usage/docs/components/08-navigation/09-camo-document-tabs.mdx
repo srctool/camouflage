@@ -1,0 +1,117 @@
+---
+title: CamoDocumentTabs
+sidebar_label: DocumentTabs
+sidebar_position: 9
+description: "Editor-style tabs for open documents: a close button on hover and on the selected tab (a dot while the document is modified), middle-click to close, drag to reorder (Alt+Left and Alt+Right with the ke"
+---
+
+# CamoDocumentTabs
+
+Editor-style tabs for open documents: a close button on hover and on the selected tab (a dot while the
+document is modified), middle-click to close, drag to reorder (Alt+Left and Alt+Right with the keyboard),
+pinned tabs at the start, and a row that scrolls with a "show all tabs" menu when the tabs don't fit.
+
+`documents` and `selected` (a document id) are the app's; so is closing: `onClose` says the user asked, and the
+app removes the document and picks the next selection. The order and pins live in `state`. `onContextMenu`
+returns the entries of a tab's right-click menu ("Close others", "Close to the right", "Pin"). Ctrl+W is the
+app's key. Screen readers get the tab-list semantics of `CamoTabs` plus "Close", "Move earlier", "Move later"
+and "Pin" actions on every tab, and hear "modified" and "pinned" in its state.
+
+Built from the skin's tab bar (every skin draws it), so it needs no renderer of its own.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+val state = remember { CamoDocumentTabsState() } // order and pins; snapshot() and apply() to save them
+var selected by remember { mutableStateOf<Any>(documents.first().id) }
+
+CamoDocumentTabs(
+    documents = documents.map { CamoDocument(it.id, it.name, modified = it.unsaved) },
+    selected = selected,
+    onSelect = { selected = it },
+    onClose = { id -> closeDocument(id) }, // the app removes it and picks the next tab
+    state = state,
+)
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+final state = CamoDocumentTabsState(); // order and pins; snapshot() and apply() to save them
+
+CamoDocumentTabs(
+  documents: [
+    for (final d in documents) CamoDocument(id: d.id, title: d.name, modified: d.unsaved),
+  ],
+  selected: selected,
+  onSelect: (id) => setState(() => selected = id),
+  onClose: closeDocument, // the app removes it and picks the next tab
+  state: state,
+  onContextMenu: (doc) => [
+    CamoMenuItem(text: 'Pin', onPressed: () => state.pin(doc.id)),
+  ],
+);
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoDocumentTabs(
+    documents: List<CamoDocument>,
+    selected: Any,
+    onSelect: (Any) -> Unit,
+    onClose: (Any) -> Unit,
+    state: CamoDocumentTabsState,
+    modifier: Modifier = Modifier,
+    onContextMenu: ((CamoDocument) -> List<CamoMenuEntry>)? = null,
+    appearance: Appearance? = null,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `documents` | `List<CamoDocument>` | `required` |
+| `selected` | `Any` | `required` |
+| `onSelect` | `(Any) -> Unit` | `required` |
+| `onClose` | `(Any) -> Unit` | `required` |
+| `state` | `CamoDocumentTabsState` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `onContextMenu` | `((CamoDocument) -> List<CamoMenuEntry>)?` | `null` |
+| `appearance` | `Appearance?` | `null` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `documents` | `List<CamoDocument>` | `required` | The open documents, in any order: `state` orders them. |
+| `selected` | `Object` | `required` | The selected document's id. |
+| `onSelect` | `ValueChanged<Object>` | `required` | Called with the id of the tab the user chose. |
+| `onClose` | `ValueChanged<Object>` | `required` | Called with the id of the tab the user asked to close; the app removes it. |
+| `state` | `CamoDocumentTabsState` | `required` | The order and the pinned tabs. |
+| `onContextMenu` | `List<CamoMenuEntry> Function(CamoDocument document)?` |  | The entries of a tab's right-click menu. |
+| `appearance` | `Appearance?` |  | `null` uses the skin's default tab appearance. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoDocumentTabs works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/navigation/camo-document-tabs).
+:::

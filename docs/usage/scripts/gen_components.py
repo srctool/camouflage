@@ -27,14 +27,14 @@ KOTLIN = ROOT / "kotlin-lib"
 INTERNAL = ROOT / "docs" / "internal" / "development" / "components"
 
 CATEGORIES = {
-    "01-primitives": ("Primitives", "Text, icons, surfaces and dividers: the pieces everything else is built from."),
+    "01-primitives": ("Primitives", "Text, icons, surfaces, dividers, scrollbars and speed search: the pieces everything else is built from."),
     "02-actions": ("Actions", "Buttons and the controls that start something."),
     "03-inputs": ("Inputs and forms", "Fields, choices, pickers and forms."),
-    "04-containers-and-lists": ("Containers and lists", "Cards, list rows, paged lists and accordions."),
+    "04-containers-and-lists": ("Containers and lists", "Cards, list rows, paged lists, accordions, split panes and dock layouts."),
     "05-data-display": ("Data display", "Chips, badges, avatars, images, ratings, carousels, tables and trees."),
     "06-feedback": ("Feedback", "Progress, snackbars, banners, skeletons and step indicators."),
-    "07-overlays": ("Overlays", "Dialogs, sheets, menus, tooltips and popovers."),
-    "08-navigation": ("Navigation", "Top bars, tabs, navigation bars, rails and drawers, pagination and breadcrumbs."),
+    "07-overlays": ("Overlays", "Dialogs, sheets, menus, tooltips, popovers and the command palette."),
+    "08-navigation": ("Navigation", "Top bars, tabs, document tabs, navigation bars, rails and drawers, pagination and breadcrumbs."),
     "09-charts": ("Charts", "Line, bar, pie and sparkline charts, without a chart library."),
 }
 

@@ -122,6 +122,30 @@ fun <T> CamoDataTable(
  > - **Cell editing, column resizing and reordering, row expansion and frozen columns** are v0.2.
  > - **Selection is a set of keys** the app owns (like `CamoChipGroup`); say if you want a built-in single-select mode.
 
+:::info[Resizable, hideable and reorderable columns (M16, 2026-11-17, srctool/camouflage#72)]
+
+Desktop tables let the user resize, hide and reorder columns (Graft's commit graph columns, file and PR lists).
+
+```kotlin
+class CamoColumnState(columns: List<Any>) {              // app-owned, like CamoSplitState
+    val order: List<Any>; val widths: Map<Any, Dp>; val hidden: Set<Any>
+    fun resize(column: Any, to: Dp); fun move(column: Any, to: Int); fun hide(column: Any); fun show(column: Any)
+    fun reset(); fun snapshot(): CamoColumnSnapshot; fun apply(snapshot: CamoColumnSnapshot)
+}
+CamoDataTable(..., columnState: CamoColumnState? = null)  // null: the table as today
+CamoColumn(..., minWidth: Dp = 48.dp, resizable: Boolean = true, hideable: Boolean = true, reorderable: Boolean = true)
+```
+
+- **Resize**: drag the header's trailing edge (an 8 dp grab area, a `col-resize` pointer on desktop); **double-click fits the content** to the widest of the rows currently composed; each column keeps its `minWidth`; a column the user never resized keeps its flexible width, and "Reset widths" returns the rest.
+- **Hide and show**: a header context menu (right-click, and the Menu key or Shift+F10 on a focused header) lists "Hide column" and a "Columns" submenu with a checkbox per column (the submenu from M16); the last visible column cannot be hidden.
+- **Reorder**: drag a header; the drop position shows as a line; **by keyboard**, Alt+Left and Alt+Right move the focused column, Ctrl+Left and Ctrl+Right resize it by a key step.
+- **Semantics**: a header exposes the actions "Widen", "Narrow", "Move left", "Move right" and "Hide", so a screen reader can do everything a mouse can.
+- **No new renderer**: the header cell's state gains `resizable`, `resizing`, `reordering` and `dropTarget` (defaulted); the renderer draws the grab line and the drop line.
+
+**Open for review:** (1) **reorder in scope now?** Proposed: **yes, all three at once**: they share the header interaction and the state object, and the issue asks for all three; (2) widths in **dp** (not fractions): columns are content, and a saved layout should keep a readable width; (3) where the state lives: the table takes `columnState`, the app persists `snapshot()`; Camouflage stores nothing.
+
+:::
+
 ## Implementation {#implementation}
 
 <KotlinOnly>

@@ -1,0 +1,51 @@
+---
+title: CamoScrollbar
+sidebar_label: Scrollbar
+sidebar_position: 5
+description: "A scrollbar for adapter's content, in the skin's look: a thumb that grows under the pointer, dragged to scroll and a click on the track pages by a viewport."
+---
+
+# CamoScrollbar
+
+A scrollbar for `adapter`'s content, in the skin's look: a thumb that grows under the pointer, dragged to scroll
+and a click on the track pages by a viewport. It shows only with pointer input on desktop and the web (nothing on
+touch platforms), takes no focus and is hidden from screen readers, which scroll the content themselves; wheel
+events go to the content. A bar with nothing to scroll draws nothing. Place it at the edge of the scrolling
+content, or use `CamoScrollArea`.
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoScrollbar(
+    adapter: CamoScrollAdapter,
+    modifier: Modifier = Modifier,
+    orientation: Orientation = Orientation.Vertical,
+    visibility: ScrollbarVisibility = ScrollbarVisibility.Auto,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `adapter` | `CamoScrollAdapter` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `orientation` | `Orientation` | `Orientation.Vertical` |
+| `visibility` | `ScrollbarVisibility` | `ScrollbarVisibility.Auto` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+_Not available in Dart._
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoScrollbar works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/primitives/camo-scrollbar).
+:::

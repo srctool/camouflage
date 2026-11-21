@@ -1,0 +1,104 @@
+---
+title: CamoDockLayout
+sidebar_label: DockLayout
+sidebar_position: 6
+description: "IDE-style tool windows around a center: docks on the left, right and bottom that open from icon stripes on the window's edges."
+---
+
+# CamoDockLayout
+
+IDE-style tool windows around a center: docks on the left, right and bottom that open from icon stripes on the window's edges. A stripe button toggles its tool window, several open windows on one edge stack in a split of their own, and docks resize through the split pane's divider. Each window's header has a "Move to" menu, maximize or restore and hide. The app owns the layout in a `CamoDockState`, which it can save and restore with `snapshot()` and `apply()`. `focus(id)` opens a window and moves keyboard focus into it, for your own shortcuts; Esc inside a window returns focus to the center. Left and right mean start and end, so a layout mirrors in right-to-left.
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+val state = remember {
+    CamoDockState(
+        mapOf("files" to DockEdge.Left, "details" to DockEdge.Right, "log" to DockEdge.Bottom),
+        open = setOf("files"),
+    )
+}
+val windows = listOf(
+    CamoToolWindow("files", "Files", { Icon(FilesIcon) }, DockEdge.Left) { FileTree() },
+    CamoToolWindow("details", "Details", { Icon(InfoIcon) }, DockEdge.Right) { Details() },
+    CamoToolWindow("log", "Log", { Icon(LogIcon) }, DockEdge.Bottom) { LogView() },
+)
+
+CamoDockLayout(state, windows) { Editor() }
+
+// From your own shortcut: open the Log and move focus into it
+state.focus("log")
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+final state = CamoDockState(
+  {'files': DockEdge.left, 'details': DockEdge.right, 'log': DockEdge.bottom},
+  open: {'files'},
+);
+
+CamoDockLayout(
+  state: state,
+  toolWindows: [
+    CamoToolWindow(id: 'files', title: 'Files', icon: filesIcon, defaultEdge: DockEdge.left, child: const FileTree()),
+    CamoToolWindow(id: 'details', title: 'Details', icon: infoIcon, defaultEdge: DockEdge.right, child: const Details()),
+    CamoToolWindow(id: 'log', title: 'Log', icon: logIcon, defaultEdge: DockEdge.bottom, child: const LogView()),
+  ],
+  center: const Editor(),
+);
+
+// From your own shortcut: open the Log and move focus into it
+state.focus('log');
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoDockLayout(
+    state: CamoDockState,
+    toolWindows: List<CamoToolWindow>,
+    modifier: Modifier = Modifier,
+    center: @Composable () -> Unit,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `state` | `CamoDockState` | `required` |
+| `toolWindows` | `List<CamoToolWindow>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+| `center` | `@Composable () -> Unit` | `required` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `state` | `CamoDockState` | `required` | The layout, owned by the app. |
+| `toolWindows` | `List<CamoToolWindow>` | `required` | Every tool window; the state holds where each one is. |
+| `center` | `Widget` | `required` | The main content. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoDockLayout works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/containers-and-lists/camo-dock-layout).
+:::

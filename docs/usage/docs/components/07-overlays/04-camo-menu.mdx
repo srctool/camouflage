@@ -11,7 +11,9 @@ A menu attached to `anchor` (an overflow button, a split button's arrow): `ancho
 The menu shows `items`, or `panel`'s custom content in a `CamoMenuPanel` (ADR-30), below the anchor (above
 it near the bottom edge). Opened from the keyboard, the first item takes focus; Up and Down move, Home and
 End jump, typing jumps to the next item starting with the typed letters, Enter selects, and Esc or an outside
-tap closes it, returning focus to the anchor.
+tap closes it, returning focus to the anchor. With `speedSearch` typing instead filters the items by what was
+typed (prefix, substring or camel-hump), highlights the matches, and Esc clears the text before it closes the
+menu; a menu with submenus keeps the plain type-ahead.
 
 ## API
 
@@ -25,6 +27,7 @@ public fun CamoMenuAnchor(
     items: List<CamoMenuEntry> = emptyList(),
     panel: (@Composable () -> Unit)? = null,
     controller: CamoMenuController? = null,
+    speedSearch: Boolean = false,
     anchor: @Composable (open: () -> Unit) -> Unit,
 )
 ```
@@ -35,6 +38,7 @@ public fun CamoMenuAnchor(
 | `items` | `List<CamoMenuEntry>` | `emptyList()` |
 | `panel` | `(@Composable () -> Unit)?` | `null` |
 | `controller` | `CamoMenuController?` | `null` |
+| `speedSearch` | `Boolean` | `false` |
 | `anchor` | `@Composable (open: () -> Unit) -> Unit` | `required` |
 
 </TabItem>
@@ -46,6 +50,7 @@ public fun CamoMenuAnchor(
 | `items` | `List<CamoMenuEntry>` | `const []` | The menu's entries. |
 | `panel` | `Widget?` |  | Custom content instead of `items`. |
 | `controller` | `CamoMenuController?` |  | Opens and closes it from outside. |
+| `speedSearch` | `bool` | `false` | Typing filters the items instead of jumping to the next item that starts with the letters. |
 | `builder` | `Widget Function(BuildContext context, VoidCallback open)` | `required` | The anchor, given the function that opens the menu. |
 
 </TabItem>

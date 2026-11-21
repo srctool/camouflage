@@ -1,0 +1,16 @@
+val state = remember {
+    CamoDockState(
+        mapOf("files" to DockEdge.Left, "details" to DockEdge.Right, "log" to DockEdge.Bottom),
+        open = setOf("files"),
+    )
+}
+val windows = listOf(
+    CamoToolWindow("files", "Files", { Icon(FilesIcon) }, DockEdge.Left) { FileTree() },
+    CamoToolWindow("details", "Details", { Icon(InfoIcon) }, DockEdge.Right) { Details() },
+    CamoToolWindow("log", "Log", { Icon(LogIcon) }, DockEdge.Bottom) { LogView() },
+)
+
+CamoDockLayout(state, windows) { Editor() }
+
+// From your own shortcut: open the Log and move focus into it
+state.focus("log")

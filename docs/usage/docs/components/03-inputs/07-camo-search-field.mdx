@@ -10,7 +10,8 @@ description: "A search field: the search icon, the keyboard's Search action (Ent
 A search field: the search icon, the keyboard's Search action (Enter on desktop and web) calling `onSearch`,
 and a "Clear search" button while there's text, which clears and keeps focus. Esc clears too. `leading`
 replaces the search icon (a back button when a search is open); `trailing` adds e.g. a mic. Debouncing is the
-app's: the field reports every change.
+app's: the field reports every change. With `autoFocus` the field takes focus when it first appears (a search
+that opens on its own, such as the command palette's).
 
 ## API
 
@@ -30,6 +31,7 @@ public fun CamoSearchField(
     enabled: Boolean = true,
     onFocusChanged: ((Boolean) -> Unit)? = null,
     interactionSource: MutableInteractionSource? = null,
+    autoFocus: Boolean = false,
 )
 ```
 
@@ -45,6 +47,7 @@ public fun CamoSearchField(
 | `enabled` | `Boolean` | `true` |
 | `onFocusChanged` | `((Boolean) -> Unit)?` | `null` |
 | `interactionSource` | `MutableInteractionSource?` | `null` |
+| `autoFocus` | `Boolean` | `false` |
 
 </TabItem>
 

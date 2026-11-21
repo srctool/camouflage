@@ -1,0 +1,101 @@
+---
+title: CamoCommandPalette
+sidebar_label: CommandPalette
+sidebar_position: 5
+description: "\"Find action\" and \"Search everywhere\": a popup at the top of the window with one field and results grouped by source."
+---
+
+# CamoCommandPalette
+
+"Find action" and "Search everywhere": a popup at the top of the window with one field and results grouped by
+source. Put it once near the root; show it with `CamoCommandPaletteState.show` from your own shortcut.
+
+Typing runs every source's search (a new keystroke cancels the old one, and a late answer for an old query
+never shows); each group appears as it answers and a slow one shows a loading row. Titles are highlighted with
+the source's match kind. With nothing typed each group lists what was run before first. Focus stays in the
+field: Up and Down move the active row through every group, Tab and Shift+Tab jump between groups, Enter runs
+the active row, Esc closes. The palette closes first, then the item's `onSelect` runs in the next frame.
+
+Built from the skin's popup panel, search field and menu rows: every skin draws it. Screen readers get the
+field, a list with "n of m" and the group of every row, and hear the active row as it changes. (Compose has no
+combobox role, so the field is announced as an edit field; check TalkBack and VoiceOver.)
+
+## Usage
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+val palette = remember { CamoCommandPaletteState() }
+val actions = CamoCommandSource.of(
+    "Actions",
+    listOf(CamoCommandItem("open", "Open File", onSelect = { openFile() }, shortcut = "Ctrl+O")),
+)
+val files = CamoCommandSource("Files") { query -> searchProject(query) } // a slow source shows a loading row
+
+CamoCommandPalette(palette, listOf(actions, files))
+
+// From your own shortcut (Ctrl+K, double Shift)
+palette.show()
+```
+
+</TabItem>
+
+<TabItem value="dart">
+
+```dart
+final palette = CamoCommandPaletteState();
+final actions = CamoCommandSource.of(
+  title: 'Actions',
+  items: [CamoCommandItem(id: 'open', title: 'Open File', onSelect: openFile, shortcut: 'Ctrl+O')],
+);
+final files = CamoCommandSource(title: 'Files', search: searchProject); // a slow source shows a loading row
+
+CamoCommandPalette(state: palette, sources: [actions, files]);
+
+// From your own shortcut (Ctrl+K, double Shift)
+palette.show();
+```
+
+</TabItem>
+
+</LangTabs>
+
+## API
+
+<LangTabs>
+
+<TabItem value="kotlin">
+
+```kotlin
+public fun CamoCommandPalette(
+    state: CamoCommandPaletteState,
+    sources: List<CamoCommandSource>,
+    modifier: Modifier = Modifier,
+)
+```
+
+| Name | Type | Default |
+|---|---|---|
+| `state` | `CamoCommandPaletteState` | `required` |
+| `sources` | `List<CamoCommandSource>` | `required` |
+| `modifier` | `Modifier` | `Modifier` |
+
+</TabItem>
+
+<TabItem value="dart">
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `state` | `CamoCommandPaletteState` | `required` | Whether it's open, and the query. |
+| `sources` | `List<CamoCommandSource>` | `required` | The groups of results. |
+
+</TabItem>
+
+</LangTabs>
+
+
+:::tip Design notes
+Why CamoCommandPalette works this way, its states and its edge cases: [contributor docs](https://camouflage-dev.srctool.com/components/overlays/camo-command-palette).
+:::

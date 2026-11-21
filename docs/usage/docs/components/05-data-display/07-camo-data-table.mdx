@@ -11,7 +11,10 @@ Rows of records in columns, with sorting, selection and an optional footer. The 
 (and does the sorting) and the `selection` (a set of `rowKey`s; `null` means rows can't be selected). A click
 on a header of a sortable column calls `onSortChange`; a click or Space on a row toggles its selection (a
 click calls `onRowClick` instead when it is set); Up and Down move between rows. `caption` names the table.
-Rows are lazy; the header stays above them.
+Rows are lazy; the header stays above them. With a `columnState` the user can resize, hide and reorder the
+columns (see `CamoColumn`); `null` keeps the columns as given. With a `speedSearch` typing in the rows filters
+them (or jumps) by the columns that give their `text`; draw the matches in your cells with
+`CamoHighlightedText(text, speedSearch.match(text).orEmpty())`.
 
 ## API
 
@@ -34,6 +37,8 @@ public fun <T> CamoDataTable(
     empty: (@Composable () -> Unit)? = null,
     loading: Boolean = false,
     footer: (@Composable () -> Unit)? = null,
+    columnState: CamoColumnState? = null,
+    speedSearch: CamoSpeedSearchState? = null,
 )
 ```
 
@@ -52,6 +57,8 @@ public fun <T> CamoDataTable(
 | `empty` | `(@Composable () -> Unit)?` | `null` |
 | `loading` | `Boolean` | `false` |
 | `footer` | `(@Composable () -> Unit)?` | `null` |
+| `columnState` | `CamoColumnState?` | `null` |
+| `speedSearch` | `CamoSpeedSearchState?` | `null` |
 
 </TabItem>
 
@@ -71,6 +78,8 @@ public fun <T> CamoDataTable(
 | `empty` | `Widget?` |  | Shown when there are no rows. |
 | `loading` | `bool` | `false` | Whether the rows are loading. |
 | `footer` | `Widget?` |  | Below the rows. |
+| `columnState` | `state =` |  |  |
+| `speedSearch` | `search =` |  |  |
 
 </TabItem>
 
