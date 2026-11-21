@@ -315,3 +315,137 @@ Dart has no built-in ABI dump. Use **`dart_apitool`** (it compares the public AP
 | Web renderer | Wasm (`--wasm`, the default direction for Flutter web). The JS fallback works automatically for browsers without WasmGC. |
 
 </DartOnly>
+
+## 1. Why {#web-1-why}
+
+This note settles the repository, the TypeScript configuration, the tools and the publishing plan for `srctool/camouflage-web`, so the spike and the first milestones start from the same setup. It implements the module and platform parts of the base Architecture note.
+
+## 2. Shape {#web-2-shape}
+
+```
+camouflage-web/                      # a submodule of srctool/camouflage (web-lib/), like kotlin-lib and dart-lib
+├── package.json                     # private root; scripts for every package
+├── pnpm-workspace.yaml
+├── tsconfig.base.json               # strict, shared by every package
+├── packages/
+│   ├── core/                        # layer 1: theme, provider, skin contract, behavior, components
+│   ├── skin-minimal/ skin-material/ skin-cupertino/ skin-fluent/ skin-carbon/   # layer 2
+│   └── charts/                      # layer 2
+├── apps/
+│   ├── storybook/                   # galleries and screenshot scenarios
+│   ├── sample/                      # the sample app, also built for Tauri
+│   └── ssr-sample/                  # server rendering: plain Node and Next.js
+├── tools/                           # contract generation, size budget, release scripts
+└── .github/workflows/               # CI and release
+```
+
+**Layers.** `core` depends on no skin. Each skin depends only on `core`. `charts` depends on `core` and reads its skin preset by name, as in the other libraries. A script checks this (the equivalent of `checkModuleLayers`).
+
+## 3. API {#web-3-api}
+
+### 3.1 TypeScript configuration {#web-31-typescript-configuration}
+
+`tsconfig.base.json` turns on everything that makes the contract trustworthy:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "isolatedDeclarations": true,
+    "experimentalDecorators": false,
+    "useDefineForClassFields": true
+  }
+}
+```
+
+- `isolatedDeclarations` and `verbatimModuleSyntax` keep the public types explicit and the build fast.
+- Skins end with `satisfies CamoSkin`, so the compiler lists missing renderers.
+- Lit's decorators: use the standard decorators supported by the Lit version we pin, or the `static properties` form. Decide at W0 (check the current Lit guidance).
+
+### 3.2 Packages {#web-32-packages}
+
+| Rule | Why |
+|---|---|
+| ESM only, one `exports` map per package | no dual-package problems; smaller output |
+| `"sideEffects": false`, except each skin's `register` entry and the element-defining entry | bundlers can drop unused skins and renderers |
+| Elements are defined from one `define` entry, guarded (`if (!customElements.get(...))`) | importing a type never registers elements; two copies of the package don't throw |
+| Types are published with each package (`.d.ts` from `isolatedDeclarations`) | the contract is typed for every consumer |
+| The Custom Elements Manifest is published with `core` | docs, IDE support and framework wrappers can read it |
+
+### 3.3 Tooling {#web-33-tooling}
+
+| Need | Tool |
+|---|---|
+| Build | Vite library mode (or tsup), one entry per package |
+| Unit and behavior tests | Vitest in browser mode with Playwright (Chromium, Firefox, WebKit) |
+| Screenshots | Playwright screenshots of Storybook scenarios, compared per skin, mode and browser |
+| Accessibility | axe-core inside the same scenarios |
+| Lint and format | ESLint with the Lit and TypeScript rules, and a custom rule against literal colors and sizes in renderers; Prettier |
+| Docs and previews | Storybook for web components, fed by the Custom Elements Manifest |
+| Size budget | a script that fails CI when a component or skin passes its budget |
+
+### 3.4 Tests that mirror the other libraries {#web-34-tests-that-mirror-the-other-libraries}
+
+| Kotlin and Dart | Web |
+|---|---|
+| goldens per skin, mode and gallery | the same scenario list, rendered in Storybook and captured with Playwright |
+| `assertRendererAppliesBehavior` | a test that a renderer keeps the element's behavior (click, keyboard, disabled, loading) |
+| the no-literals test | an ESLint rule and a test that scans the built renderers for color and size literals |
+| tap-target and label guidelines | axe plus a minimum-size check (48 px target) |
+| Reduce Transparency and blur-off goldens | Playwright with `prefers-reduced-transparency` and with blur disabled |
+
+### 3.5 Publishing {#web-35-publishing}
+
+- **Registry:** npm, under the **`@srctool`** scope (the npm organization exists, created by the owner; packages are `@srctool/camouflage-core`, `@srctool/camouflage-skin-minimal` and so on), with **provenance** from GitHub Actions (OIDC, no stored tokens), as pub.dev and Maven Central are done for the others.
+- **Versions:** `0.x`, in lockstep with the Kotlin and Dart releases once the web port reaches parity. A package's `0.2.0` means the same contract as Kotlin and Dart `0.2.0`. Before parity, previews use `0.2.0-alpha.N`, never a number that claims parity.
+- **Tags:** `core-v0.2.0` style tags per package, like `camouflage_core-v0.1.0` on pub.dev.
+- **The submodule:** `srctool/camouflage` adds `web-lib/` and the sync script's wrapper, as for the other two.
+
+### 3.6 Where Storybook lives: inside the usage site {#web-36-where-storybook-lives-inside-the-usage-site}
+
+The component gallery is **Storybook for web components, hosted in the usage site** (`camouflage.srctool.com`), not on its own domain. That site is a Docusaurus site deployed to Cloudflare Pages by `.github/workflows/docs.yml` in `srctool/camouflage`.
+
+**Proposed path.** The static Storybook build is placed in `docs/usage/static/web/` so Cloudflare serves it at `/web/` (for example `/web/?path=/story/button--solid`), and the usage docs link to it from the component pages and embed the relevant stories where it helps. Docusaurus copies `static/` as it is, so the Storybook output needs no processing.
+
+**How the build gets there** (to decide at the end of W0; the first option is proposed):
+
+| Option | How | Trade-off |
+|---|---|---|
+| **A. Pinned submodule build (proposed)** | the camouflage repo adds `web-lib/` (like `kotlin-lib/` and `dart-lib/`); the docs workflow checks out the submodule, builds Storybook and copies it into `docs/usage/static/web/` before the Docusaurus build | reproducible: the gallery always matches the pinned web version; the workflow needs submodule checkout and a pnpm step |
+| B. Release artifact | the web repo publishes the Storybook build as a release asset; the docs workflow downloads a pinned version | no web build inside the docs workflow; one more release step to keep in sync |
+| C. Separate deploy, proxied | the web repo deploys its own Pages project and the usage site proxies `/web/` to it | live on every web commit, but two deployments and a routing rule |
+
+**Rules for either option:**
+- Storybook uses a base path of `/web/` so assets resolve under the usage site.
+- The pull-request build of the usage site builds the gallery too, so a broken story fails the check (as the docs build does now); only pushes to `main` deploy.
+- The gallery has no secrets and is static, so it needs no change to the Cloudflare project.
+- Stories are the same scenarios as the Kotlin and Dart goldens, so the three galleries can be compared side by side.
+
+## 4. Build steps {#web-4-build-steps}
+
+1. Initialize the workspace, `tsconfig.base.json`, lint, formatter and CI (typecheck, lint, test).
+2. Add `core` with the spike's provider and button; add `skin-minimal` and `skin-cupertino` with the same.
+3. Add Storybook and the first screenshot scenario; add the layer check and the size budget.
+4. Add the `ssr-sample` app (plain Node first, then Next.js).
+5. Add the release workflow with provenance, dry-run only until W10.
+
+**Done when**
+- [ ] `pnpm check` runs typecheck, lint, tests and the layer check on a clean clone.
+- [ ] CI runs the browser tests on Chromium, Firefox and WebKit.
+- [ ] A package build shows no side effects outside the `define` and `register` entries.
+
+## 5. Edge cases {#web-5-edge-cases}
+
+| Case | Decided behavior |
+|---|---|
+| A consumer uses a bundler that ignores `sideEffects` | Document that the `define` and `register` entries are explicit imports; the main entries are always safe to import. |
+| The same page loads two versions of `core` | The context key is shared, `define` is guarded, and a version mismatch warns once. |
+| A framework wants typed wrappers | Generate them from the manifest in a separate package later; do not hand-write them. |
+| Node-side imports (SSR) | Every package has a Node-safe entry: no `window` or `document` at import time. |

@@ -407,3 +407,18 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
 - **Consequences:**
   - The skin contract note counts 54 renderers; the skin notes' "52 renderers" done-when lines become 54 for M16 work only.
   - Later desktop pieces (document tabs, the dock layout, the command palette) should prefer composing existing renderers, and add a renderer only when nothing existing can draw them.
+
+### ADR-46 (Proposed) The web port: TypeScript and Lit, skins as render functions in separate packages, server rendering as a goal
+- **Status:** proposed; the W0 spike confirms or changes it. `srctool/camouflage-web` exists and is empty.
+- **Context:** ADR-34 and ADR-43 settle that the web port is Web Components with CSS-variable themes. Still open were the implementation language and library, how skins work (they change structure, so CSS alone can't express them), and whether server rendering is supported. The target is parity with v0.2.0 of the Kotlin and Dart libraries, usable from any web framework and from Tauri.
+- **Decision (proposed):**
+  - **TypeScript, strict.** The contract is typed (`CamoSkin` with one required renderer per component, finished with `satisfies CamoSkin`), as the Kotlin data class and Dart class are.
+  - **Lit 3** for the elements, `@lit/context` (the W3C context protocol) for the skin and environment. Stencil was considered and rejected for now because it ties skin packages to its compiler; wrappers can be generated later from the Custom Elements Manifest.
+  - **Skin model B:** a component element owns state, behavior and accessibility, and calls the skin's **pure render function** (state, slots, theme, style → a template). Skins are **separate packages** with a side-effect-free main entry and an opt-in `register` entry. Slots are native `<slot>` elements. A skin object may be spread to override or borrow renderers.
+  - **Server rendering is a goal.** Components use shadow DOM, renderers are pure, the skin is named by attribute, initial state comes from attributes, and measured values correct after hydration. Lit's server rendering (`@lit-labs/ssr`, a labs package) is the first choice; a small renderer of our own over the same pure functions is the fallback, decided at the end of the spike.
+  - **Scope and version:** parity with Kotlin and Dart v0.2.0, with milestones W0 to W10 in the web Overview. The web packages use `0.2.0-alpha.N` until parity, then `0.2.0`.
+- **Consequences:**
+  - The contract notes need no change. A new `web/` note tree implements them (Overview, Project Setup, Skin Contract, Provider and Scoping, SSR and Hydration).
+  - The sync script shows web notes as a "Web (planned)" section; it does not add a language switch.
+  - A new repository check (layers, side effects, size budget) and a shared scenario list keep the three libraries aligned.
+  - The component-provider fallback (a lone component with no provider uses Minimal) differs from Kotlin and Flutter and needs review.

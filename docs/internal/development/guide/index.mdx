@@ -223,3 +223,129 @@ camouflage-dart/
 7. **Files ≤ 1000 lines, one public widget per file, `snake_case` file names matching the class** (your Flutter conventions).
 
 </DartOnly>
+
+## Web (planned) {#web}
+
+This folder holds the design notes for **Camouflage for web**: the third platform next to Kotlin and Flutter, built as **Web Components** in **TypeScript** (ADR-34, ADR-43, ADR-46). It follows the same layout as `kotlin/` and `flutter/`: each note has `implements:` pointing to its base note, the base note says **what** and **why**, and the web note says **how on the web**.
+
+:::info[Status: planning]
+
+The repository `srctool/camouflage-web` exists and is empty. Nothing here is built. The first piece of work is the spike (section 5). These notes record the decisions reached while brainstorming, so the spike and the first milestones start from one agreed plan.
+
+:::
+
+### 1. Goal and scope {#web-1-goal-and-scope}
+
+**Goal:** a web version of Camouflage that works from any web framework (React, Vue, Svelte, Angular, plain HTML) and from Tauri webviews, with **server-side rendering**, and the same vocabulary as Kotlin and Dart.
+
+**Scope:** parity with **v0.2.0** of the Kotlin and Dart libraries. That means:
+
+- the theme model and the provider (base Theme, Provider and Scoping);
+- the skin contract, and the five skins: Minimal, Material, Cupertino, Fluent and Carbon;
+- the full component set of v0.1 plus the M16 desktop foundations (menu submenus, split pane, scrollbar, Carbon density);
+- charts, last.
+
+Later desktop tools (srctool/camouflage#72 to #76) follow the Kotlin and Dart work, not the other way around.
+
+**Parity means:** the same names, parameters, states and accessibility guarantees. It does **not** mean pixel parity: materials follow ADR-42 (the best surface each platform allows, with a fallback chain), and webview differences are documented per skin.
+
+### 2. Decisions made {#web-2-decisions-made}
+
+| Question | Decision | Why |
+|---|---|---|
+| Language | **TypeScript**, strict | typed contract, and the skin model is easier to keep honest with types than with JS |
+| Component library | **Lit 3** (custom elements) | small runtime; skins are plain TypeScript modules, not tied to a compiler; context protocol; server rendering |
+| Skin model | **B: skins are render functions in separate packages** (see [Skin Contract](/guide/architecture/skin-contract#web)) | skins change structure (stacked alerts, segmented tabs), so CSS alone can't do it; per-skin packages keep bundles small |
+| Server rendering | **A goal**, proven by the spike | needs shadow DOM components and pure render functions, which the skin model already requires |
+| Theme | CSS custom properties, `--camo-*` (ADR-43, [Theme](/guide/foundations/theme#web)) | SSR-safe from the first byte, crosses shadow roots |
+| Tauri and Rust | Web Components run in the webview; no Rust port | ADR-43 |
+
+Stencil was considered. It generates React, Vue and Angular wrappers and has a hydrate build, but it ties every skin package to its compiler. Generated wrappers can be added later from the Custom Elements Manifest if React ergonomics need them.
+
+### 3. Toolchain (to confirm at W0) {#web-3-toolchain-to-confirm-at-w0}
+
+| Tool | Choice | Notes |
+|---|---|---|
+| Language | TypeScript 5.x, `strict` | exact version pinned at W0 |
+| Components | Lit 3, `@lit/context` for the skin and theme | server rendering through `@lit-labs/ssr` (a labs package: re-check its status at W0) |
+| Workspace | pnpm workspaces | see [Project Setup](/guide/architecture/project-setup) |
+| Build | Vite library mode (or tsup) | ESM only, per-package entry points |
+| Tests | Vitest browser mode + Playwright | behavior tests and screenshots; axe for accessibility |
+| Docs and previews | Storybook for web components, **hosted inside the usage site** (decided) | same scenarios as the Kotlin and Dart goldens; see Project Setup §3.6 |
+| Manifest | Custom Elements Manifest analyzer | feeds docs, typings and later `camouflage-contract.json` |
+
+### 4. Packages {#web-4-packages}
+
+One npm scope, **`@srctool`** (the organization exists), with the package names `@srctool/camouflage-*`:
+
+```
+camouflage-web/
+├── packages/
+│   ├── core/              # theme, provider, skin contract, behavior, every component (no look)
+│   ├── skin-minimal/      # the Minimal skin's renderers and styles
+│   ├── skin-material/     # Material 3
+│   ├── skin-cupertino/    # Apple, Classic and Liquid Glass
+│   ├── skin-fluent/       # Fluent 2
+│   ├── skin-carbon/       # IBM Carbon
+│   └── charts/            # the chart components and presets
+├── apps/
+│   ├── storybook/         # component galleries and screenshots
+│   ├── sample/            # the sample app (also built as a Tauri app)
+│   └── ssr-sample/        # Next.js (and plain Node) server rendering sample
+└── tools/                 # contract generation, release scripts
+```
+
+### 5. Plan {#web-5-plan}
+
+**W0: spike (first, time-boxed).** Prove the skin model and server rendering before anything else is built:
+
+1. `camo-provider` (theme variables, skin by attribute and property, context).
+2. `camo-button` and `camo-dialog` in Minimal and Cupertino, light and dark.
+3. Server-render them with `@lit-labs/ssr`, then hydrate in the browser, in a plain Node page and in a Next.js page.
+4. Run the same page in a Tauri window.
+
+If the dialog with stacked buttons works under both skins and renders on the server, the model holds. The fallback if Lit's server rendering falls short is in [SSR and Hydration](/guide/architecture/ssr-and-hydration).
+
+**After the spike**, the milestones follow the Kotlin order so the contract and the goldens line up:
+
+| Web milestone | Mirrors | Content |
+|---|---|---|
+| W1 Foundations | M1, M2 | theme, `validateTheme`, provider, skin contract, test and screenshot harness, Minimal skin shell |
+| W2 Primitives and actions | M3 | text, icon, surface, divider, button, icon button |
+| W3 Inputs | M5 | text field, checkbox, switch, radio, segmented control, slider, search field, form, pickers, stepper |
+| W4 Structure and overlays | M6 | card, lists, skeleton, dialog, bottom sheet, menu, tooltip |
+| W5 Feedback, data display, navigation | M7, M8 | progress, snackbar, banner, chips, badge, avatar, tabs, navigation bar, rail, drawer, FAB |
+| W6 Components that arrived later | M9, M10 | popover, side sheet, toolbar, button group, split button, carousel, file uploader and the rest |
+| W7 Charts | M11 | the chart frame, line, bar and pie charts, sparkline |
+| W8 Skins | M12 to M14 | Material, Cupertino (with Liquid Glass), Fluent, Carbon |
+| W9 Desktop foundations | M16 | menu submenus, split pane, scrollbar, Carbon density |
+| W10 Release | M15 | the test matrix, accessibility passes, publishing 0.2.0 |
+
+Minimal ships first so every component has one complete skin early. A second, structurally different skin (Cupertino) is built during W1 to W2, not at the end, so the skin contract is tested against real differences from the start.
+
+### 6. Risks {#web-6-risks}
+
+| Risk | Mitigation |
+|---|---|
+| Three implementations drift apart | `camouflage-contract.json` generated from the notes, one scenario list shared by the three goldens suites, generated docs |
+| Server rendering with Lit is a labs feature | the spike tests it first; the render functions are pure, so a thin renderer of our own is a fallback |
+| Accessibility across shadow roots (`aria-labelledby` cannot cross them) | a shared behavior layer, `ElementInternals` for form fields, axe in the test suite |
+| Bundle size | per-skin packages, `sideEffects` flags, a size budget per component checked in CI |
+| Webview differences (WebKitGTK is the oldest) | a browser baseline chosen at W0; the capability chain of ADR-42 for materials |
+
+### 7. Open decisions {#web-7-open-decisions}
+
+- The browser baseline (for example, "Baseline widely available" at the release date), including the Tauri webviews.
+- Whether to ship generated React, Vue and Angular wrappers or rely on native custom element support.
+- A fallback skin when no provider is present (see the Provider note).
+- How the Storybook build reaches the usage site (see Project Setup §3.6: a pinned submodule build is proposed).
+
+### 8. Doc map {#web-8-doc-map}
+
+| Note | Base note |
+|---|---|
+| [Theme](/guide/foundations/theme#web) | Theme |
+| [Project Setup](/guide/architecture/project-setup) | Project Setup (Kotlin and Flutter) |
+| [Skin Contract](/guide/architecture/skin-contract#web) | Skin Contract |
+| [Provider and Scoping](/guide/architecture/provider-and-scoping#web) | Provider and Scoping |
+| [SSR and Hydration](/guide/architecture/ssr-and-hydration) | (web only) |

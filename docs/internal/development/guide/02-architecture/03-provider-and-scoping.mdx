@@ -447,3 +447,107 @@ Future<T?> showCamoDialog<T>({required BuildContext context, required WidgetBuil
 :::
 
 </DartOnly>
+
+## Web (planned) {#web}
+
+### 1. Why {#web-1-why}
+
+On Kotlin and Flutter the provider writes a skin and a theme into the UI tree, and components read the nearest one. On the web the tree is the DOM, and there are **two carriers** for the same information:
+
+- **CSS custom properties** carry the *theme*. They cascade through the DOM, cross shadow roots and work without JavaScript, so they are server-safe ([Theme](/guide/foundations/theme#web)).
+- **The context protocol** carries the *skin* and the *environment* (window size, input kind, capabilities). A component asks for them with a DOM event that the nearest `camo-provider` above it answers (`@lit/context`, the W3C community protocol, so non-Lit elements can take part).
+
+### 2. Shape {#web-2-shape}
+
+```mermaid
+flowchart TB
+    Root["camo-provider skin=minimal scheme=light"] --> Home["page: Minimal + brand theme"]
+    Root --> Inner["camo-provider scheme=dark"]
+    Inner --> Promo["subtree: Minimal (inherited) + dark variables"]
+    Root --> Inner2["camo-provider skin=cupertino"]
+    Inner2 --> Ios["subtree: Cupertino + theme (inherited)"]
+```
+
+**Responsibilities of the provider** (the same as in the base note):
+
+- Resolve the effective skin and theme: its own value, else the one inherited from the provider above.
+- Apply **system adjustments** once: reduced motion zeroes the motion tokens; reduced transparency and blur support feed the capabilities.
+- Reset the **content color** and **icon style** for its subtree (`--camo-content-color`, `--camo-icon-size`), so text and icons outside any container are readable.
+- Provide the **environment**: `windowSize` (Compact, Medium, Expanded, Large), `input` (Touch, Pointer), `platform` and `capabilities` (ADR-41, ADR-42).
+
+### 3. API {#web-3-api}
+
+#### 3.1 The element {#web-31-the-element}
+
+```html
+<camo-provider skin="minimal" scheme="light">
+  <camo-button appearance="solid">Save</camo-button>
+</camo-provider>
+```
+
+| Attribute / property | Meaning |
+|---|---|
+| `skin` (attribute, a registered name) | selects a skin by name; needs the skin's `register` entry (see the Skin Contract note) |
+| `.skin` (property, a `CamoSkin`) | the typed way from TypeScript; wins over the attribute |
+| `scheme` (`light`, `dark`; reflected as `data-camo-scheme`) | the color scheme for the subtree; with none, `prefers-color-scheme` decides |
+| `.theme` (property, a `CamoTheme`) | applies a theme object (`applyTheme`); equivalent to setting the variables by hand |
+| `.adjustTheme` (property, a function) | after ADR-44: applied to the effective theme, before the system adjustments |
+
+The provider is `display: contents`, so it never changes layout.
+
+#### 3.2 Reading from code {#web-32-reading-from-code}
+
+```ts
+import { camouflage } from "@srctool/camouflage-core";
+
+class MyWidget extends LitElement {
+  private cx = camouflage(this);        // a reactive controller: skin, theme, environment
+  render() {
+    return html`<span style="color: var(--camo-color-primary)">${this.cx.environment.input}</span>`;
+  }
+}
+```
+
+`camouflage(host)` returns a typed controller with `skin`, `theme` (as resolved values), `tokens<T>()` for a brand's token set, `environment` and `contentColor`. A change in the provider re-renders the hosts that read it.
+
+#### 3.3 Environment {#web-33-environment}
+
+| Value | Source on the web |
+|---|---|
+| `windowSize` | a `ResizeObserver` on the provider, with the breakpoints of ADR-41 |
+| `input` | `matchMedia("(pointer: coarse)")` and `(hover: none)` |
+| `platform` | `Web`, or the host platform inside Tauri when the app sets it |
+| `capabilities.backdropBlur` | `CSS.supports("backdrop-filter", "blur(1px)")` |
+| `capabilities.runtimeShaders` | `true` where SVG displacement filters work inside `backdrop-filter` (Chromium); `false` elsewhere |
+| `capabilities.windowMaterial` | `false` on the web |
+| `capabilities.reduceTransparency` | `matchMedia("(prefers-reduced-transparency: reduce)")` |
+| reduced motion | `matchMedia("(prefers-reduced-motion: reduce)")`, kept live with a `change` listener |
+
+On the server none of these can be measured. The server uses **attributes and defaults** (the provider's `window-size`, `input` and `platform` attributes, with sensible defaults) and corrects them on the client after hydration. See the SSR note.
+
+#### 3.4 Inheritance rules {#web-34-inheritance-rules}
+
+The seven rows of the base note apply. In short: a nested provider with no value inherits from the one above; with a skin, only the skin changes; with a theme, only the theme changes (until ADR-44, which adds `adjustTheme`). On the web the theme half is the CSS cascade itself, so a partial theme needs no merge code.
+
+### 4. Build steps {#web-4-build-steps}
+
+1. The registry and the context keys (`skin`, `environment`) with `@lit/context`.
+2. `camo-provider` with the `skin`, `scheme` and theme-variable handling.
+3. The `camouflage(host)` controller.
+4. The environment sources of §3.3, each behind a small function so the server can replace them.
+5. Tests in the browser: nesting, inheritance, scheme per subtree, live reduced motion; and a render-to-string test with attributes only.
+
+**Done when**
+- [ ] A nested provider changes only what it sets.
+- [ ] A component outside any provider renders with the fallback and logs once in development.
+- [ ] Every row of the inheritance table has a test.
+
+### 5. Edge cases {#web-5-edge-cases}
+
+| Case | Decided behavior |
+|---|---|
+| A component with **no provider** | **Proposed:** it falls back to the Minimal skin and the starter theme and logs a warning in development, so a lone `<camo-button>` in plain HTML works. This differs from Kotlin and Flutter, which fail fast; it needs review. |
+| The `skin` attribute names an unregistered skin | A clear error in development, then the fallback skin. |
+| A component is moved to another provider | It re-requests the context and re-renders (the context protocol handles reconnection). |
+| Nested providers in different shadow roots | Context requests cross shadow roots (the events are composed), CSS variables inherit through them, so it works. |
+| Two copies of `core` on one page | The context key is a `Symbol.for(...)`, so they share it; a version mismatch warns once. |
