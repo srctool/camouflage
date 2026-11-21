@@ -104,15 +104,18 @@ camo theme export theme/ --tailwind   # a Tailwind preset from the same tokens, 
 
 ### 3.3 `camouflage-mcp`: Camouflage's own MCP server
 
-For any AI client (Claude Code and others), **no Figma needed**:
+For any AI client (Claude Code and others), **no Figma needed**.
+
+**Few tools, big data (Code Mode pattern).** The contract (`camouflage-contract.json`) is large: about 40 components with parameters, slots and component-theme fields, plus five skins' alignment tables. Putting each lookup in its own tool costs tokens in every conversation and grows with every addition. The server follows the pattern Cloudflare calls *Code Mode* for its own MCP server (a `search` tool and an `execute` tool instead of thousands of tools; verify the current details in Cloudflare's docs when building): **one `search` tool** runs a small query (a JavaScript function or a JSONPath-style filter) against the contract and returns only the slice the model asked for, so the cost stays flat as components are added. Tools that must run code (validation, generation, linting) stay separate tools.
+
+**Stage 1 (read-only):** `search` and `validate_theme`. Before any server exists, the same facts are reachable with no server at all: an assistant reads `llms.txt`, the agent guide and the contract JSON ([Agent Guide and llms.txt](/guide/integrations/agent-guide-and-llms-txt)). The server adds querying and validation on top.
 
 | Tool | Does |
 |---|---|
-| `list_components` / `get_component` | the contract: parameters, slots, building blocks, and the component-theme fields with allowed values |
-| `get_theme_schema` | the tokens format and every theme field |
+| `search` (stage 1) | runs a query over `camouflage-contract.json` and returns only the matching slice: a component's parameters, slots, building blocks and component-theme fields with allowed values; a skin's alignment table and surface options; the theme schema and the Figma naming contract. Replaces the separate `list_components`, `get_component`, `get_skin_support` and `get_theme_schema` tools. |
 | `import_tokens` | a tokens JSON (or a Tokens Studio / Penpot export) → validated Camouflage tokens |
 | `generate_theme` | tokens → Kotlin and Dart theme code (the generator's library) |
-| `validate_theme` | the same checks as `camo theme validate` |
+| `validate_theme` (stage 1) | the same checks as `camo theme validate` |
 | `suggest_from_image` | the client model reads a screenshot or mockup; this tool returns the component catalog and the tokens skeleton to fill, then validates what the model proposes (theme tokens **and** component-theme choices, e.g. "dialog buttons stacked, full width") |
 | `lint_code` | finds non-Camouflage widgets and proposes the `Camo*` equivalent |
 
