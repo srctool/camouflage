@@ -641,3 +641,174 @@ class DebugButtonRenderer implements CamoButtonRenderer {
 | **Testing third-party skins** | `camouflage_skin_testing` (a test-only package) runs the "no literals" check (every component-theme field changes the output) and a semantics/hit-test check on any skin, including brand renderers and generated ones. |
 
 </DartOnly>
+
+## Web (planned) {#web}
+
+### 1. Why {#web-1-why}
+
+This note turns the skin contract into TypeScript: one renderer per component, plus a surface treatment and interaction feedback, bundled in a `CamoSkin` object. The web-specific questions it settles:
+
+- A component is a **custom element** that owns state, behavior and accessibility. It does **not** draw itself. It asks the nearest provider for the skin and calls the skin's renderer.
+- A renderer is a **pure function** that returns a Lit template. That is what makes server rendering possible ([SSR and Hydration](/guide/architecture/ssr-and-hydration)).
+- Skins are **separate packages**, so an app bundles only the skins it uses.
+- **Slots** map to native `<slot>` elements, which fits the rule that a renderer decides where a slot goes but never inspects what is inside it.
+
+### 2. Shape {#web-2-shape}
+
+```mermaid
+flowchart TB
+    App["app: import { cupertinoSkin } from skin-cupertino"] --> Prov["camo-provider (skin, theme)"]
+    Prov -- "context" --> Btn["camo-button (state, behavior, a11y)"]
+    Btn -- "state + slots + theme + style" --> R["skin.button.render(...) returns a template"]
+    R --> Sh["shadow DOM: skin's template and styles"]
+    Btn --> Beh["behavior layer: focus, keyboard, ElementInternals"]
+```
+
+| Layer | Lives in | Owns |
+|---|---|---|
+| Component element | `core` | attributes and properties (state), events, accessibility semantics, form participation |
+| Behavior | `core` | focus management, roving tabindex, keyboard, popover and dialog wiring |
+| Renderer | a skin package | the template, the styles, the defaults for the component theme |
+| Surface and feedback | a skin package | materials and press, hover and focus responses |
+
+The rule from the base note stays: **a renderer can't change what a component does.** If a skin needs different behavior (a segmented control for tabs), the behavior layer already provides the behavior, and the renderer decides how to show it.
+
+### 3. API {#web-3-api}
+
+#### 3.1 Types {#web-31-types}
+
+```ts
+import type { TemplateResult, CSSResultGroup } from "lit";
+
+export interface Renderer<State, Slots extends string, Style> {
+  /** A complete component theme (every field set); may reference global tokens. */
+  defaults(theme: CamoTheme): Style;
+  /** Pure: the output depends only on the arguments. No browser or network access. */
+  render(args: { state: State; slots: SlotNames<Slots>; theme: CamoTheme; style: Style }): TemplateResult;
+  /** Styles for this renderer's shadow DOM, shared as constructable stylesheets. */
+  readonly styles?: CSSResultGroup;
+}
+
+/** The names of the native <slot> elements the renderer may place. */
+export type SlotNames<S extends string> = { readonly [K in S]: string };
+
+export interface CamoSkin {
+  readonly name: string;                 // "minimal", for debugging and tests
+  readonly surfaceTreatment: SurfaceTreatment;
+  readonly feedback: InteractionFeedback;
+  readonly text: Renderer<TextState, never, TextTheme>;
+  readonly icon: Renderer<IconState, never, IconTheme>;
+  readonly button: Renderer<ButtonState, "prefix-icon" | "suffix-icon", ButtonTheme>;
+  readonly dialog: Renderer<DialogState, "confirm" | "dismiss" | "content", DialogTheme>;
+  // ...one required field per component, as in Kotlin and Dart
+}
+```
+
+All fields are **required, with no defaults**. A skin that misses a renderer fails type-checking. A skin file ends with `satisfies CamoSkin` so the compiler reports the missing field by name.
+
+#### 3.2 State and slots {#web-32-state-and-slots}
+
+| | State | Slots |
+|---|---|---|
+| **Is** | plain data: `text`, `enabled`, `appearance`, `tone`, the interaction state | names of `<slot>` elements; the caller's nodes go in them (`<camo-icon slot="prefix-icon">`) |
+| **Renderer may** | branch on it, draw text values in its own styles | place a `<slot>`, wrap it, give it a content color and icon style, or leave it out |
+| **Renderer may not** | mutate it | look at the slotted nodes |
+
+**Content color and icon style:** before a slot, the renderer's wrapper sets `--camo-content-color` and `--camo-icon-size` (CSS custom properties). `camo-text` and `camo-icon` read them by default, so `<camo-text>Save</camo-text>` inside a Solid button is automatically `onPrimary`, as in Kotlin and Dart.
+
+#### 3.3 Surface treatment and feedback {#web-33-surface-treatment-and-feedback}
+
+```ts
+export interface SurfaceTreatment {
+  /** CSS for a region: background, border or shadow, blur, clip to shape. Pure. */
+  paint(args: { color: string; shape: ShapeRole; elevation: ElevationLevel; theme: CamoTheme; capabilities: CamoCapabilities }): CSSResult;
+}
+
+export interface InteractionFeedback {
+  /** The visual response to hover, press and focus, as styles over a region. */
+  indicate(args: { contentColor: string; theme: CamoTheme }): CSSResult;
+  /** Optional: a directive for feedback that needs the element, such as a ripple's origin. */
+  readonly attach?: (el: HTMLElement) => () => void;
+}
+```
+
+- Feedback uses CSS states (`:hover`, `:active`, `:focus-visible`) wherever it can, which is also what server rendering can emit.
+- A material (Liquid Glass, Acrylic) reads `capabilities` from the provider (`backdropBlur`, `reduceTransparency`, and so on) and follows the chain of ADR-42: refraction (an SVG filter, Chromium only) then blur plus specular edge, then an opaque fill. Mica falls back to Solid. See [Theme](/guide/foundations/theme#web) §3.3.
+- **Keyboard focus is always visible** (WCAG 2.4.7), drawn by the feedback.
+
+#### 3.4 Skins as packages {#web-34-skins-as-packages}
+
+```ts
+// packages/skin-cupertino/src/index.ts
+export const cupertinoSkin = {
+  name: "cupertino",
+  surfaceTreatment: classic,
+  feedback: opacity,
+  button: cupertinoButton,
+  dialog: cupertinoDialog,
+  // ...
+} satisfies CamoSkin;
+
+export function cupertinoSkinWith(options: { surface: "classic" | "liquid-glass" }): CamoSkin { /* ... */ }
+export { cupertinoButton, cupertinoTabs /* every renderer is exported on its own */ };
+```
+
+```ts
+// packages/skin-cupertino/src/register.ts  (a separate, side-effect entry)
+import { registerSkin } from "@srctool/camouflage-core";
+import { cupertinoSkin } from "./index";
+registerSkin(cupertinoSkin);
+```
+
+- The main entry has **no side effects**, so bundlers can drop unused renderers (`"sideEffects": false`).
+- `register` is opt-in and lets the `skin="cupertino"` **attribute** work in plain HTML and on the server. In TypeScript, set the typed property instead (`provider.skin = cupertinoSkin`).
+- Every skin exports each renderer on its own, so another skin can borrow it.
+
+#### 3.5 Partial override and borrowing {#web-35-partial-override-and-borrowing}
+
+```ts
+import { minimalSkin } from "@srctool/camouflage-skin-minimal";
+import { cupertinoTabs } from "@srctool/camouflage-skin-cupertino";
+
+export const brandSkin = { ...minimalSkin, name: "brand", tabs: cupertinoTabs } satisfies CamoSkin;
+```
+
+A plain object spread replaces any subset and keeps the rest. A borrowed renderer keeps its structure, behavior and `defaults(theme)`, reads the **host** skin's surface treatment and feedback, and reads the **app's** theme (ADR-28). On the web, borrowing a renderer means also importing its styles, which the renderer carries with it.
+
+#### 3.6 Rules every renderer follows {#web-36-rules-every-renderer-follows}
+
+1. **Pure.** No `window`, `document`, timers or fetch inside `render`. Server rendering depends on it.
+2. **Tokens only.** Colors, sizes and durations come from `style` and `--camo-*` variables, never literals. A lint rule and a test check this, as the Kotlin and Dart no-literals tests do.
+3. **Sets content color and icon style** before a slot.
+4. **Logical properties.** `margin-inline-start`, never `left`, so right-to-left mirrors by itself.
+5. **Touch area of at least 48 px**, even if the visual is smaller.
+6. **Reduced motion** by reading the motion tokens, which the provider zeroes under `prefers-reduced-motion`.
+7. **No light DOM leaks.** All styles live in the shadow root; only `::part()` hooks named in the component note are public.
+
+#### 3.7 Checklist: writing a new skin {#web-37-checklist-writing-a-new-skin}
+
+Same as the base note, with two web items: export every renderer individually, and provide a `register` entry.
+
+### 4. Build steps {#web-4-build-steps}
+
+1. The types of §3.1 and the registry (`registerSkin`, `resolveSkin(name)`).
+2. The behavior layer for the spike components (button, dialog), then the rest per milestone.
+3. `skin-minimal` renderers for the components in each milestone, with `satisfies CamoSkin` kept compiling at the **end of each milestone** (a milestone adds a renderer to every skin that exists).
+4. `skin-cupertino` started during W1 to W2, to test the contract against structural differences.
+5. A conformance test per renderer: purity (renders the same twice, and on the server), tokens only, logical properties, 48 px target, axe.
+
+**Done when**
+- [ ] A skin with a missing renderer fails `tsc` with the renderer's name.
+- [ ] `<camo-button>` renders under Minimal and Cupertino with no change to the element.
+- [ ] A dialog's actions stack under Cupertino and sit side by side under Minimal from the same markup.
+- [ ] Every renderer renders on the server and hydrates.
+
+### 5. Edge cases {#web-5-edge-cases}
+
+| Case | Decided behavior |
+|---|---|
+| A skin is chosen by attribute but not registered | The provider logs a clear error in development and uses the fallback skin (see the Provider note). |
+| Two skins loaded on one page (nested providers) | Each provider holds its own skin; styles are scoped by shadow roots, so they never collide. |
+| A renderer needs the element (ripple origin) | Through `feedback.attach`, never by reading the DOM inside `render`. |
+| A renderer's styles are large | Styles are constructable stylesheets shared by every instance; per-skin packages keep unused skins out of the bundle. |
+| A brand overrides a renderer with different slots | The type of `slots` is per component, so the compiler flags a mismatch. |

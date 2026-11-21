@@ -417,3 +417,173 @@ src/
 This is your convention: one public widget per file, `snake_case` file names matching the class, no private widget classes hidden in other files, and ≤ 1000 lines per file.
 
 </DartOnly>
+
+## Web (planned) {#web}
+
+:::info[Status: draft for the W0 spike]
+
+The component contracts in `base/03 - Components` are written as Kotlin signatures (`CamoButton(text, onClick, appearance, tone, enabled, loading, prefixIcon, suffixIcon)`). This note says how every kind of parameter becomes a custom element, so each web component follows the same rules and a parameter is easy to find from the contract. The spike (srctool/camouflage-web#1) tests rules 1 to 8 on the button and the dialog; the input rules (§3.5) are confirmed at W3.
+
+:::
+
+### 1. Why {#web-1-why}
+
+Without shared conventions each component would invent its own attributes, events and slots. Web APIs also differ from Compose and Flutter in ways that matter: values reach elements as **strings** (attributes) or as **JS values** (properties), events are DOM events, and there are no lambdas for content, only slots.
+
+The contract stays the source of truth. This note does not rename anything: a parameter named `supportingText` is `supporting-text` as an attribute and `supportingText` as a property, always.
+
+### 2. Shape {#web-2-shape}
+
+| Contract (Kotlin and Dart) | Web |
+|---|---|
+| a component `CamoTextField` | a custom element `camo-text-field`, class `CamoTextField`, tag registered by the `define` entry |
+| a **value** parameter (`String`, `Boolean`, enum, number) | an **attribute and a property**, kept in sync |
+| an **object, list or function** parameter (`inputFilter`, `displayFormat`, `items`, `rules`) | a **property only** |
+| a **widget** parameter (`prefixIcon`, `confirm`) | a **named slot** (`slot="prefix-icon"`) |
+| a single layout `content: Slot` | the **default slot** |
+| a callback `onClick`, `onValueChange` | a **DOM event** (`click`, `input`) or a `camo-*` custom event |
+| `modifier` (size, padding, alignment) | CSS on the host element (`class`, `style`) |
+| `skin` and `theme` (never parameters) | the provider (context and CSS variables) |
+
+### 3. API {#web-3-api}
+
+#### 3.1 Names {#web-31-names}
+
+| Thing | Rule | Example |
+|---|---|---|
+| Tag | `camo-` + the component name in kebab-case, without the `Camo` prefix | `CamoSegmentedControl` → `camo-segmented-control` |
+| Class | the contract name | `CamoSegmentedControl` |
+| Attribute | the parameter in kebab-case | `supportingText` → `supporting-text` |
+| Property | the parameter in camelCase, same as the contract | `el.supportingText` |
+| Enum value | lowercase kebab-case string | `Appearance.Solid` → `appearance="solid"`, `Tone.Error` → `tone="error"` |
+| Slot | the widget parameter in kebab-case | `prefixIcon` → `slot="prefix-icon"` |
+| Event | the DOM event if one exists, else `camo-` + kebab-case | `click`, `camo-dismiss` |
+| CSS part | named in the component note | `::part(label)` |
+
+#### 3.2 Values: attributes and properties {#web-32-values-attributes-and-properties}
+
+- Primitive values and enums are **both** an attribute and a property. The property is the source of truth; attributes **reflect** only where the value is part of the look or the state (`appearance`, `tone`, `disabled`, `loading`, `selected`, `open`), so styling and tests can select on them.
+- **Absent means null.** A nullable parameter (`appearance: Appearance? = null`) is "not set" when the attribute is absent; the theme's default applies. Setting the property to `null` removes the attribute.
+- **Booleans default to false.** HTML booleans are present or absent, and cannot be "true by default" cleanly. A contract parameter that defaults to `true` is **inverted**:
+
+| Contract | Web |
+|---|---|
+| `enabled: Boolean = true` | `disabled` (absent = enabled) |
+| `singleLine: Boolean = true` | `multiline` (absent = single line) |
+| `loading: Boolean = false` | `loading` |
+| `secure: Boolean = false` | `secure` |
+
+- **Text values are attributes, not slot content.** The contract says text is a *value* the renderer draws in its own style (`text`, `label`, `title`, `message`, `placeholder`, `supportingText`, `error`), and a renderer may not inspect a slot. So `<camo-button text="Save">`, not `<camo-button>Save</camo-button>`. This also keeps server rendering simple: the renderer gets the string from an attribute, and the light DOM is not needed to render. Using the default slot as the text is an open question (§5).
+- **Numbers** are attributes parsed as numbers and properties as numbers. **Dates and times** are ISO strings (`2026-11-22`, `13:45`, `2026-11-22T13:45`); a range is two properties, `start` and `end`.
+- **Objects, lists and functions** are properties only. Frameworks that can't pass properties declaratively set them in code (React 19, Vue, Svelte and Angular can).
+
+#### 3.3 Widgets and content: slots {#web-33-widgets-and-content-slots}
+
+- A widget parameter is a **named slot** in kebab-case: `prefixIcon` → `<camo-icon slot="prefix-icon">`, dialog `confirm` and `dismiss` → `slot="confirm"` and `slot="dismiss"`.
+- A single layout content parameter (`content: Slot`) is the **default slot**.
+- A skin only decides **where a slot goes** (the renderer places the `<slot>`); it never looks at what is slotted in (the Skin Contract rule). The slot names a component exposes are part of its contract and appear in the Custom Elements Manifest.
+- **Icons:** a `camo-icon` takes inline SVG as its child (`<camo-icon><svg …/></camo-icon>`) or a `name` registered with `registerIcons({ plus: "<svg…" })`. It takes its size and color from `--camo-icon-size` and `--camo-content-color`, set by the container.
+
+#### 3.4 Events and callbacks {#web-34-events-and-callbacks}
+
+| Contract | Web |
+|---|---|
+| `onClick` | the native `click` event. The element handles Enter and Space, and does **not** fire `click` when disabled or loading (it stops the event in the capture phase). |
+| `onFocusChanged` | the native `focus` and `blur` events (they don't bubble; `focusin` and `focusout` do) |
+| `onValueChange` | `input` while editing and `change` on commit, both native-style; the `detail`-less event reads from `el.value` |
+| Other callbacks | a `CustomEvent` named `camo-` + kebab-case, with a typed `detail`, `bubbles: true`, `composed: true` (so it crosses shadow roots) |
+
+Rules: an event is **fired once per user action**; a cancelable event can be cancelled with `preventDefault()`, and the element then keeps its previous state. Event names and `detail` types are listed in the manifest and in the `HTMLElementEventMap` type (section 3.8).
+
+#### 3.5 Inputs, forms and controlled values {#web-35-inputs-forms-and-controlled-values}
+
+The contract's inputs are **controlled** (`value` plus `onValueChange`). On the web:
+
+- `value` is a property and attribute (initial value). The element updates `value` itself when the user edits, and fires a **cancelable** `camo-before-change` (detail `{ value }`) first. Calling `preventDefault()` on it rejects the edit, which gives the same control a controlled input has in Compose and Flutter. Then it fires `input` and, on commit, `change`.
+- A framework that wants a fully controlled input sets `value` in response to the event, and nothing else is needed.
+- Every input is **form-associated** (`ElementInternals`): it takes `name`, `value`, `required`, `disabled`, takes part in `FormData`, `reset` and `form.checkValidity()`, and reports validity with `setValidity`. A text field shows its `error` attribute (the contract's `error: String?`) as the error state.
+- `CamoForm` and its form fields: the rules are objects, so `rules` is a **property**. Form-level state is read through events (`camo-submit`, `camo-invalid`) and `form.valid`.
+- `inputFilter` and `displayFormat` are **properties** (objects with functions), never attributes.
+
+#### 3.6 Overlays {#web-36-overlays}
+
+The base notes open overlays through the platform's navigator (`showCamoDialog` in Flutter, Navigation 3 entries in Compose). The web offers **both** forms:
+
+```html
+<camo-dialog open title="Delete item?" message="This can't be undone.">
+  <camo-button slot="confirm" tone="error" text="Delete"></camo-button>
+  <camo-button slot="dismiss" appearance="ghost" text="Cancel"></camo-button>
+</camo-dialog>
+```
+
+```ts
+const result = await showCamoDialog<boolean>({
+  title: "Delete item?",
+  message: "This can't be undone.",
+  confirm: { text: "Delete", tone: "error", result: true },
+  dismiss: { text: "Cancel", appearance: "ghost", result: false },
+});
+```
+
+- The dialog is a native `<dialog>` element shown in the **top layer**; menus, popovers and tooltips use the Popover API. Focus trapping, Escape and scrim dismissal follow the overlay note.
+- The imperative helpers return a promise resolved with the result (or `undefined` when dismissed), like Flutter's `showCamoDialog<T>`. They attach to the nearest provider (or to a `host` option), so the skin and theme come from the right place.
+- A declarative overlay fires `camo-close` with `detail: { result }`, and `open` is a property and attribute.
+- Dismissal rules, back behavior and result types come from the base overlay note, not from this one.
+
+#### 3.7 Lists and collections {#web-37-lists-and-collections}
+
+- A list of items is **slotted children** (`<camo-list-item>`) when it is static, and a `state` property with a `renderItem` function when it is data-driven (`CamoPagedList` takes its paging state as an object, like the contract). Virtualization, if needed, is the component's concern and invisible to callers.
+- Selection state is the `selected` attribute on items and a `camo-select` event on the container, with the selected key in `detail`.
+
+#### 3.8 TypeScript {#web-38-typescript}
+
+Every component exports its class, a props interface and its events, and augments the global maps so types work everywhere:
+
+```ts
+export interface CamoButtonProps {
+  text: string;
+  appearance?: Appearance | null;
+  tone?: Tone;
+  disabled?: boolean;
+  loading?: boolean;
+}
+declare global {
+  interface HTMLElementTagNameMap { "camo-button": CamoButton }
+}
+```
+
+- Enums are string-literal unions (`type Appearance = "solid" | "soft" | "raised" | "outline" | "ghost" | "link"`), so attributes and properties share one type.
+- Framework typings (JSX for React, `GlobalComponents` for Vue, and so on) are generated from the Custom Elements Manifest, not written by hand.
+- The manifest is checked against the contract: a test fails if a component is missing a parameter, an enum value or a slot the contract names.
+
+#### 3.9 Accessibility {#web-39-accessibility}
+
+- The host element carries the role and label through `ElementInternals` (`internals.role`, `internals.ariaLabel`, `ariaDisabled`, `ariaBusy`), not through ids that would have to cross a shadow root. A label from `label`, from text, or from a slotted label becomes the accessible name.
+- An **icon-only control** requires `label` (the contract's required label); a missing one logs in development and fails the test.
+- Keyboard maps are the same as in the base notes. Focus is visible whenever it comes from the keyboard.
+- `loading` sets `aria-busy` and keeps the control focusable, as in the button contract.
+
+### 4. Build steps {#web-4-build-steps}
+
+1. W0: apply sections 3.1 to 3.4, 3.6 and 3.9 to `camo-button` and `camo-dialog`; write the manifest check for the two.
+2. W1: the manifest-versus-contract test as a CI step; the `HTMLElementTagNameMap` and framework typing generation.
+3. W3: confirm and finish section 3.5 on the text field, checkbox, switch and the form.
+4. W4: confirm section 3.7 on the list and the paged list.
+5. Update this note with what each milestone settles, and add an ADR when a rule changes the contract.
+
+**Done when**
+- [ ] Every component in a milestone follows sections 3.1 to 3.4 with no exceptions beyond those listed here.
+- [ ] The manifest check passes for every shipped component.
+- [ ] The spike's button and dialog render the same markup under Minimal and Cupertino.
+
+### 5. Edge cases {#web-5-edge-cases}
+
+| Case | Decided behavior |
+|---|---|
+| Text as the default slot (`<camo-button>Save</camo-button>`) | **Open.** It is the habit of most web developers, but a renderer gets a string from an attribute and server rendering has no light DOM at render time. Proposed for later: support it only when the element can read its own text before first render, with the attribute winning if both exist. |
+| A framework sets a boolean attribute to the string `"false"` | The property is the source of truth. Document that `disabled="false"` is still disabled (HTML semantics); frameworks should use the property or omit the attribute. |
+| An attribute and its property are both set | The last write wins, and the attribute reflects the property. |
+| A `camo-*` event name that clashes with a native one | Use the native one when its meaning matches exactly; never reuse a native name with a different meaning. |
+| A component needs a parameter the contract has no name for | Add it to the base contract first (ADR), then to the three platforms. |
+| Server rendering | Initial state is read from **attributes only**. Properties that hold objects must be set again on the client after hydration (the component note says which). |
+| Right-to-left | `dir` comes from the document or provider; slots named `prefix` and `suffix` follow the writing direction, never left and right. |
