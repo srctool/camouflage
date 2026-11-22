@@ -551,3 +551,16 @@ The seven rows of the base note apply. In short: a nested provider with no value
 | A component is moved to another provider | It re-requests the context and re-renders (the context protocol handles reconnection). |
 | Nested providers in different shadow roots | Context requests cross shadow roots (the events are composed), CSS variables inherit through them, so it works. |
 | Two copies of `core` on one page | The context key is a `Symbol.for(...)`, so they share it; a version mismatch warns once. |
+
+### 6. What W1 settled (srctool/camouflage-web#10) {#web-6-what-w1-settled-srctoolcamouflage-web10}
+
+| Finding | Decision |
+|---|---|
+| Environment sources | Each value the environment reads is a small replaceable function (`setEnvironmentSources`): viewport width and its changes, media queries (read and watched), `CSS.supports`. A server (or a test) replaces them; with none that answer, the provider keeps its attributes and defaults. |
+| Reduced motion | Part of the environment (`reducedMotion`), **live** through a `change` listener, and also zeroed in CSS (`prefers-reduced-motion`) for the durations, so it works with no JavaScript. |
+| Input | `(pointer: coarse)` or `(hover: none)` is touch. |
+| Measured beats attributes | `window-size`, `input` and `platform` are the server's guesses; once the client measures, the measurement wins. |
+| `camouflage(host)` | `skin`, `theme` (values, for the scheme in force), `scheme`, `tokens(name)` (names the missing set), `environment`, `contentColor` (the live reference `var(--camo-content-color)`). |
+| Content reset | The provider resets `color`, `--camo-content-color` and `--camo-icon-size` for its subtree. |
+| Inheritance rows | The seven rows are tested, including the three with no provider above (a skin only, a theme only, both). With a theme only, the fallback skin takes it. |
+| `.adjustTheme` | Not built: ADR-44 is still proposed. `createCamoTheme` is its web equivalent. |

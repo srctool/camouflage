@@ -604,3 +604,16 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 **Answers to the open questions**
 - **Default slot as the text:** not in W0. Text stays an attribute; revisit after W1 with real usage, with the attribute winning if both exist.
 - **One overlay options type or two:** two. `showCamoDialog` takes `ShowDialogOptions<T>` (actions are objects with a `result`), the declarative element takes attributes and slotted buttons. They share the field names `title` and `message`, and both close through `camo-close` with `{ result }`.
+
+### 7. What W1 settled (srctool/camouflage-web#12 and #13) {#web-7-what-w1-settled-srctoolcamouflage-web12-and-13}
+
+| Finding | Decision |
+|---|---|
+| Contract file | `camouflage-contract.json` (draft schema in the web repository, shared with srctool/camouflage#64): per component, its parameters (values with enum values and defaults, slots, callbacks) and its theme fields, in the base notes' names. The web mapping is derived from it by the rules of §3.1 to §3.4, in one place. A default-true boolean must be listed as inverted, or the check fails. |
+| Manifest check | The manifest is generated fresh and checked against the contract for every component, including `camo-provider`: attributes, enum values, slots, events, inverted booleans, kebab-case. It is published as `custom-elements.json` in the core package. |
+| Typings | Generated from the manifest and checked in CI: the tag and event maps (`HTMLElementTagNameMap`, `HTMLElementEventMap`), JSX for React 19 (`@srctool/camouflage-core/react`) and `GlobalComponents` for Vue (`/vue`). Compiled against a DOM, a React and a Vue consumer. |
+| Theme-field gaps | `actionsLayout`, `titleAlign`, `showCloseButton`, `stackedScrim` (dialog) and `defaultAppearance` (button) are not CSS values. They are listed and tested as gaps; a field leaves the list when the web carries it. |
+| Scenarios | One list (`scenarios/scenarios.json`, JSON Schema) expands over skin, mode, text scale and direction into ids like the Kotlin file names. A new component needs a scenario entry and no test code: the Storybook harness story, the Playwright runner (three browsers, 0.5% tolerance, Linux baselines from CI) and the conformance checks read it. |
+| Test modes | `reduced-motion`, `reduced-transparency` and `blur-off` make the environment report that value, so a skin's fallback is exercised in any browser. |
+| Size budget | `pnpm size` fails over a gzip budget set about 10% above the size; a milestone that adds components raises it in its pull request. |
+| Open | The scenario list is read by the web suite only: Kotlin's Roborazzi and Dart's Alchemist have not agreed to read it. The schema is a draft until srctool/camouflage#64 and the generator accept it. |

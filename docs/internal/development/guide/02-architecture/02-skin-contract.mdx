@@ -812,3 +812,14 @@ Same as the base note, with two web items: export every renderer individually, a
 | A renderer needs the element (ripple origin) | Through `feedback.attach`, never by reading the DOM inside `render`. |
 | A renderer's styles are large | Styles are constructable stylesheets shared by every instance; per-skin packages keep unused skins out of the bundle. |
 | A brand overrides a renderer with different slots | The type of `slots` is per component, so the compiler flags a mismatch. |
+
+### 6. What W1 settled (srctool/camouflage-web#11) {#web-6-what-w1-settled-srctoolcamouflage-web11}
+
+| Finding | Decision |
+|---|---|
+| Growing contract | `SkinComponents` has one renderer per component built so far, and `CamoSkin` requires all of them. A milestone adds its components' lines, and every skin must follow (Kotlin and Dart list all 54 at once). |
+| Incomplete skins | `defineSkin({ ...minimalSkin, name: "brand" })` fails to compile, and throws, naming the missing renderer. `InProgressSkin` compiles while a skin is half built but cannot be registered. `registerSkin` checks at run time (a JavaScript skin has no compiler). `pnpm skins` checks every skin package in CI: complete, and a `register` entry. |
+| Shared treatments | Flat, Classic, Fade and Opacity live in core and the skins re-export them. |
+| Press feedback | Feedback reacts to `:active` and to `[data-camo-pressed]`, which `PressController` sets for pointer and key, so Space and Enter feel like a click. |
+| Behavior layer | `PressController`; focus helpers (`tabbables`, `initialFocusTarget`, `rememberFocus`, `hasVisibleFocus`); `RovingTabindexController` (arrow keys, Home, End, wrap, skips disabled, mirrors in right-to-left); `setCustomState` and `reportFormState` for `ElementInternals`; `contentVariables` for the two variables a container sets. |
+| Conformance | Pure (no `window`, same output twice, same page on the server twice), tokens only, logical properties only, axe, and a 48 px touch area, checked for every scenario variant with no per-component code. The touch-area check found a link button with a 24 px inline target, now fixed. |

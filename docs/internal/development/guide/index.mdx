@@ -228,7 +228,9 @@ camouflage-dart/
 
 This folder holds the design notes for **Camouflage for web**: the third platform next to Kotlin and Flutter, built as **Web Components** in **TypeScript** (ADR-34, ADR-43, ADR-46). It follows the same layout as `kotlin/` and `flutter/`: each note has `implements:` pointing to its base note, the base note says **what** and **why**, and the web note says **how on the web**.
 
-:::info[Status: W0 spike done in code, two checks open]
+:::info[Status: W1 foundations built, W0 checks still open]
+
+**W1 (foundations) is built** in `srctool/camouflage-web`: the full theme model with `fromSeed` and `validateTheme` checked against Dart, the provider environment, the skin contract and behavior layer, the scenario-driven screenshot and conformance harness, the contract, manifest and typings checks, and the two skin packages. Type sizes are `rem`. See each note's "What W1 settled".
 
 The spike is built in `srctool/camouflage-web` (provider, button and dialog in Minimal and Cupertino, server rendering and hydration, Storybook under `/web/`, the manifest check). ADR-46 is accepted with amendments, and ADR-47 and ADR-48 record the server rendering and no-provider decisions. Next.js App Router passes. Still open from W0: the spike page in a Tauri window on Windows and Linux (macOS matches Chromium and WebKit), the first task of W1.
 
