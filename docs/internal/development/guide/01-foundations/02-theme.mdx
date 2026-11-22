@@ -1136,3 +1136,16 @@ The importer lists what it could not map. It never guesses a role silently (Figm
 | Webview differences (WebKitGTK is older) | Skins with materials use the capability chain of ADR-42; unsupported `backdrop-filter` falls back to an opaque fill. |
 | Dark scheme on a subtree inside a light page | Works through `data-camo-scheme`; no class on `<html>` is needed. |
 | An unknown key in `createCamoTheme` | An error with the path of the key, never silently ignored. |
+
+### 6. What W1 settled (srctool/camouflage-web#9) {#web-6-what-w1-settled-srctoolcamouflage-web9}
+
+| Finding | Decision |
+|---|---|
+| Type sizes | **`rem`**, not `px`: a `px` size ignores the user's font-size setting (WCAG 1.4.4) and would leave the text-scale axis of the screenshot suite empty. At the default 16px root a style is the same number of pixels as in the notes. Letter spacing stays `px`. |
+| The model | 42 color roles, 15 text styles, five motion roles (`durationLong` added), shapes, spacing, elevation, **component themes** and **token sets**, as typed TypeScript. The same names as Kotlin and Dart. |
+| Token sets | `tokenSets: { brand: { "600": "#7c3aed" } }` becomes `--brand-600`: the set name and the step in kebab-case, unprefixed (ADR-32). `createCamoTheme` takes any set name. `validateTheme` reports two sets that write one variable (`DuplicateTokenSet`). |
+| Component themes | Each field is `--camo-<component>-<field>`. `createCamoTheme` accepts only the fields a component has (an unknown one is an error naming its path). Fields that change structure (`actionsLayout`, `titleAlign`, `defaultAppearance`) cannot be CSS variables, since a renderer reads no styles: they are listed as gaps in `camouflage-contract.json`. |
+| `fromSeed` | Material tonal palettes with Camouflage's tone table, on its own entry (`@srctool/camouflage-core/seed`) because the utilities ship ESM that Node cannot load. For five seeds, light and dark, and tinted neutrals, its 42 roles equal the Dart library's (a fixture Dart generated). |
+| Starter themes | Generated (`pnpm themes`) and checked in CI: Minimal from `fromSeed` with the ink primary, Cupertino from Apple's tables. `cupertinoTheme({ accent, fontFamily })` replaces the primary family. |
+| `validateTheme` | The same checks in the same order as `validate()`; its issues equal Dart's for shared cases. `MissingRole`, `LowContrast`, `InvalidValue`, `DuplicateTokenSet`. A `var()` of the theme's own token set is resolved; one the page defines is skipped. |
+| Applying | `themeDeclarations` and `schemeStylesheet` (the server), `applyTheme(element, theme)` (the client). The provider also resets `--camo-content-color` and `--camo-icon-size`. |
