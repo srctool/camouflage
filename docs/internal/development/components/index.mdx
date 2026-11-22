@@ -587,3 +587,20 @@ declare global {
 | A component needs a parameter the contract has no name for | Add it to the base contract first (ADR), then to the three platforms. |
 | Server rendering | Initial state is read from **attributes only**. Properties that hold objects must be set again on the client after hydration (the component note says which). |
 | Right-to-left | `dir` comes from the document or provider; slots named `prefix` and `suffix` follow the writing direction, never left and right. |
+
+### 6. What the spike settled (W0, srctool/camouflage-web#5) {#web-6-what-the-spike-settled-w0-srctoolcamouflage-web5}
+
+Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test.ts`, which generates the Custom Elements Manifest fresh and compares it with the contract (attributes, enum values, slots, events, inverted booleans).
+
+| Finding | Decision |
+|---|---|
+| The contract's single `content: Slot` | It is the **default slot** (`<slot name="">`), not a slot named `content`. The skin's `slots.content` is `""`. Tested in the browser under both skins. |
+| `title` is also a global HTML attribute | The browser would show a tooltip over the whole dialog. The element reads the attribute into the property and removes it. Other components should avoid a contract name that collides with a global attribute, or do the same. |
+| Properties and decorators | `static properties` plus `declare` fields, no decorators (they need build support and are not standard everywhere). Attributes reflect only where §3.2 says. |
+| Where focus goes in a dialog | The slotted actions are light DOM, so native autofocus cannot see them. The dialog focuses an `[autofocus]` child, else `dismiss`, else `confirm`, after that button's first update. The dialog frame draws no focus ring of its own. |
+| Manifest tooling | `@custom-elements-manifest/analyzer` does not follow a `defineElement()` helper, so each class carries `@tagname`, `@slot`, `@fires` and `@attr` in its JSDoc. Enum values are not in the attribute's type text (only the alias name), so the check resolves aliases from `skin/types.ts`. The default slot appears in the manifest with the name `""`. |
+| `click` when disabled or loading | Not fired (stopped in the capture phase); `aria-disabled` and `aria-busy` come from `ElementInternals`. Tested, axe passes. |
+
+**Answers to the open questions**
+- **Default slot as the text:** not in W0. Text stays an attribute; revisit after W1 with real usage, with the attribute winning if both exist.
+- **One overlay options type or two:** two. `showCamoDialog` takes `ShowDialogOptions<T>` (actions are objects with a `result`), the declarative element takes attributes and slotted buttons. They share the field names `title` and `message`, and both close through `camo-close` with `{ result }`.

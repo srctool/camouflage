@@ -546,8 +546,8 @@ The seven rows of the base note apply. In short: a nested provider with no value
 
 | Case | Decided behavior |
 |---|---|
-| A component with **no provider** | **Proposed:** it falls back to the Minimal skin and the starter theme and logs a warning in development, so a lone `<camo-button>` in plain HTML works. This differs from Kotlin and Flutter, which fail fast; it needs review. |
-| The `skin` attribute names an unregistered skin | A clear error in development, then the fallback skin. |
+| A component with **no provider** | **Decided (ADR-48):** with a fallback skin registered (Minimal's `register` entry does it) it uses that skin and its starter theme; with none it renders unstyled but working and warns once. It never throws, because that would break server rendering. This differs from Kotlin and Flutter, which fail fast. |
+| The `skin` attribute names an unregistered skin | One warning naming it, then the fallback as above (tested on the server). |
 | A component is moved to another provider | It re-requests the context and re-renders (the context protocol handles reconnection). |
 | Nested providers in different shadow roots | Context requests cross shadow roots (the events are composed), CSS variables inherit through them, so it works. |
 | Two copies of `core` on one page | The context key is a `Symbol.for(...)`, so they share it; a version mismatch warns once. |

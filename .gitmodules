@@ -6,3 +6,7 @@
 	path = dart-lib
 	url = https://github.com/srctool/camouflage-dart.git
 	branch = main
+[submodule "web-lib"]
+	path = web-lib
+	url = https://github.com/srctool/camouflage-web.git
+	branch = main
