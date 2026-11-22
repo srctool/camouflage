@@ -617,3 +617,18 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 | Test modes | `reduced-motion`, `reduced-transparency` and `blur-off` make the environment report that value, so a skin's fallback is exercised in any browser. |
 | Size budget | `pnpm size` fails over a gzip budget set about 10% above the size; a milestone that adds components raises it in its pull request. |
 | Open | The scenario list is read by the web suite only: Kotlin's Roborazzi and Dart's Alchemist have not agreed to read it. The schema is a draft until srctool/camouflage#64 and the generator accept it. |
+
+### 8. What W2 settled (srctool/camouflage-web, milestone W2) {#web-8-what-w2-settled-srctoolcamouflage-web-milestone-w2}
+
+| Finding | Decision |
+|---|---|
+| `CamoText(style)` | The attribute is `variant` (`body-medium`, `title-large`, …): `style` is the global HTML attribute for inline CSS. The contract file lists `variant`; Kotlin and Dart keep `style`. |
+| Rich text | Markup in the default slot (`<strong>`, `<em>`, `<a href>`), styled by the skin, instead of a span list. Each link is a real, focusable link. |
+| Icons | `registerIcons({ name: pathData \| { svg, viewBox, autoMirror, original } })`, or an inline `<svg>` child. Trusted markup, drawn through `unsafeSVG` so it also renders on the server. No `label` means decorative (`aria-hidden`); a label means `role="img"`. An unregistered name draws an empty box. |
+| Ambient icon style | `--camo-icon-size` and `--camo-content-color`, set by every container (button, icon button, surface). The icon theme's `size` and `color` are gaps: the provider's reset is the root style. |
+| Surface | `level`, `shape`, `elevation`, `border`; the skin's surface treatment paints it and clips content to the shape. It sets the content color to `onSurface` for its subtree. A `block` flag on `SurfaceTreatment.decorate` separates a region of content from a centered control. |
+| Divider | Decorative (`aria-hidden`). Insets follow the reading direction; a vertical divider takes the height of its row. |
+| Icon button | `label` is required and is the accessible name. Ghost by default; Raised falls back to Soft and Link to Ghost. The contract's non-null `checked` becomes `toggle` plus `checked` (an HTML boolean cannot be null); `aria-pressed` only when `toggle`. 48 px touch area around a 40 (Minimal) or 44 (Cupertino) container. |
+| Tooltip | A stand-in drawn by the skin on hover and keyboard focus, hidden from assistive technology; the overlay `camo-tooltip` (W5) replaces it. |
+| Shared drawing | `textBase`, `iconBase`, `surfaceBase`, `dividerBase`, `iconButtonBase` in core; a skin supplies `defaults(theme)` and spreads the base, so the no-literals rule still holds. |
+| Robustness | An empty attribute (`appearance=""`, what a framework binding sends for "none") means absent. |
