@@ -367,7 +367,7 @@ camouflage-web/                      # a submodule of srctool/camouflage (web-li
 
 - `isolatedDeclarations` and `verbatimModuleSyntax` keep the public types explicit and the build fast.
 - Skins end with `satisfies CamoSkin`, so the compiler lists missing renderers.
-- Lit's decorators: use the standard decorators supported by the Lit version we pin, or the `static properties` form. Decide at W0 (check the current Lit guidance).
+- **Decided at W0: `static properties` with `declare` fields, no decorators.** The properties are typed by `declare` (so no class field overwrites the accessor Lit defines), the output needs no decorator transform in any tool (Vite, Vitest, the SSR build, Storybook), and the Custom Elements Manifest reads the JSDoc. `isolatedDeclarations` is on, so each export has an explicit type.
 
 ### 3.2 Packages {#web-32-packages}
 
@@ -405,20 +405,21 @@ camouflage-web/                      # a submodule of srctool/camouflage (web-li
 
 - **Registry:** npm, under the **`@srctool`** scope (the npm organization exists, created by the owner; packages are `@srctool/camouflage-core`, `@srctool/camouflage-skin-minimal` and so on), with **provenance** from GitHub Actions (OIDC, no stored tokens), as pub.dev and Maven Central are done for the others.
 - **Versions:** `0.x`, in lockstep with the Kotlin and Dart releases once the web port reaches parity. A package's `0.2.0` means the same contract as Kotlin and Dart `0.2.0`. Before parity, previews use `0.2.0-alpha.N`, never a number that claims parity.
-- **Tags:** `core-v0.2.0` style tags per package, like `camouflage_core-v0.1.0` on pub.dev.
+- **Tags:** `<folder>-v<version>` per package (`core-v0.2.0-alpha.1`, `skin-minimal-v0.2.0-alpha.1`), like `camouflage_core-v0.1.0` on pub.dev. `tools/release-check.mjs` fails the release if the tag and the package version differ, and, before parity, if the version is anything but `0.x.y-alpha.N` (dist-tag `alpha`).
+- **Workflow:** `release.yml` runs on the tag in the `npm` environment, verifies, packs with pnpm and runs `npm publish --provenance`; it is a **dry run until W10** (`DRY_RUN`). The owner's one-time setup (reserve each name, then the Trusted Publisher on npmjs.com) is in the web repository's `docs/publishing.md`.
 - **The submodule:** `srctool/camouflage` adds `web-lib/` and the sync script's wrapper, as for the other two.
 
 ### 3.6 Where Storybook lives: inside the usage site {#web-36-where-storybook-lives-inside-the-usage-site}
 
 The component gallery is **Storybook for web components, hosted in the usage site** (`camouflage.srctool.com`), not on its own domain. That site is a Docusaurus site deployed to Cloudflare Pages by `.github/workflows/docs.yml` in `srctool/camouflage`.
 
-**Proposed path.** The static Storybook build is placed in `docs/usage/static/web/` so Cloudflare serves it at `/web/` (for example `/web/?path=/story/button--solid`), and the usage docs link to it from the component pages and embed the relevant stories where it helps. Docusaurus copies `static/` as it is, so the Storybook output needs no processing.
+**Path.** The static Storybook build is placed in `docs/usage/static/web/` so Cloudflare serves it at `/web/` (for example `/web/?path=/story/button--solid`), and the usage docs link to it from the component pages and embed the relevant stories where it helps. Docusaurus copies `static/` as it is, so the Storybook output needs no processing.
 
-**How the build gets there** (to decide at the end of W0; the first option is proposed):
+**How the build gets there** (decided at the end of W0: **option A**; the W0 Storybook already builds with base `/web/` and `apps/storybook/serve.mjs` serves it under that path to test it):
 
 | Option | How | Trade-off |
 |---|---|---|
-| **A. Pinned submodule build (proposed)** | the camouflage repo adds `web-lib/` (like `kotlin-lib/` and `dart-lib/`); the docs workflow checks out the submodule, builds Storybook and copies it into `docs/usage/static/web/` before the Docusaurus build | reproducible: the gallery always matches the pinned web version; the workflow needs submodule checkout and a pnpm step |
+| **A. Pinned submodule build (decided)** | the camouflage repo adds `web-lib/` (like `kotlin-lib/` and `dart-lib/`); the docs workflow checks out the submodule, builds Storybook and copies it into `docs/usage/static/web/` before the Docusaurus build | reproducible: the gallery always matches the pinned web version; the workflow needs submodule checkout and a pnpm step |
 | B. Release artifact | the web repo publishes the Storybook build as a release asset; the docs workflow downloads a pinned version | no web build inside the docs workflow; one more release step to keep in sync |
 | C. Separate deploy, proxied | the web repo deploys its own Pages project and the usage site proxies `/web/` to it | live on every web commit, but two deployments and a routing rule |
 

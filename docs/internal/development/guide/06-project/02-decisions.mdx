@@ -408,8 +408,8 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - The skin contract note counts 54 renderers; the skin notes' "52 renderers" done-when lines become 54 for M16 work only.
   - Later desktop pieces (document tabs, the dock layout, the command palette) should prefer composing existing renderers, and add a renderer only when nothing existing can draw them.
 
-### ADR-46 (Proposed) The web port: TypeScript and Lit, skins as render functions in separate packages, server rendering as a goal
-- **Status:** proposed; the W0 spike confirms or changes it. `srctool/camouflage-web` exists and is empty.
+### ADR-46 (Accepted, W0; amended) The web port: TypeScript and Lit, skins as render functions in separate packages, server rendering as a goal
+- **Status:** accepted after the W0 spike (srctool/camouflage-web#1, #5, #6), with the amendments below. One check is still open and named: the Tauri window on Windows and Linux (W1; macOS matches). Next.js App Router passed (ADR-47).
 - **Context:** ADR-34 and ADR-43 settle that the web port is Web Components with CSS-variable themes. Still open were the implementation language and library, how skins work (they change structure, so CSS alone can't express them), and whether server rendering is supported. The target is parity with v0.2.0 of the Kotlin and Dart libraries, usable from any web framework and from Tauri.
 - **Decision (proposed):**
   - **TypeScript, strict.** The contract is typed (`CamoSkin` with one required renderer per component, finished with `satisfies CamoSkin`), as the Kotlin data class and Dart class are.
@@ -422,3 +422,33 @@ Each ADR has three parts: **Context → Decision → Consequences**. The status 
   - The sync script shows web notes as a "Web (planned)" section; it does not add a language switch.
   - A new repository check (layers, side effects, size budget) and a shared scenario list keep the three libraries aligned.
   - The component-provider fallback (a lone component with no provider uses Minimal) differs from Kotlin and Flutter and needs review.
+- **Amendments from the spike:**
+  - Lit's server rendering carried the skin and provider model, so it is the choice and our own renderer stays plan B (ADR-47).
+  - A component with no provider is **not** a Minimal fallback by default: the fallback is an opt-in registration, and without one the element renders unstyled and warns once (ADR-48).
+  - The package uses `static properties` with `declare` fields, not decorators.
+  - The contract's single `content` slot is the default slot on the web.
+  - Each class carries `@tagname`, `@slot`, `@fires` and `@attr` JSDoc for the Custom Elements Manifest, and a test compares the manifest with the contract.
+
+### ADR-47 (Accepted, W0) Web server rendering uses Lit's server package
+- **Status:** accepted. The spike's pages render on the server, are correct with scripts off, and hydrate with no layout jump in Chromium and WebKit (Firefox runs in CI).
+- **Context:** ADR-46 made server rendering a goal, with `@lit-labs/ssr` first and our own renderer as the fallback.
+- **Decision:** use `@lit-labs/ssr` 4.x with `@lit-labs/ssr-client` for hydration. The rules the spike found:
+  - Install the DOM shim first, then `await import` the `define` and `register` entries (static imports are hoisted and run before the shim), then set `LitElementRenderer.renderOptions` to call `connectedCallback`, so context reaches the elements.
+  - Initial state comes from attributes only. Role and name are set from `willUpdate` and mirrored as attributes marked `data-camo-ssr-aria`, which the client removes once `ElementInternals` take over.
+  - A server-rendered dialog is open but not modal, so core centres it with a frame style and the skin paints the scrim with a `box-shadow`; on hydration it is closed and shown as a modal, and the `close` that causes is ignored once. The two paints differ by under 50 pixels in a Playwright test.
+  - The hydrated modal must draw no focus ring of its own (WebKit did), so initial focus goes to an action.
+  - `<html>` cannot be part of a Lit template; the page shell is a string around the streamed template.
+- **Consequences:**
+  - The labs status stays a risk: pin the versions and re-run the hydration tests on every upgrade (they are in CI).
+  - Plan B (our own renderer over the pure render functions) is not built. Build it only if a later milestone finds something Lit's server cannot carry.
+  - Next.js 16 App Router is proven: a Server Component renders the Lit template and a Client Component defines the elements (the skins before `define`, which goes last). `@lit-labs/nextjs` is not used, since it supports Next 13 to 15 only. Plain JSX tags give no server shadow DOM, so apps use the Lit-template boundary, and a React wrapper from the manifest can hide it (W10).
+
+### ADR-48 (Accepted, W0) A web component with no provider renders unstyled and warns, and the fallback skin is opt-in
+- **Status:** accepted; this keeps web different from Kotlin and Flutter on purpose.
+- **Context:** the Provider note proposed that a lone `<camo-button>` in plain HTML falls back to Minimal. Kotlin and Flutter fail fast.
+- **Decision:**
+  - A skin's `register` entry registers it by name, and may mark itself the **fallback** (`registerSkin(skin, { theme, fallback: true })`). Minimal's `register` entry does. Importing a skin's main entry registers nothing.
+  - With a fallback registered, a component with no provider uses it and the skin's starter theme.
+  - With none, a component renders an unstyled but working element (slots and text) and logs one warning naming the missing `<camo-provider>`; it does not throw, because a throw would break server rendering of the whole page.
+  - A `skin` attribute that names an unregistered skin logs a warning naming it, then falls back the same way.
+- **Consequences:** plain-HTML use works after one import; apps that want strictness simply do not import a fallback. A test covers each case on the server.

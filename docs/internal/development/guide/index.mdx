@@ -228,9 +228,9 @@ camouflage-dart/
 
 This folder holds the design notes for **Camouflage for web**: the third platform next to Kotlin and Flutter, built as **Web Components** in **TypeScript** (ADR-34, ADR-43, ADR-46). It follows the same layout as `kotlin/` and `flutter/`: each note has `implements:` pointing to its base note, the base note says **what** and **why**, and the web note says **how on the web**.
 
-:::info[Status: planning]
+:::info[Status: W0 spike done in code, two checks open]
 
-The repository `srctool/camouflage-web` exists and is empty. Nothing here is built. The first piece of work is the spike (section 5). These notes record the decisions reached while brainstorming, so the spike and the first milestones start from one agreed plan.
+The spike is built in `srctool/camouflage-web` (provider, button and dialog in Minimal and Cupertino, server rendering and hydration, Storybook under `/web/`, the manifest check). ADR-46 is accepted with amendments, and ADR-47 and ADR-48 record the server rendering and no-provider decisions. Next.js App Router passes. Still open from W0: the spike page in a Tauri window on Windows and Linux (macOS matches Chromium and WebKit), the first task of W1.
 
 :::
 
@@ -271,8 +271,12 @@ Stencil was considered. It generates React, Vue and Angular wrappers and has a h
 | Workspace | pnpm workspaces | see [Project Setup](/guide/architecture/project-setup) |
 | Build | Vite library mode (or tsup) | ESM only, per-package entry points |
 | Tests | Vitest browser mode + Playwright | behavior tests and screenshots; axe for accessibility |
-| Docs and previews | Storybook for web components, **hosted inside the usage site** (decided) | same scenarios as the Kotlin and Dart goldens; see Project Setup §3.6 |
+| Docs and previews | Storybook 10 for web components, **hosted inside the usage site** at `/web/` (decided, built in W0) | same scenarios as the Kotlin and Dart goldens; see Project Setup §3.6 |
 | Manifest | Custom Elements Manifest analyzer | feeds docs, typings and later `camouflage-contract.json` |
+
+### 3b. Browser baseline (decided at W0) {#web-3b-browser-baseline-decided-at-w0}
+
+**Baseline widely available at the release date, for everything core uses.** Today that is Chrome and Edge 111, Firefox 123, Safari 16.4 (declarative shadow DOM is the limit), and it rises to Chrome 116, Firefox 125 and Safari 17 when the first popover component ships (W4). A feature that is only newly available or not Baseline is progressive with a fallback: anchor positioning (core positions with a script), `backdrop-filter` and SVG-filter glass (the ADR-42 capability chain), `prefers-reduced-transparency` (absent means false), `scrollbar-width` (the scrollbar skin draws its own). WebView2 is evergreen Chromium; WKWebView follows the macOS version (Safari 16.4 is macOS 13.3, Safari 17 is macOS 14); WebKitGTK follows the distribution and is the open row. The feature-by-engine table, the probe and how to run the Tauri window are in `docs/browser-baseline.md` in the web repository. The spike scenario gives the same result in Chromium, WebKit and the Tauri macOS window; Firefox runs in CI.
 
 ### 4. Packages {#web-4-packages}
 
@@ -335,12 +339,20 @@ Minimal ships first so every component has one complete skin early. A second, st
 | Bundle size | per-skin packages, `sideEffects` flags, a size budget per component checked in CI |
 | Webview differences (WebKitGTK is the oldest) | a browser baseline chosen at W0; the capability chain of ADR-42 for materials |
 
-### 7. Open decisions {#web-7-open-decisions}
+### 7. Decisions still open {#web-7-decisions-still-open}
 
-- The browser baseline (for example, "Baseline widely available" at the release date), including the Tauri webviews.
-- Whether to ship generated React, Vue and Angular wrappers or rely on native custom element support.
-- A fallback skin when no provider is present (see the Provider note).
-- How the Storybook build reaches the usage site (see Project Setup §3.6: a pinned submodule build is proposed).
+Every decision the W0 list named is decided, or moved to a milestone.
+
+| Decision | State |
+|---|---|
+| Server rendering: Lit's package or our own renderer | **Decided**, Lit (ADR-47) |
+| A component with no provider | **Decided**, opt-in fallback, else unstyled and a warning (ADR-48) |
+| Decorators or `static properties` | **Decided**, `static properties` with `declare` (Project Setup §2) |
+| How the Storybook build reaches the usage site | **Decided**, the pinned submodule build, option A (Project Setup §3.6) |
+| Default slot as text, one or two overlay option types | **Decided** (Components Overview §6) |
+| The browser baseline, including the Tauri webviews | **Decided**: Baseline widely available at the release date for everything core uses; newer features are progressive with a fallback (§3b). Open: WebKitGTK and WebView2 were not run (no Linux or Windows machine), first task of W1 |
+| Next.js App Router | **Proven** on Next 16 (ADR-47); static generation and `next dev` still untried |
+| Generated React, Vue and Angular wrappers | W10, from the manifest, if native custom element support is not enough |
 
 ### 8. Doc map {#web-8-doc-map}
 

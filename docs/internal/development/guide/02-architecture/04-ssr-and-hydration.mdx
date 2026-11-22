@@ -13,9 +13,9 @@ Kotlin and Flutter have no server rendering, so this note has no base note. It r
 
 :::
 
-:::warning[Check at W0]
+:::tip[Decided at W0 (ADR-47)]
 
-The status of Lit's server rendering (`@lit-labs/ssr`, a labs package), its context support, and Next.js support changes. The points below come from the documentation and package pages at the time of writing. Re-check them against the current docs before relying on them.
+Lit's server rendering is the choice. The spike's findings are in ADR-47 and the repository's `docs/spike-findings.md`; Next.js 16 App Router is proven (see §3.3). The status of Lit's server rendering (`@lit-labs/ssr`, a labs package), its context support, and Next.js support changes. The points below come from the documentation and package pages at the time of writing. Re-check them against the current docs before relying on them.
 
 :::
 
@@ -71,7 +71,7 @@ const page = html`
 for (const chunk of render(page)) response.write(chunk);   // a stream of HTML
 ```
 
-For Next.js, the integration packages from Lit's labs (`@lit-labs/ssr-react`, `@lit-labs/nextjs`) are the starting point. Check what each supports for the App Router before choosing, because their status is labs and changes.
+For Next.js, `@lit-labs/nextjs` is not used (it supports Next 13 to 15, as a webpack plugin). The proven pattern: a **Server Component** renders the Lit template with `@lit-labs/ssr` and places the HTML with `dangerouslySetInnerHTML`; a **Client Component** defines the elements in `useEffect` (hydration support, then the skins' `register` entries, then `define` last, so the first client render finds its skin). `@lit-labs/ssr` and Lit are `serverExternalPackages`. Plain JSX tags render the host only, with no server shadow DOM.
 
 ### 3.4 Hydration and the client {#web-34-hydration-and-the-client}
 
@@ -95,9 +95,10 @@ Because every skin renderer is a pure function from `(state, slots, theme, style
 5. Decide Lit's server rendering or our own renderer at the end of W0, and record it as an ADR.
 
 **Done when**
-- [ ] A page with a nested provider and two skins renders correctly on the server and hydrates with no layout jump.
-- [ ] The same page works with scripts disabled (look only).
-- [ ] The decision between Lit's server rendering and our own renderer is recorded.
+- [x] A page with a nested provider and two skins renders correctly on the server and hydrates with no layout jump (Chromium and WebKit; Firefox in CI).
+- [x] The same page works with scripts disabled (look only).
+- [x] The decision between Lit's server rendering and our own renderer is recorded (ADR-47).
+- [x] The same in Next.js 16 (App Router).
 
 ## 5. Edge cases {#web-5-edge-cases}
 
