@@ -501,8 +501,8 @@ The contract's inputs are **controlled** (`value` plus `onValueChange`). On the 
 
 - `value` is a property and attribute (initial value). The element updates `value` itself when the user edits, and fires a **cancelable** `camo-before-change` (detail `{ value }`) first. Calling `preventDefault()` on it rejects the edit, which gives the same control a controlled input has in Compose and Flutter. Then it fires `input` and, on commit, `change`.
 - A framework that wants a fully controlled input sets `value` in response to the event, and nothing else is needed.
-- Every input is **form-associated** (`ElementInternals`): it takes `name`, `value`, `required`, `disabled`, takes part in `FormData`, `reset` and `form.checkValidity()`, and reports validity with `setValidity`. A text field shows its `error` attribute (the contract's `error: String?`) as the error state.
-- `CamoForm` and its form fields: the rules are objects, so `rules` is a **property**. Form-level state is read through events (`camo-submit`, `camo-invalid`) and `form.valid`.
+- Every input is **form-associated** (`ElementInternals`): it takes `name`, `value`, `required`, `disabled`, takes part in `FormData`, `reset` and `form.checkValidity()`, and reports validity with `setValidity`. A text field shows its `error` attribute (the contract's `error: String?`) as the error state. **Confirmed in W3:** an `error` also makes the input invalid to its form (`customError`), so `form.checkValidity()` and `requestSubmit()` honor it; the user's next edit clears a message the form set.
+- `CamoForm` and its form fields: the rules are objects, so `rules` is a **property**, a rule or a list of rules by input `name`. Form-level state is read through events (`camo-submit`, `camo-invalid`, `camo-changed`) and `form.valid` and `form.dirty`. **Confirmed in W3:** every input with a `name` inside the form takes part, so there is no field wrapper; it works with a native `<form>` around it or alone.
 - `inputFilter` and `displayFormat` are **properties** (objects with functions), never attributes.
 
 #### 3.6 Overlays {#web-36-overlays}
@@ -632,3 +632,19 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 | Tooltip | A stand-in drawn by the skin on hover and keyboard focus, hidden from assistive technology; the overlay `camo-tooltip` (W5) replaces it. |
 | Shared drawing | `textBase`, `iconBase`, `surfaceBase`, `dividerBase`, `iconButtonBase` in core; a skin supplies `defaults(theme)` and spreads the base, so the no-literals rule still holds. |
 | Robustness | An empty attribute (`appearance=""`, what a framework binding sends for "none") means absent. |
+
+#### 9. What W3 settled (srctool/camouflage-web, milestone W3) {#web-9-what-w3-settled-srctoolcamouflage-web-milestone-w3}
+
+| Finding | Decision |
+|---|---|
+| One base | `CamoControl`: a form-associated element with `name`, `required`, `disabled` and `error`; value and validity through `ElementInternals`; `FormData`, `reset`, `checkValidity` and disabled `<fieldset>` work. Events: a cancelable `camo-before-change` (`{ value }`), then `input` once per edit, and `change` on commit. |
+| The editable node | Core builds the `<input>` and hands it to the renderer as `nodes.input`; the renderer places it and draws label, helper text and error around it. They meet through fixed ids in the shadow root (`input`, `label`, `supporting`, `error`). The same node is the search field's, the stepper's and the pickers'. |
+| Filters and formats | `inputFilters` and `displayFormats` are pure objects applied by `applyEdit(previous, typed, cursor, …)` around each edit; the cursor maps between raw and shown text. They run in Node. |
+| Options are children | `camo-radio` in `camo-radio-group`, `camo-segment` in `camo-segmented-control`: they render on the server and work in plain HTML. The group owns selection, the roving tab stop and the arrows (move and select, wrap, skip disabled). Server-render `checked` or `selected` on the child to avoid a flash. |
+| Rich labels | A role makes its children presentational: a link in a checkbox label is focusable but invisible to a screen reader (axe `nested-interactive`). Labels take `<strong>` and `<em>`; a link or control in one warns. The link goes next to the control. A gap against the Kotlin and Dart `labelSpans`. |
+| Form | `rules` by input name: a rule or a list; rules are plain functions (`CamoRules.required`, `requiredTrue`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `email`, `matches`), first failure wins. `validate-mode`: `disabled` (on submit), `always`, `on-user-interaction`, `on-unfocus`. `camo-button type="submit"` or Enter validates, then fires `camo-submit` (cancelable) or `camo-invalid` and focuses the first invalid input. `setErrors` takes server errors by name. |
+| Dates and times | ISO strings; month, weekday names, first weekday and the day label read by a screen reader come from `Intl`; calendar arithmetic is on year, month and day, so no time zone. A range is `start` and `end`; it submits `start/end`. |
+| Pickers | A field plus a native popover (`popover="auto"`: Escape, outside click, light dismiss), a popup below the field or a sheet from the bottom (`presentation`, `auto` by window width); `camo-calendar` is its own element. Single dates confirm with Cancel and OK (or `instant`); a range has Done and Clear. Space opens on key up. |
+| Skin choices | `timePicker` is `fields` in Minimal and `wheel` in Cupertino (each wheel one adjustable control). Cupertino has no date wheel yet. Radio is a ring in Minimal and a checkmark list in Cupertino; the switch is the iOS 51 by 31. |
+| Names | `value` for `query`; `step` (a spacing) for `steps`; `checked` for `selected`; `readonly` is the inverted `allowTyping`; `hour-cycle` is `use24Hour`. |
+| Gaps | Typing a date into the field (`allowTyping`); `CamoFieldFrame` as an element; the theme fields that change structure (`labelPlacement`, `labelPosition`, `showCheckIcon`, `showStopMarks`, `showValueLabel`, stepper `layout`, `showOutsideDays`, time picker `style`). |
