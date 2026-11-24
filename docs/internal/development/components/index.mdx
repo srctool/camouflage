@@ -525,7 +525,7 @@ const result = await showCamoDialog<boolean>({
 });
 ```
 
-- The dialog is a native `<dialog>` element shown in the **top layer**; menus, popovers and tooltips use the Popover API. Focus trapping, Escape and scrim dismissal follow the overlay note.
+- The dialog is a native `<dialog>` element shown in the **top layer**; menus, popovers and tooltips use the Popover API. Focus trapping, Escape and scrim dismissal follow the overlay note. **Confirmed in W4:** one overlay frame (`CamoModal`) serves the dialog and the bottom sheet; the menu, the tooltip and the pickers use the Popover API; both forms of the dialog (declarative and `showCamoDialog`) work and attach to the nearest provider.
 - The imperative helpers return a promise resolved with the result (or `undefined` when dismissed), like Flutter's `showCamoDialog<T>`. They attach to the nearest provider (or to a `host` option), so the skin and theme come from the right place.
 - A declarative overlay fires `camo-close` with `detail: { result }`, and `open` is a property and attribute.
 - Dismissal rules, back behavior and result types come from the base overlay note, not from this one.
@@ -533,7 +533,7 @@ const result = await showCamoDialog<boolean>({
 #### 3.7 Lists and collections {#web-37-lists-and-collections}
 
 - A list of items is **slotted children** (`<camo-list-item>`) when it is static, and a `state` property with a `renderItem` function when it is data-driven (`CamoPagedList` takes its paging state as an object, like the contract). Virtualization, if needed, is the component's concern and invisible to callers.
-- Selection state is the `selected` attribute on items and a `camo-select` event on the container, with the selected key in `detail`.
+- A list of items is slotted children when static (`camo-list-item` in a `camo-list-section`) and a `state` property with a `renderItem` function when data-driven (`camo-paged-list`). **Amended in W4:** an item carries `selected` and `clickable` and reports a press as the native `click`; no container event was needed, because a controlled list sets `selected` itself. Rows and sections are drawn by the skin; the section draws the dividers.
 
 #### 3.8 TypeScript {#web-38-typescript}
 
@@ -648,3 +648,18 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 | Skin choices | `timePicker` is `fields` in Minimal and `wheel` in Cupertino (each wheel one adjustable control). Cupertino has no date wheel yet. Radio is a ring in Minimal and a checkmark list in Cupertino; the switch is the iOS 51 by 31. |
 | Names | `value` for `query`; `step` (a spacing) for `steps`; `checked` for `selected`; `readonly` is the inverted `allowTyping`; `hour-cycle` is `use24Hour`. |
 | Gaps | Typing a date into the field (`allowTyping`); `CamoFieldFrame` as an element; the theme fields that change structure (`labelPlacement`, `labelPosition`, `showCheckIcon`, `showStopMarks`, `showValueLabel`, stepper `layout`, `showOutsideDays`, time picker `style`). |
+
+#### 10. What W4 settled (srctool/camouflage-web, milestone W4) {#web-10-what-w4-settled-srctoolcamouflage-web-milestone-w4}
+
+| Finding | Decision |
+|---|---|
+| Overlay frame | `CamoModal`: a native `<dialog>` shown with `showModal()` (top layer, scrim, focus trap, inert page, Escape), plus dismissal by the scrim, `close(result)`, one `camo-close`, a focus target in slotted content, and an overlay that a server renders open and that becomes modal on hydration. `persistent` turns scrim and Escape off. |
+| Popover overlays | Menu, tooltip and the pickers use `popover="auto"` (or `manual`). `placePopover` puts a popup below its anchor, above when there is no room, at the anchor's start edge; CSS anchor positioning is not used. |
+| Menu | An `anchor` slot and element entries (`camo-menu-item`, `camo-menu-divider`, `camo-menu-group exclusive`). The anchor announces "has popup" and expanded; arrows, Home, End and typeahead move; a click or Enter runs the item's `click` and closes; checkable items are menu item checkboxes or, in an exclusive group, radios. |
+| Tooltip | Hover after a delay, keyboard focus at once; Escape, blur and press hide it; hoverable; never takes focus; the text is the anchor's description, not its name. |
+| Paged list | `state = { items, loading, endReached, error }`, `renderItem`, `itemKey`; `camo-load-more` once per state near the end, `camo-retry`, `camo-refresh` (pull on touch); skeletons hidden from assistive technology, one live status. No virtualization. |
+| Select | A text field plus a panel (no renderer of its own): `camo-option` children or an `options` property, `searchable`, async through `loading`, `selected-label`, `camo-open`, `camo-query` (debounced) and `camo-load-more`; a menu as wide as the field or a sheet (`auto` by window width and more than seven options). |
+| Skeleton | No group element: every skeleton starts its cycle at the same moment of the page's clock. Stops under reduced motion. |
+| Top bar | `scroll-offset` is a distance; `scroll-target` follows a scroller; Cupertino collapses a large title; `title-content` replaces the drawn title and the heading stays. |
+| Host cannot see its children | `:host(:has(...))` is not in every engine and a server has no light DOM: slotted widgets are styled from the shadow root with `::slotted`, and a gap belongs to the widget. W1's and W2's button rule for icons was dead in Chromium and is fixed. |
+| Gaps | A wheel inside a select sheet and a date wheel; context menus; submenus, popover, side sheet and command palette (W6); the structural theme fields; `refreshKeepsItems` and `itemFadeIn`. |
