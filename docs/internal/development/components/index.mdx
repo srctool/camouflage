@@ -694,3 +694,17 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 | Pagination, breadcrumb, steps | `pageItems` keeps a fixed length of `2 * siblings + 5`; the arrows move focus without choosing. The breadcrumb's items are data holders, the trail is drawn and folded by the breadcrumb (`planBreadcrumb`). Steps take their state from `current`; only `clickable` ones are buttons; `index` and `count` reflect for a server render. |
 | Names | `connected` is the inverted `spaced`, `showIndicator` the inverted `hide-indicator`; `onClose` is `camo-close`, `onPageChange` is `camo-page-change`; `page` counts from 0; the table's `selection` is a `Set` or a list. |
 | Gaps | Virtualization, content-measured and resizable columns, row expansion and cell editing; checkbox trees and range selection; a rich tooltip; the toolbar's labels, hide on scroll and vertical form; the structural theme fields (popover `showArrow`, toolbar `placement`, table `density`, tree `showLines`, and the rest of the list in the findings). |
+
+#### 13. What W7 settled (srctool/camouflage-web, milestone W7) {#web-13-what-w7-settled-srctoolcamouflage-web-milestone-w7}
+
+| Finding | Decision |
+|---|---|
+| Package | `@srctool/camouflage-charts` depends on core only; `/define` registers `camo-chart-frame`, `camo-chart-data-table`, `camo-sparkline`, `camo-line-chart`, `camo-bar-chart`, `camo-pie-chart` and `camo-charts-provider`. Charts are not in the skin contract |
+| Drawing | By fractions, so nothing is measured: a stretched SVG with non-scaling strokes for lines and areas, boxes at percentages for bars, dots and labels, a square SVG for the pie. The server's drawing is right at any width and hydration moves nothing |
+| Data | JSON attributes (`categories`, `series`, `slices`, `values`), or properties; the server and the browser read the same data before the first render. Functions (axis and value formats) are properties only |
+| Style | The theme's defaults, the preset for the skin's name, the theme's `tokenSets.chart`, then `chart-style`. The palette is live color-family variables, leaving out those under 3:1 with the surface |
+| Accessibility | A plot is `role="application"` (not an image, so arrow keys reach it), named by the title and a generated summary, with the focused point said in a live region. A sparkline is an image. The table fallback is `camo-chart-data-table` |
+| Replacing the drawing | `<camo-charts-provider .renderer=…>`; the frame, axes, legend, keys and tables stay |
+| Right-to-left | Logical properties and one mirrored SVG; a time axis stays left to right and a pie keeps turning clockwise |
+| A W4 bug | A card or list item that was not clickable cancelled every click inside it. Now it blocks only its own click; a disabled one still blocks everything |
+| Gaps | Zoom, pan and brush; dual y axes; patterns as a second cue beside color; the skin's tooltip renderer; label thinning on a server; gauges and reference bands |
