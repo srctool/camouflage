@@ -708,3 +708,30 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 | Right-to-left | Logical properties and one mirrored SVG; a time axis stays left to right and a pie keeps turning clockwise |
 | A W4 bug | A card or list item that was not clickable cancelled every click inside it. Now it blocks only its own click; a disabled one still blocks everything |
 | Gaps | Zoom, pan and brush; dual y axes; patterns as a second cue beside color; the skin's tooltip renderer; label thinning on a server; gauges and reference bands |
+
+#### 14. What W8 settled (srctool/camouflage-web, milestone W8) {#web-14-what-w8-settled-srctoolcamouflage-web-milestone-w8}
+
+| Finding | Decision |
+|---|---|
+| Packages | `skin-material`, `skin-fluent` and `skin-carbon` join Minimal and Cupertino, each on core only. Theme factories that need the color library are a `/factory` entry, since plain Node cannot load it |
+| How a skin is written | Most renderers are core's shared base with the skin's `defaults(theme)` and a little CSS on its parts; button and dialog are the skin's own |
+| Options | `createMaterialSkin({ expressiveProgress })`, `createCupertinoSkin({ surface })` (`classic` or `liquid-glass`), `createFluentSkin({ surface })` (`solid`, `acrylic`, `mica`). `cupertinoSkin` is now Classic with blurred bars, sheets and menus |
+| Capabilities in CSS | The provider writes `--camo-blur-supported`, `--camo-glass-refraction`, `--camo-material-texture`, `--camo-window-material` and `--camo-input-pointer` after hydration; the server writes none, so the first paint is opaque and touch-sized |
+| Refraction | An SVG displacement filter inside `backdrop-filter`, in Chromium only (`userAgentData`); elsewhere glass keeps blur and edge |
+| Density | Fluent (32 pointer, 40 touch) and Carbon (40, 48) follow the input in CSS; `fluentTheme({ density })` and `carbonTheme({ density })` fix it |
+| Ripple | The press controller leaves the pointer's position in `--camo-press-x` and `--camo-press-y` |
+| Colors changed for contrast | Fluent: dark error text `#ee8f94`, light warning `#bc4b09`. Carbon: dark error `#ff8389`, the light theme's inverse link `#78a9ff`; banner actions are link blue |
+| Core bugs found | A `line` or `dot` navigation indicator squashed the icon; a bottom sheet's close button stacked under the title and left an empty heading when untitled; a removed tooltip threw; a side-aligned snackbar did not center below 600 |
+| Gaps | No time-picker dial or date wheel; no Material switch icons; no Fluent dialog close button; Carbon steps a nested tile one layer only; Liquid Glass not measured on a mid-range device; Mica untested against a window material |
+
+**Material availability on the web**
+
+| Skin | Surfaces, best first | Needs |
+|---|---|---|
+| Minimal, Material, Carbon | flat, paper, layered | nothing |
+| Cupertino Classic | blur, opaque | `backdrop-filter` |
+| Cupertino Liquid Glass | refraction, blur and edge, Classic blur, opaque | refraction: Chromium in a secure context |
+| Fluent Acrylic | blur, tint and grain; grain over solid; Solid | `backdrop-filter` |
+| Fluent Mica | the window's material, Solid | a window material; a web page has none |
+
+Reduce Transparency ends every chain at the opaque surface.
