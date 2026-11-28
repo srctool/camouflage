@@ -735,3 +735,15 @@ Applied to `camo-button` and `camo-dialog`, checked by `tests/node/manifest.test
 | Fluent Mica | the window's material, Solid | a window material; a web page has none |
 
 Reduce Transparency ends every chain at the opaque surface.
+
+#### 15. What W9 settled (srctool/camouflage-web, milestone W9) {#web-15-what-w9-settled-srctoolcamouflage-web-milestone-w9}
+
+| Finding | Decision |
+|---|---|
+| Submenus | `camo-menu-submenu` (`text`, `open`, `disabled`) inside a menu, any depth. Its child is a nested `popover="auto"`, so Escape and a click outside behave natively. Hover opens after 250 ms and closes after a 120 ms grace |
+| Split pane | `camo-split-pane` with `camo-pane` children. Each pane carries its own `size`, `min-size`, `max-size`, `collapsible` and draws the divider after itself, so a server draws the split from attributes. `fractions` saves and restores; `camo-resize` reports |
+| Separator | The divider is a real `separator` with a percentage value, which the web has and Compose and Flutter do not |
+| Scrollbar | `camo-scrollbar` is the scroll area itself. With a mouse the platform bar is hidden by CSS (so nothing moves at hydration) and the skin's is drawn; touch and no-script keep the platform's. Camouflage's own scroll containers use the platform's bar in the theme's colors, not the skin's renderer |
+| Density | A generic `density="xs|sm|md|lg"` on the provider (CSS only), read by Carbon and Fluent before their theme's density |
+| Renderers | 60 on the web with `splitPane` and `scrollbar` |
+| Gaps | No safe triangle for the pointer path to a submenu; no scroll adapters for virtualized lists; the drawn scrollbar is not wired into the tree, table or lists; Carbon `xs` keeps 14 px text; the macOS "show scroll bars" setting is not read |

@@ -817,7 +817,7 @@ Same as the base note, with two web items: export every renderer individually, a
 
 | Finding | Decision |
 |---|---|
-| Growing contract | `SkinComponents` has one renderer per component built so far, and `CamoSkin` requires all of them. A milestone adds its components' lines, and every skin must follow (Kotlin and Dart list all 54 at once). |
+| Growing contract | `SkinComponents` has one renderer per component built so far, and `CamoSkin` requires all of them. A milestone adds its components' lines, and every skin must follow (Kotlin and Dart list all 54 at once). The web lists **60** since W9: the split pane and the scrollbar joined, and it counts the drawn parts of a component (a segment, a menu item, a tab) as renderers of their own. |
 | Incomplete skins | `defineSkin({ ...minimalSkin, name: "brand" })` fails to compile, and throws, naming the missing renderer. `InProgressSkin` compiles while a skin is half built but cannot be registered. `registerSkin` checks at run time (a JavaScript skin has no compiler). `pnpm skins` checks every skin package in CI: complete, and a `register` entry. |
 | Shared treatments | Flat, Classic, Fade and Opacity live in core and the skins re-export them. |
 | Press feedback | Feedback reacts to `:active` and to `[data-camo-pressed]`, which `PressController` sets for pointer and key, so Space and Enter feel like a click. |
